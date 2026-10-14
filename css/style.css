@@ -434,11 +434,6 @@ body {
   color: var(--ink-soft);
 }
 
-.brands__cuisine {
-  font: italic 500 clamp(13px, 1.8vmin, 17px)/1.1 var(--font-display);
-  color: var(--accent);
-}
-
 /* short landscape screens: one line per brand so the title block fits */
 @media (max-height: 500px) {
   :root { --floor: 58%; }
