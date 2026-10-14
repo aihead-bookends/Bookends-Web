@@ -492,3 +492,79 @@ body {
 .no-anim .skip,
 .no-anim .replay,
 .no-anim .char { display: none; }
+
+/* --- props used by the opening variations ---------------------------------- */
+
+.prop svg,
+.held svg,
+.bit--icon svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.bit--icon { width: clamp(28px, 5.5vmin, 56px); }
+
+.noodle svg { height: 100%; }
+
+.held {
+  position: absolute;
+  pointer-events: none;
+}
+
+.tray__food {
+  display: block;
+  width: 66%;
+  margin: 0 auto -10%;
+}
+
+.say {
+  font: italic 900 clamp(24px, 5vmin, 60px)/1 var(--font-display);
+  color: var(--accent);
+  letter-spacing: -.01em;
+  white-space: nowrap;
+  text-shadow: .045em .045em 0 var(--ink);
+}
+
+/* --- variation switcher (variation branch only) ---------------------------- */
+
+.variants {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  z-index: 12;
+  display: flex;
+  gap: 4px;
+  max-width: calc(100% - 24px);
+  padding: 4px;
+  overflow-x: auto;
+  translate: -50% 0;
+  background: rgba(17, 17, 17, .86);
+  border-radius: 999px;
+  scrollbar-width: none;
+}
+
+.variants button {
+  flex: none;
+  padding: 8px 12px;
+  font: 600 12px/1 var(--font-ui);
+  color: var(--paper);
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.variants button:hover { background: rgba(243, 236, 223, .14); }
+
+.variants button[aria-pressed="true"] {
+  color: var(--ink);
+  background: var(--paper);
+}
+
+.variants button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+

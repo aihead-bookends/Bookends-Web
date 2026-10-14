@@ -25,6 +25,12 @@
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const portrait = window.matchMedia('(max-aspect-ratio: 4/5)');
   const ESSENCE = window.BOOKENDS_ESSENCE;
+  const OPENINGS = window.BOOKENDS_OPENINGS;
+  const VARIANTS = Object.keys(OPENINGS);
+  let variant = (() => {
+    const v = new URLSearchParams(location.search).get('v');
+    return VARIANTS.includes(v) ? v : (VARIANTS[Number(v)] || VARIANTS[0]);
+  })();
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   const pair = (str, fallback) => (str || fallback).split(' ').map(Number);
 
@@ -135,6 +141,30 @@
     el.className = cls;
     el.innerHTML = html;
     parent.appendChild(el);
+    return el;
+  }
+
+  let props = [];
+  function removeProps() {
+    props.forEach((el) => el.remove());
+    props = [];
+  }
+  // a loose prop on the effects layer, positioned by its centre with x/y
+  function prop(cls, html, width) {
+    const el = make(`prop ${cls}`, html);
+    if (width) el.style.width = `${width}px`;
+    gsap.set(el, { xPercent: -50, yPercent: -50, autoAlpha: 0 });
+    props.push(el);
+    return el;
+  }
+  // something a character holds: moves, squashes and spins with it
+  function held(ch, cls, html, { width, left, top }) {
+    const el = document.createElement('span');
+    el.className = `held ${cls}`;
+    el.innerHTML = html;
+    Object.assign(el.style, { width: `${width}px`, left: `${left}px`, top: `${top}px` });
+    ch.body.appendChild(el);
+    props.push(el);
     return el;
   }
 
@@ -394,6 +424,7 @@
 
   function build() {
     if (tl) tl.kill();
+    removeProps();
 
     const korean = icons.aiko;
     const italian = icons.capiche;
@@ -506,12 +537,29 @@
     gsap.set([title, sub, replayBtn], { autoAlpha: 0, y: 18 });
     gsap.set(skipBtn, { autoAlpha: 1 });
 
-    const FACEOFF = 1.25;
-    const HIT1 = 2.15;
-    const HIT2 = 3.25;
-    const BRAWL = 4.3;
-    const CLASH = BRAWL + 0.37;
-    const RUNIN = 4.9;
+    tl = gsap.timeline({ paused: true, onComplete: () => document.dispatchEvent(new Event('intro:done')) });
+
+    // the countries pop in as the two arrive (every opening)
+    tl.to(korean, { scale: 1, autoAlpha: 1, duration: 0.45, ease: 'back.out(2.2)', stagger: 0.05 }, 0.05)
+      .to(italian, { scale: 1, autoAlpha: 1, duration: 0.45, ease: 'back.out(2.2)', stagger: 0.05 }, 0.17);
+
+    // 1–3 · the opening act (see openings.js): it ends with Aiko and Capiche inside the cloud at `clash`
+    const opening = OPENINGS[variant]({
+      tl, gsap, A, C, m, W, H, cx, floorY, fh, space, knock, windup, ax, cxo,
+      aOff, cOff, aFace, cFace, aHit, cHit, aMid, cMid,
+      cloud, cw, ch, cloudY, bolt, sushiHit, pizzaHit, korean, italian, hearts,
+      FOOD: HIT_FOOD, prop, held,
+      hop, hopInPlace, squash, shake, burst, strike, jolt, heartsUp, dustPuff,
+    });
+    const CLASH = opening.clash;
+    (opening.bits || BITS).forEach((b, i) => {
+      if (!bits[i]) return;
+      const icon = b.trim().startsWith('<');
+      bits[i].className = icon ? 'bit bit--icon' : (i % 3 === 0 ? 'bit bit--accent' : 'bit');
+      bits[i].innerHTML = b;
+    });
+
+    const RUNIN = CLASH + 0.23;
     const JUMP = RUNIN + 0.6;
     const LEAP = 0.8;
     const LAND = JUMP + LEAP;
@@ -527,67 +575,8 @@
     const END = EXIT + exitSteps * EXIT_STEP;
     const TITLE = EXIT + (END - EXIT) * 0.55;
 
-    tl = gsap.timeline({ paused: true, onComplete: () => document.dispatchEvent(new Event('intro:done')) });
-
-    // 1 · enter: both hop in from the edges, each bringing its country
-    tl.add(hop(A, (aOff + aFace) / 2, 0.5, fh * 0.45), 0)
-      .add(squash(A, 0.18, 0.4), 0.5)
-      .add(hop(A, aFace, 0.42, fh * 0.25), 0.55)
-      .add(squash(A, 0.14), 0.97)
-      .add(hop(C, (cOff + cFace) / 2, 0.5, fh * 0.45), 0.12)
-      .add(squash(C, 0.18, 0.4), 0.62)
-      .add(hop(C, cFace, 0.42, fh * 0.25), 0.67)
-      .add(squash(C, 0.14), 1.09)
-      .to(korean, { scale: 1, autoAlpha: 1, duration: 0.45, ease: 'back.out(2.2)', stagger: 0.05 }, 0.05)
-      .to(italian, { scale: 1, autoAlpha: 1, duration: 0.45, ease: 'back.out(2.2)', stagger: 0.05 }, 0.17);
-
-    // 2 · face-off: boxer bob, Capiche shakes it out, a lightning bolt strikes between them
-    tl.to([A.lift, C.lift], { y: -fh * 0.04, duration: 0.16, ease: 'sine.inOut', yoyo: true, repeat: 5, stagger: 0.08 }, FACEOFF)
-      .to(A.body, { rotation: -7, duration: 0.3 }, FACEOFF)
-      .to(C.body, { keyframes: { rotation: [8, -8, 8, -6, 0] }, duration: 0.7, ease: 'none' }, FACEOFF + 0.15)
-      .fromTo(bolt, { autoAlpha: 1, scale: 0, rotation: -25, y: floorY - fh * 0.6 - fh * 0.4 },
-        { scale: 1, rotation: 0, y: floorY - fh * 0.6, duration: 0.18, ease: 'back.out(2.5)', immediateRender: false }, FACEOFF + 0.2)
-      .to(bolt.firstElementChild, { keyframes: { opacity: [0.25, 1, 0.4, 1] }, duration: 0.3, ease: 'none' }, FACEOFF + 0.38)
-      .add(shake(7, 0.22), FACEOFF + 0.25)
-      .to(bolt, { autoAlpha: 0, scale: 1.35, duration: 0.25, ease: 'power2.in' }, FACEOFF + 0.85);
-
-    // 3a · Aiko strikes, Capiche spins away
-    const IMPACT1 = HIT1 + 0.3;
-    tl.add(strike(A, aFace, aHit, 1, windup), HIT1)
-      .add(burst(sushiHit), IMPACT1)
-      .add(shake(12, 0.3), IMPACT1)
-      .add(jolt(italian, 1), IMPACT1)
-      .to(C.root, { x: cFace + knock, duration: 0.45, ease: 'power3.out' }, IMPACT1)
-      .to(C.body, { rotation: 360, duration: 0.5, ease: 'power2.out' }, IMPACT1)
-      .set(C.body, { rotation: 0 }, IMPACT1 + 0.5)
-      .add(hopInPlace(C, m.c.h * 0.22, 0.42), IMPACT1)
-      .add(squash(C, 0.15), IMPACT1 + 0.42)
-      .to(C.root, { x: cFace, duration: 0.3, ease: 'power2.inOut' }, IMPACT1 + 0.48);
-
-    // 3b · Capiche slaps back, Aiko gets squashed
-    const IMPACT2 = HIT2 + 0.3;
-    tl.add(strike(C, cFace, cHit, -1, windup), HIT2)
-      .add(burst(pizzaHit), IMPACT2)
-      .add(shake(14, 0.32), IMPACT2)
-      .add(jolt(korean, -1), IMPACT2)
-      .to(A.root, { x: aFace - knock, duration: 0.4, ease: 'power3.out' }, IMPACT2)
-      .to(A.body, {
-        keyframes: [
-          { scaleX: 0.68, scaleY: 1.16, rotation: -16, duration: 0.09, ease: 'power2.out' },
-          { scaleX: 1, scaleY: 1, rotation: 0, duration: 0.65, ease: 'elastic.out(1, 0.35)' },
-        ],
-      }, IMPACT2)
-      .to(A.root, { x: aFace, duration: 0.3, ease: 'power2.inOut' }, IMPACT2 + 0.55);
-
-    // 3c · both charge, brawl cloud (it keeps going until the tiger is inside)
-    tl.to(A.body, { rotation: -10, duration: 0.15 }, BRAWL)
-      .to(C.body, { rotation: 10, duration: 0.15 }, BRAWL)
-      .to(A.root, { x: aMid, duration: 0.22, ease: 'power3.in' }, BRAWL + 0.15)
-      .to(C.root, { x: cMid, duration: 0.22, ease: 'power3.in' }, BRAWL + 0.15)
-      .to([A.body, C.body], { rotation: 0, duration: 0.2 }, BRAWL + 0.15)
-      .to(cloud, { autoAlpha: 1, scale: 1, duration: 0.32, ease: 'back.out(2)' }, CLASH - 0.04)
-      .add(shake(10, 0.28), CLASH)
-      .add(cloudWobble(VANISH - CLASH - 0.1, cw), CLASH + 0.1)
+    // inside the cloud: it churns, things fly out, heads pop up (every opening)
+    tl.add(cloudWobble(VANISH - CLASH - 0.1, cw), CLASH + 0.1)
       .add(cloudBits(VANISH - CLASH - 0.4, cx, cloudY - ch * 0.1, cw * 0.62), CLASH + 0.1)
       .add(peek(A, -1, peekA), CLASH + 0.3)
       .add(peek(C, 1, peekC), CLASH + 0.8)
@@ -747,6 +736,22 @@
 
     createFx();
     play();
+
+    // variation switcher: rebuild with another opening act and play it from the top
+    const switcher = document.querySelectorAll('[data-variant]');
+    const mark = () => switcher.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.variant === variant)));
+    mark();
+    switcher.forEach((btn) => btn.addEventListener('click', () => {
+      variant = btn.dataset.variant;
+      const url = new URL(location.href);
+      url.searchParams.set('v', variant);
+      url.searchParams.delete('t');
+      history.replaceState(null, '', url);
+      mark();
+      build();
+      document.dispatchEvent(new Event('intro:start'));
+      tl.play(0);
+    }));
 
     skipBtn.addEventListener('click', skip);
     replayBtn.addEventListener('click', () => {

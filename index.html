@@ -100,6 +100,15 @@
     </header>
 
     <button class="btn skip" type="button">Skip intro</button>
+    <!-- variation branch: pick which opening act plays before the tiger -->
+    <nav class="variants" aria-label="Opening variations">
+      <button type="button" data-variant="fight">0 · Fight</button>
+      <button type="button" data-variant="cookoff">1 · Cook-off</button>
+      <button type="button" data-variant="sharing">2 · Sharing</button>
+      <button type="button" data-variant="noodle">3 · Noodle</button>
+      <button type="button" data-variant="dance">4 · Dance</button>
+      <button type="button" data-variant="race">5 · Race</button>
+    </nav>
     <a class="scroll-cue" href="#restaurants">Explore
       <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </a>
@@ -288,6 +297,7 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="js/essence.js"></script>
+  <script src="js/openings.js"></script>
   <script src="js/intro.js"></script>
   <script src="js/home.js"></script>
 </body>
