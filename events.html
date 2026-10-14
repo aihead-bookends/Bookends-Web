@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Events · Bookends Hospitality</title>
+  <meta name="description" content="Events at Bookends Hospitality: celebrations, private dining and festival nights at Aiko, Beshak and Capiche.">
+  <meta name="theme-color" content="#F3ECDF">
+  <!-- favicon: the Caiko logo, the official Bookends Hospitality mark -->
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/icon-64.png">
+  <link rel="apple-touch-icon" href="assets/icon-180.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..900;1,9..144,500..900&family=Inter:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/home.css">
+  <link rel="stylesheet" href="css/events.css">
+  <script>document.documentElement.classList.add('js')</script>
+</head>
+<body class="page">
+  <header class="site-header is-shown" id="site-header">
+    <a class="site-header__brand" href="index.html"><img src="assets/logo-black.png" width="1518" height="417" alt="Bookends Hospitality"></a>
+    <nav class="site-header__nav" aria-label="Main">
+      <a href="index.html#about">About</a>
+      <a href="index.html#brands">Our brands</a>
+      <a href="index.html#visit">Visit</a>
+      <a href="events.html" aria-current="page">Events</a>
+    </nav>
+    <a class="btn btn--solid site-header__cta" href="index.html#reserve">Reserve</a>
+  </header>
+
+  <main id="top">
+    <section class="page-head" aria-labelledby="events-title">
+      <div class="wrap page-head__grid">
+        <div>
+          <p class="eyebrow reveal">Events</p>
+          <h1 class="hero__title reveal" style="--d: 1" id="events-title">Moments at Bookends.</h1>
+        </div>
+        <div class="page-head__side">
+          <p class="lede reveal" style="--d: 2">Celebrations, private dinners and festival nights across Aiko, Beshak and Capiche.</p>
+          <a class="btn btn--solid btn--lg reveal" style="--d: 3" href="#host">Plan an event</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         The gallery is built by js/events.js from the EVENTS list there.
+         ================================================================ -->
+    <section class="section gallery-section" aria-labelledby="gallery-title">
+      <div class="wrap">
+        <div class="gallery-bar">
+          <h2 class="visually-hidden" id="gallery-title">Gallery</h2>
+          <div class="filters" role="group" aria-label="Show events from">
+            <button type="button" data-filter="all" aria-pressed="true">All</button>
+            <button type="button" data-filter="aiko" aria-pressed="false">Aiko</button>
+            <button type="button" data-filter="beshak" aria-pressed="false">Beshak</button>
+            <button type="button" data-filter="capiche" aria-pressed="false">Capiche</button>
+          </div>
+          <p class="gallery-count" id="gallery-count" aria-live="polite"></p>
+        </div>
+        <ul class="gallery" id="gallery"></ul>
+      </div>
+    </section>
+
+    <section class="section section--dark" id="host" aria-labelledby="host-title">
+      <div class="wrap">
+        <p class="eyebrow reveal">Host with us</p>
+        <h2 class="h2 reveal" id="host-title">Your event, our tables.</h2>
+        <p class="lede reveal">From a quiet dinner for ten to a full takeover, our teams at Aiko, Beshak and Capiche will shape the menu and the room around you.</p>
+
+        <div class="host">
+          <article class="host__item reveal" style="--d: 0">
+            <span class="host__icon" data-icon="lantern" aria-hidden="true"></span>
+            <h3>Private dining</h3>
+            <p>[A line about private dining: room sizes, set menus, how many guests.]</p>
+          </article>
+          <article class="host__item reveal" style="--d: 1">
+            <span class="host__icon" data-icon="diya" aria-hidden="true"></span>
+            <h3>Celebrations</h3>
+            <p>[Birthdays, anniversaries, festivals: what you can arrange.]</p>
+          </article>
+          <article class="host__item reveal" style="--d: 2">
+            <span class="host__icon" data-icon="olive" aria-hidden="true"></span>
+            <h3>Corporate &amp; groups</h3>
+            <p>[Team dinners, launches and large groups: capacity and what's included.]</p>
+          </article>
+        </div>
+
+        <div class="host__cta reveal">
+          <a class="btn btn--light btn--lg" data-link="group.email" href="#">Enquire by email</a>
+          <a class="btn btn--outline-light btn--lg" data-link="group.phone" href="#">Call us</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="contact">
+    <div class="wrap footer">
+      <div class="footer__brand">
+        <p class="footer__name"><img src="assets/logo-black.png" width="1518" height="417" alt="Bookends Hospitality" loading="lazy"></p>
+        <p class="footer__tag">Aiko · Beshak · Capiche</p>
+      </div>
+      <nav class="footer__col" aria-label="Our brands">
+        <h3>Our brands</h3>
+        <a href="index.html#brands">Aiko</a>
+        <a href="index.html#brands">Beshak</a>
+        <a href="index.html#brands">Capiche</a>
+        <a href="events.html">Events</a>
+      </nav>
+      <div class="footer__col">
+        <h3>Follow</h3>
+        <a data-link="aiko.instagram" href="#">Aiko on Instagram</a>
+        <a data-link="beshak.instagram" href="#">Beshak on Instagram</a>
+        <a data-link="capiche.instagram" href="#">Capiche on Instagram</a>
+      </div>
+      <div class="footer__col">
+        <h3>Contact</h3>
+        <a data-link="group.phone" href="#">[Phone number]</a>
+        <a data-link="group.email" href="#">[Email address]</a>
+        <a href="index.html#reserve">Reservations</a>
+      </div>
+    </div>
+    <p class="footer__legal wrap">© <span data-year>2026</span> Bookends Hospitality</p>
+  </footer>
+
+  <!-- full-screen photo viewer -->
+  <dialog class="lightbox" id="lightbox" aria-label="Event photo">
+    <div class="lightbox__frame">
+      <button class="lightbox__close" type="button" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <figure class="lightbox__figure">
+        <div class="lightbox__media"></div>
+        <figcaption>
+          <p class="lightbox__title"></p>
+          <p class="lightbox__meta"></p>
+          <p class="lightbox__caption" hidden></p>
+        </figcaption>
+      </figure>
+      <div class="lightbox__nav">
+        <button class="lightbox__prev" type="button" aria-label="Previous photo">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <span class="lightbox__count"></span>
+        <button class="lightbox__next" type="button" aria-label="Next photo">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="js/essence.js"></script>
+  <script src="js/home.js"></script>
+  <script src="js/events.js"></script>
+</body>
+</html>
