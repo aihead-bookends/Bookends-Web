@@ -409,14 +409,6 @@ body {
   text-wrap: balance;
 }
 
-/* the Bookends logo in place of the typed title */
-.title__logo {
-  display: block;
-  width: clamp(240px, 46vmin, 560px);
-  height: auto;
-  margin: 0 auto clamp(6px, 1.2vmin, 14px);
-}
-
 .brands {
   display: flex;
   justify-content: center;
