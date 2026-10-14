@@ -65,6 +65,29 @@
   document.addEventListener('intro:done', () => stage && stage.classList.add('is-done'));
   document.addEventListener('intro:start', () => stage && stage.classList.remove('is-done'));
 
+  // 2s after the intro's closing title, glide down to the home page, unless the
+  // visitor is already scrolling, tapping or typing (or the intro is frozen with ?t=)
+  const home = document.getElementById('home');
+  const AUTO_SCROLL_MS = 2000;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let autoScroll;
+  const cancelAutoScroll = () => {
+    clearTimeout(autoScroll);
+    autoScroll = null;
+    ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach((type) => window.removeEventListener(type, cancelAutoScroll));
+  };
+  document.addEventListener('intro:done', () => {
+    if (!home || !stage || new URLSearchParams(location.search).has('t')) return;
+    cancelAutoScroll();
+    ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach((type) => window.addEventListener(type, cancelAutoScroll, { passive: true }));
+    autoScroll = setTimeout(() => {
+      cancelAutoScroll();
+      if (window.scrollY > stage.offsetHeight * 0.3) return; // already on their way down
+      home.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
+    }, AUTO_SCROLL_MS);
+  });
+  document.addEventListener('intro:start', cancelAutoScroll);
+
   // sections fade up as they come into view
   const reveals = document.querySelectorAll('.reveal');
   if ('IntersectionObserver' in window) {
