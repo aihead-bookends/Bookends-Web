@@ -373,7 +373,8 @@
   /* --- geometry ------------------------------------------------------------ */
 
   function measure() {
-    const s = stage.getBoundingClientRect();
+    // measured from the inner layer, which drifts with the scroll-away fade (home.js)
+    const s = (document.getElementById('stage-inner') || stage).getBoundingClientRect();
     const box = (el) => {
       const r = el.getBoundingClientRect();
       return { x: r.left - s.left + r.width / 2, top: r.top - s.top, bottom: r.bottom - s.top, w: r.width, h: r.height };

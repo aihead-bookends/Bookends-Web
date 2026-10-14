@@ -32,6 +32,8 @@
 
   <main id="top">
   <section class="stage" id="stage" aria-labelledby="brand-title">
+    <!-- drifts and fades as the page scrolls on to the home page (js/home.js) -->
+    <div class="stage__inner" id="stage-inner">
     <div class="scene" id="scene">
 
       <!-- Korea / India / Italy line art and the mandala are added here by intro.js -->
@@ -102,6 +104,7 @@
         Replay
       </button>
     </header>
+    </div>
 
     <button class="btn skip" type="button">Skip intro</button>
     <a class="scroll-cue" href="#home">Explore
@@ -119,20 +122,20 @@
   <section class="hero" id="home" aria-labelledby="hero-title">
     <div class="wrap hero__grid">
       <div class="hero__copy">
-        <p class="eyebrow reveal">Bookends Hospitality</p>
-        <h2 class="hero__title reveal" id="hero-title">Where Korea, India and Italy share a&nbsp;table.</h2>
-        <p class="lede reveal">Home of Aiko, Beshak and Capiche: three restaurants, three cuisines and one way of looking after you.</p>
-        <div class="hero__actions reveal">
+        <p class="eyebrow reveal" style="--d: 0">Bookends Hospitality</p>
+        <h2 class="hero__title reveal" style="--d: 1" id="hero-title">Where Korea, India and Italy share a&nbsp;table.</h2>
+        <p class="lede reveal" style="--d: 2">Home of Aiko, Beshak and Capiche: three restaurants, three cuisines and one way of looking after you.</p>
+        <div class="hero__actions reveal" style="--d: 3">
           <a class="btn btn--solid btn--lg" href="#reserve">Reserve a table</a>
           <a class="btn btn--lg" href="#restaurants">Explore restaurants</a>
         </div>
-        <ul class="hero__brands reveal" aria-label="Our restaurants">
+        <ul class="hero__brands reveal" style="--d: 4" aria-label="Our restaurants">
           <li><a href="#restaurants"><img src="assets/aiko.png" alt=""><span><b>Aiko</b><i>Korean</i></span></a></li>
           <li><a href="#restaurants"><img class="is-wide" src="assets/tiger.png" alt=""><span><b>Beshak</b><i>Indian</i></span></a></li>
           <li><a href="#restaurants"><img src="assets/capiche.png" alt=""><span><b>Capiche</b><i>Italian</i></span></a></li>
         </ul>
       </div>
-      <figure class="hero__art reveal" aria-hidden="true">
+      <figure class="hero__art reveal" style="--d: 1" aria-hidden="true">
         <span class="hero__mandala" data-mandala></span>
         <div class="ride">
           <img class="ride__tiger" src="assets/tiger.png" alt="">
