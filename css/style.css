@@ -1,0 +1,494 @@
+/* ==========================================================================
+   Bookends Hospitality: fight intro
+   This stylesheet lays out the FINAL "bookends" pose. intro.js animates into it.
+   ========================================================================== */
+
+:root {
+  --paper: #F3ECDF;
+  --paper-light: #FBF6EC;
+  --ink: #111111;
+  --ink-soft: rgba(17, 17, 17, .62);
+  --accent: #C8553D;
+  --stroke: 3px;
+
+  /* stage geometry */
+  --floor: 62%;                         /* where everyone stands, from the top */
+  --fh: clamp(96px, 27vmin, 300px);     /* fighter height */
+  --fw-max: 24vw;                       /* fighter max width */
+  --th: clamp(140px, 40vmin, 440px);    /* tiger max height */
+  --tw-max: 36vw;                       /* tiger max width (it's wide: width usually wins) */
+  --aiko-x: 20%;
+  --capiche-x: 80%;
+  --bs: clamp(84px, 16vmin, 170px);     /* sushi / pizza hit burst size */
+  --doodle: clamp(34px, 6.5vmin, 80px); /* background icon size */
+
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+/* phones and tall tablets */
+@media (max-aspect-ratio: 4/5) {
+  :root {
+    --floor: 58%;
+    --fh: 24vw;
+    --fw-max: 26vw;
+    --th: 36vw;
+    --tw-max: 42vw;
+    --aiko-x: 15%;
+    --capiche-x: 85%;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body { margin: 0; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- stage ---------------------------------------------------------------- */
+
+.stage {
+  position: relative;
+  height: 100vh;
+  height: 100svh;
+  min-height: 360px;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 90% at 50% 45%, rgba(255, 255, 255, .35), rgba(255, 255, 255, 0) 60%),
+    var(--paper);
+  isolation: isolate;
+}
+
+/* paper grain */
+.stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: .07;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+}
+
+/* hold everything until images are loaded and the timeline is set */
+.stage:not(.is-ready) .scene,
+.stage:not(.is-ready) .title,
+.stage:not(.is-ready) .skip { visibility: hidden; }
+
+/* --- background: the essence of Korea (Aiko) on the left, Italy (Capiche)
+       on the right, India (Beshak) ringing a mandala behind the title -------- */
+
+.bg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.doodle {
+  --s: 1;
+  --size: calc(var(--doodle) * var(--s));
+  position: absolute;
+  width: var(--size);
+  aspect-ratio: 1;
+  margin: calc(var(--size) / -2) 0 0 calc(var(--size) / -2);
+  color: var(--ink);
+  visibility: hidden;
+}
+
+.doodle svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  opacity: .24;
+}
+
+.doodle--beshak svg { opacity: .32; }
+
+.f {
+  fill: var(--accent);
+  fill-opacity: .45;
+}
+
+.mandala {
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--ink);
+  visibility: hidden;
+}
+
+.mandala svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: .11;
+}
+
+/* --- characters ------------------------------------------------------------
+   .char        horizontal position (GSAP x)
+   .char__lift  hops and drops   (GSAP y)
+   .char__body  squash / spin    (GSAP scale, rotation)
+   ------------------------------------------------------------------------- */
+
+.char {
+  position: absolute;
+  left: var(--x);
+  bottom: calc(100% - var(--floor));
+  width: 0;                     /* zero-width anchor: content centers on --x */
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.char--aiko    { --x: var(--aiko-x); }
+.char--capiche { --x: var(--capiche-x); }
+.char--tiger   { --x: 50%; z-index: 4; }
+
+.char__lift,
+.char__body { flex: none; }
+
+.char__body {
+  position: relative;
+  transform-origin: 50% 100%;
+}
+
+/* the tiger's legs and tail: full-size layers stacked behind its body,
+   so each joint hides under the body while the part swings */
+.char--tiger .char__body { isolation: isolate; }
+
+.char .rig {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  z-index: -1;
+}
+
+.char .rig--far  { z-index: -2; }
+.char .rig--tail { z-index: -3; }
+
+/* the head sits on top of the body, so its moving edges cover the neck */
+.char .rig-head {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.char .rig-head__part {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+}
+
+/* Caiko rides on the tiger's back; intro.js places it on the saddle */
+.char .rider {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  top: 0;
+  height: calc(var(--fh) * .78);
+  width: auto;
+  max-width: none;
+  max-height: none;
+  visibility: hidden;
+}
+
+.char img {
+  display: block;
+  height: var(--fh);
+  width: auto;
+  max-width: var(--fw-max);
+  object-fit: contain;
+  object-position: 50% 100%;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* the tiger keeps its own proportions inside a max box, so its box = its art */
+.char--tiger img {
+  width: auto;
+  height: auto;
+  max-width: var(--tw-max);
+  max-height: var(--th);
+}
+
+/* add to a .char to mirror its art so it faces the other way */
+.is-flipped img { transform: scaleX(-1); }
+
+.char__shadow {
+  --s: var(--fh);
+  position: absolute;
+  left: 0;
+  bottom: calc(var(--s) * -.045);
+  width: calc(var(--s) * .72);
+  height: calc(var(--s) * .09);
+  margin-left: calc(var(--s) * -.36);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(17, 17, 17, .3), rgba(17, 17, 17, 0));
+}
+
+.char--tiger .char__shadow {
+  --s: var(--tw-max);
+  height: calc(var(--s) * .06);
+  bottom: calc(var(--s) * -.03);
+}
+
+/* --- brawl cloud ---------------------------------------------------------- */
+
+.cloud {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 3;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.cloud__wobble,
+.cloud__layer {
+  position: absolute;
+  inset: 0;
+}
+
+.puff {
+  position: absolute;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--paper-light);
+}
+
+/* outlines sit under the fills, so overlapping puffs read as one cloud */
+.cloud__layer--outline .puff { box-shadow: 0 0 0 var(--stroke) var(--ink); }
+
+/* --- effects -------------------------------------------------------------- */
+
+.fx {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.fx > * {
+  position: absolute;
+  left: 0;
+  top: 0;
+  visibility: hidden;
+}
+
+.bolt {
+  width: clamp(84px, 18vmin, 200px);
+  aspect-ratio: 1;
+}
+
+.bolt svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.bolt path {
+  fill: #FFFFFF;
+  stroke: var(--ink);
+  stroke-width: 3.4;
+}
+
+.bolt .bolt__sparks {
+  fill: none;
+  stroke-width: 2.6;
+}
+
+.burst {
+  width: var(--bs);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+}
+
+.burst > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.burst polygon {
+  fill: var(--paper-light);
+  stroke: var(--ink);
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+
+.burst__food {
+  position: relative;
+  display: block;
+  width: 64%;
+  aspect-ratio: 1;
+  transform: rotate(-10deg);
+}
+
+.burst__food svg {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+
+.bit {
+  font: 900 clamp(16px, 3.6vmin, 36px)/1 var(--font-display);
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.bit--accent { color: var(--accent); }
+
+.heart {
+  font: 900 clamp(18px, 3.4vmin, 34px)/1 var(--font-display);
+  color: var(--accent);
+}
+
+.ring {
+  border-radius: 50%;
+  border: 3px solid var(--ink);
+}
+
+.dust {
+  width: clamp(14px, 3vmin, 30px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--paper-light);
+  box-shadow: 0 0 0 2px var(--ink);
+}
+
+/* --- title ---------------------------------------------------------------- */
+
+/* the final screen: title centred, once the tiger has carried Caiko away */
+.title {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.title .replay { pointer-events: auto; }
+
+.title h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-variation-settings: 'opsz' 144;
+  font-size: clamp(36px, 8vmin, 104px);
+  line-height: 1.02;
+  letter-spacing: -.02em;
+  text-wrap: balance;
+}
+
+.brands {
+  display: flex;
+  justify-content: center;
+  gap: clamp(20px, 5vw, 56px);
+  margin: clamp(10px, 2vmin, 18px) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.brands li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.brands__name {
+  margin-right: -.3em;   /* balance the trailing letter-spacing */
+  font-size: clamp(11px, 1.5vmin, 14px);
+  font-weight: 500;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.brands__cuisine {
+  font: italic 500 clamp(13px, 1.8vmin, 17px)/1.1 var(--font-display);
+  color: var(--accent);
+}
+
+/* short landscape screens: one line per brand so the title block fits */
+@media (max-height: 500px) {
+  :root { --floor: 58%; }
+  .brands li { flex-direction: row; align-items: baseline; gap: 6px; }
+}
+
+/* --- buttons -------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 10px 18px;
+  font: 500 12px/1 var(--font-ui);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid rgba(17, 17, 17, .35);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color .2s, color .2s, border-color .2s;
+}
+
+.btn:hover {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.replay { margin-top: clamp(14px, 3vmin, 28px); }
+
+.skip {
+  position: absolute;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 10;
+}
+
+@media (min-width: 768px) {
+  .skip { right: 32px; bottom: 28px; }
+}
+
+/* without GSAP (CDN blocked) the page simply shows the final pose */
+.no-anim .skip,
+.no-anim .replay,
+.no-anim .char { display: none; }

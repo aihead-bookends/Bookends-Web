@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Bookends Hospitality</title>
+  <meta name="description" content="Bookends Hospitality: home of Aiko (Korean), Beshak (Indian) and Capiche (Italian).">
+  <meta name="theme-color" content="#F3ECDF">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..900;1,9..144,500..900&family=Inter:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/home.css">
+  <script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+  <!-- appears once you scroll past the intro -->
+  <header class="site-header" id="site-header">
+    <a class="site-header__brand" href="#top">Bookends</a>
+    <nav class="site-header__nav" aria-label="Main">
+      <a href="#restaurants">Restaurants</a>
+      <a href="#about">About</a>
+      <a href="#visit">Visit</a>
+    </nav>
+    <a class="btn btn--solid site-header__cta" href="#reserve">Reserve</a>
+  </header>
+
+  <main id="top">
+  <section class="stage" id="stage" aria-labelledby="brand-title">
+    <div class="scene" id="scene">
+
+      <!-- Korea / India / Italy line art and the mandala are added here by intro.js -->
+      <div class="bg" id="bg" aria-hidden="true"></div>
+
+      <div class="char char--aiko" data-char="aiko">
+        <span class="char__shadow"></span>
+        <div class="char__lift"><div class="char__body">
+          <img data-src="assets/aiko.png" alt="Aiko logo" draggable="false">
+        </div></div>
+      </div>
+
+      <div class="char char--capiche" data-char="capiche">
+        <span class="char__shadow"></span>
+        <div class="char__lift"><div class="char__body">
+          <img data-src="assets/capiche.png" alt="Capiche logo" draggable="false">
+        </div></div>
+      </div>
+
+      <div class="cloud" id="cloud" aria-hidden="true">
+        <div class="cloud__wobble">
+          <div class="cloud__layer cloud__layer--outline"></div>
+          <div class="cloud__layer cloud__layer--fill"></div>
+        </div>
+      </div>
+
+      <div class="char char--tiger" data-char="tiger">
+        <span class="char__shadow"></span>
+        <div class="char__lift"><div class="char__body">
+          <!-- data-roar: where the roar comes from; data-saddle: where Caiko sits (fractions of the image) -->
+          <img data-src="assets/tiger/body.png" data-roar="0.87 0.44" data-saddle="0.42 0.17" alt="Beshak tiger logo" draggable="false">
+          <!-- the tiger's moving parts sit behind its body; data-pivot is each joint (fractions of the image) -->
+          <img class="rig rig--tail" data-part="tail" data-src="assets/tiger/tail.png" data-pivot="0.1154 0.7831" data-placeholder="none" alt="" draggable="false">
+          <img class="rig rig--far" data-part="leg-hind-far" data-src="assets/tiger/leg-hind-far.png" data-pivot="0.4359 0.6961" data-placeholder="none" alt="" draggable="false">
+          <img class="rig rig--far" data-part="leg-fore-far" data-src="assets/tiger/leg-fore-far.png" data-pivot="0.7179 0.6613" data-placeholder="none" alt="" draggable="false">
+          <img class="rig" data-part="leg-hind-near" data-src="assets/tiger/leg-hind-near.png" data-pivot="0.1551 0.7483" data-placeholder="none" alt="" draggable="false">
+          <img class="rig" data-part="leg-fore-near" data-src="assets/tiger/leg-fore-near.png" data-pivot="0.8814 0.6613" data-placeholder="none" alt="" draggable="false">
+          <!-- the head nods, looks and roars; the jaw and ear move inside it -->
+          <div class="rig-head" data-part="head-rig" data-pivot="0.7788 0.3016">
+            <img class="rig-head__part" data-part="head" data-src="assets/tiger/head.png" data-placeholder="none" alt="" draggable="false">
+            <img class="rig-head__part" data-part="tongue" data-src="assets/tiger/tongue.png" data-placeholder="none" alt="" draggable="false">
+            <img class="rig-head__part" data-part="jaw" data-src="assets/tiger/jaw.png" data-pivot="0.8333 0.4246" data-placeholder="none" alt="" draggable="false">
+            <img class="rig-head__part" data-part="ear" data-src="assets/tiger/ear.png" data-pivot="0.9583 0.2065" data-placeholder="none" alt="" draggable="false">
+          </div>
+          <!-- data-seat: the point of Caiko that rests on the saddle -->
+          <img class="rider" data-src="assets/caiko.png" data-seat="0.62 0.76" data-placeholder="caiko" alt="Caiko: Aiko and Capiche together" draggable="false">
+        </div></div>
+      </div>
+
+      <!-- bursts, flying symbols, roar rings and dust are added here by intro.js -->
+      <div class="fx" aria-hidden="true">
+        <span class="bolt"><svg viewBox="0 0 64 64" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M37 2L11 36h18l-6 26 30-38H35l8-22z"/>
+          <path class="bolt__sparks" d="M7 13l6 4M56 7l-4 6M59 45l-7-1M5 50l7-4M48 58l-3-6"/>
+        </svg></span>
+      </div>
+    </div>
+
+    <header class="title">
+      <h1 id="brand-title">Bookends Hospitality</h1>
+      <ul class="brands" aria-label="Our restaurants">
+        <li><span class="brands__name">Aiko</span> <span class="brands__cuisine">Korean</span></li>
+        <li><span class="brands__name">Beshak</span> <span class="brands__cuisine">Indian</span></li>
+        <li><span class="brands__name">Capiche</span> <span class="brands__cuisine">Italian</span></li>
+      </ul>
+      <button class="btn replay" type="button">
+        <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Replay
+      </button>
+    </header>
+
+    <button class="btn skip" type="button">Skip intro</button>
+    <a class="scroll-cue" href="#restaurants">Explore
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </section>
+
+  <!-- ================================================================
+       Home page. Text in [square brackets] is a placeholder to replace.
+       Outside links (booking, menus, maps, phones, Instagram) are all
+       set in one list at the top of js/home.js.
+       ================================================================ -->
+
+  <section class="section" id="restaurants" aria-labelledby="restaurants-title">
+    <div class="wrap">
+      <p class="eyebrow reveal">Our restaurants</p>
+      <h2 class="h2 reveal" id="restaurants-title">Three kitchens. One house.</h2>
+      <p class="lede reveal">Korean, Indian and Italian: three very different kitchens, one way of looking after you.</p>
+
+      <div class="cards">
+        <article class="card reveal" style="--d: 0">
+          <span class="card__icon" data-icon="seoulTower" aria-hidden="true"></span>
+          <div class="card__logo"><img src="assets/aiko.png" alt="Aiko logo" loading="lazy"></div>
+          <p class="card__cuisine">Korean</p>
+          <h3 class="card__name">Aiko</h3>
+          <p class="card__text">[A line or two about Aiko: the food, the room, the mood.]</p>
+          <ul class="card__dishes" aria-label="Signature dishes">
+            <li>Sushi</li><li>Ramen</li><li>[Signature dish]</li>
+          </ul>
+          <div class="card__actions">
+            <a class="btn btn--solid" data-link="aiko.booking" href="#reserve">Reserve a table</a>
+            <a class="btn" data-link="aiko.menu" href="#">View menu</a>
+          </div>
+        </article>
+
+        <article class="card card--wide-logo reveal" style="--d: 1">
+          <span class="card__icon" data-icon="tajMahal" aria-hidden="true"></span>
+          <div class="card__logo"><img src="assets/tiger.png" alt="Beshak tiger logo" loading="lazy"></div>
+          <p class="card__cuisine">Indian</p>
+          <h3 class="card__name">Beshak</h3>
+          <p class="card__text">[A line or two about Beshak: the food, the room, the mood.]</p>
+          <ul class="card__dishes" aria-label="Signature dishes">
+            <li>[Signature dish]</li><li>[Signature dish]</li><li>[Signature dish]</li>
+          </ul>
+          <div class="card__actions">
+            <a class="btn btn--solid" data-link="beshak.booking" href="#reserve">Reserve a table</a>
+            <a class="btn" data-link="beshak.menu" href="#">View menu</a>
+          </div>
+        </article>
+
+        <article class="card reveal" style="--d: 2">
+          <span class="card__icon" data-icon="colosseum" aria-hidden="true"></span>
+          <div class="card__logo"><img src="assets/capiche.png" alt="Capiche logo" loading="lazy"></div>
+          <p class="card__cuisine">Italian</p>
+          <h3 class="card__name">Capiche</h3>
+          <p class="card__text">[A line or two about Capiche: the food, the room, the mood.]</p>
+          <ul class="card__dishes" aria-label="Signature dishes">
+            <li>Pizza</li><li>[Signature dish]</li><li>[Signature dish]</li>
+          </ul>
+          <div class="card__actions">
+            <a class="btn btn--solid" data-link="capiche.booking" href="#reserve">Reserve a table</a>
+            <a class="btn" data-link="capiche.menu" href="#">View menu</a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--about" id="about" aria-labelledby="about-title">
+    <div class="wrap about">
+      <figure class="about__art reveal" aria-hidden="true">
+        <span class="about__mandala" data-mandala></span>
+        <div class="ride">
+          <img class="ride__tiger" src="assets/tiger.png" alt="" loading="lazy">
+          <img class="ride__caiko" src="assets/caiko.png" alt="" loading="lazy">
+        </div>
+      </figure>
+      <div class="about__copy">
+        <p class="eyebrow reveal">About Bookends</p>
+        <h2 class="h2 reveal" id="about-title">Every good story needs its bookends.</h2>
+        <p class="reveal">[Tell the Bookends story here: who started it, when, and what ties Aiko, Beshak and Capiche together.]</p>
+        <p class="reveal">[A second paragraph about the people, the service, or what guests can expect.]</p>
+        <ul class="stats reveal">
+          <li><strong>3</strong><span>Restaurants</span></li>
+          <li><strong>3</strong><span>Cuisines</span></li>
+          <li><strong>[Year]</strong><span>Since</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="visit" aria-labelledby="visit-title">
+    <div class="wrap">
+      <p class="eyebrow reveal">Locations &amp; hours</p>
+      <h2 class="h2 reveal" id="visit-title">Come and find us.</h2>
+
+      <div class="visits">
+        <article class="visit reveal" style="--d: 0">
+          <h3 class="visit__name">Aiko <span>Korean</span></h3>
+          <address class="visit__address">[Street address]<br>[Area, City, PIN]</address>
+          <dl class="visit__hours">
+            <dt>Mon – Fri</dt><dd>[12:00 – 23:00]</dd>
+            <dt>Sat – Sun</dt><dd>[12:00 – 23:30]</dd>
+          </dl>
+          <p class="visit__phone"><a data-link="aiko.phone" href="#">[Phone number]</a></p>
+          <a class="link-arrow" data-link="aiko.maps" href="#">Get directions →</a>
+        </article>
+        <article class="visit reveal" style="--d: 1">
+          <h3 class="visit__name">Beshak <span>Indian</span></h3>
+          <address class="visit__address">[Street address]<br>[Area, City, PIN]</address>
+          <dl class="visit__hours">
+            <dt>Mon – Fri</dt><dd>[12:00 – 23:00]</dd>
+            <dt>Sat – Sun</dt><dd>[12:00 – 23:30]</dd>
+          </dl>
+          <p class="visit__phone"><a data-link="beshak.phone" href="#">[Phone number]</a></p>
+          <a class="link-arrow" data-link="beshak.maps" href="#">Get directions →</a>
+        </article>
+        <article class="visit reveal" style="--d: 2">
+          <h3 class="visit__name">Capiche <span>Italian</span></h3>
+          <address class="visit__address">[Street address]<br>[Area, City, PIN]</address>
+          <dl class="visit__hours">
+            <dt>Mon – Fri</dt><dd>[12:00 – 23:00]</dd>
+            <dt>Sat – Sun</dt><dd>[12:00 – 23:30]</dd>
+          </dl>
+          <p class="visit__phone"><a data-link="capiche.phone" href="#">[Phone number]</a></p>
+          <a class="link-arrow" data-link="capiche.maps" href="#">Get directions →</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--dark" id="reserve" aria-labelledby="reserve-title">
+    <div class="wrap">
+      <p class="eyebrow reveal">Reservations</p>
+      <h2 class="h2 reveal" id="reserve-title">Book your table.</h2>
+      <p class="lede reveal">Pick a restaurant and reserve online in a few taps.</p>
+
+      <div class="reserve">
+        <a class="reserve__option reveal" style="--d: 0" data-link="aiko.booking" href="#">
+          <img class="reserve__logo" src="assets/aiko.png" alt="" loading="lazy">
+          <span><span class="reserve__name">Aiko</span><span class="reserve__cuisine">Korean</span></span>
+          <span class="reserve__go">Reserve →</span>
+        </a>
+        <a class="reserve__option reveal" style="--d: 1" data-link="beshak.booking" href="#">
+          <img class="reserve__logo" src="assets/tiger.png" alt="" loading="lazy">
+          <span><span class="reserve__name">Beshak</span><span class="reserve__cuisine">Indian</span></span>
+          <span class="reserve__go">Reserve →</span>
+        </a>
+        <a class="reserve__option reveal" style="--d: 2" data-link="capiche.booking" href="#">
+          <img class="reserve__logo" src="assets/capiche.png" alt="" loading="lazy">
+          <span><span class="reserve__name">Capiche</span><span class="reserve__cuisine">Italian</span></span>
+          <span class="reserve__go">Reserve →</span>
+        </a>
+      </div>
+
+      <p class="reserve__note reveal">Large group or private event? Call <a data-link="group.phone" href="#">[Phone number]</a> or message us on <a data-link="group.instagram" href="#">Instagram</a>.</p>
+    </div>
+  </section>
+  </main>
+
+  <footer class="site-footer" id="contact">
+    <div class="wrap footer">
+      <div class="footer__brand">
+        <p class="footer__name">Bookends Hospitality</p>
+        <p class="footer__tag">Aiko · Beshak · Capiche</p>
+      </div>
+      <nav class="footer__col" aria-label="Restaurants">
+        <h3>Restaurants</h3>
+        <a href="#restaurants">Aiko</a>
+        <a href="#restaurants">Beshak</a>
+        <a href="#restaurants">Capiche</a>
+      </nav>
+      <div class="footer__col">
+        <h3>Follow</h3>
+        <a data-link="aiko.instagram" href="#">Aiko on Instagram</a>
+        <a data-link="beshak.instagram" href="#">Beshak on Instagram</a>
+        <a data-link="capiche.instagram" href="#">Capiche on Instagram</a>
+      </div>
+      <div class="footer__col">
+        <h3>Contact</h3>
+        <a data-link="group.phone" href="#">[Phone number]</a>
+        <a data-link="group.email" href="#">[Email address]</a>
+        <a href="#reserve">Reservations</a>
+      </div>
+    </div>
+    <p class="footer__legal wrap">© <span data-year>2026</span> Bookends Hospitality</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="js/essence.js"></script>
+  <script src="js/intro.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html>
