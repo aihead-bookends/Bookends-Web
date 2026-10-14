@@ -369,13 +369,16 @@ html { scroll-behavior: smooth; }
 
 .hero__art {
   position: relative;
-  margin: 0;
-  padding-top: 24%;
+  display: grid;
+  place-items: center;
+  width: min(100%, 560px);
+  aspect-ratio: 1;
+  margin: 0 0 0 auto;
 }
 
 .hero__mandala {
   position: absolute;
-  inset: -2% 4% -6%;
+  inset: 0;
   color: var(--ink);
   opacity: .1;
 }
@@ -386,38 +389,21 @@ html { scroll-behavior: smooth; }
   animation: hero-spin 120s linear infinite;
 }
 
-/* Caiko riding the tiger, placed with the same saddle/seat points as the intro */
-.ride {
+/* Caiko, the Bookends mark, standing in the mandala */
+.hero__caiko {
   position: relative;
-  aspect-ratio: 1560 / 862;
-}
-
-.ride img { position: absolute; display: block; }
-
-.ride__tiger {
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  transform-origin: 50% 100%;
-  animation: hero-breathe 3.6s ease-in-out infinite;
-}
-
-.ride__caiko {
-  width: 30.7%;
-  left: 23%;
-  top: -33.7%;
+  width: 46%;
+  height: auto;
   transform-origin: 50% 100%;
   animation: hero-bob 3.6s ease-in-out infinite;
 }
 
 @keyframes hero-spin { to { transform: rotate(360deg); } }
-@keyframes hero-breathe { 50% { transform: scale(1.012, 1.025); } }
 @keyframes hero-bob { 50% { transform: translateY(-3%) rotate(-2deg); } }
 
 @media (prefers-reduced-motion: reduce) {
   .hero__mandala svg,
-  .ride__tiger,
-  .ride__caiko { animation: none; }
+  .hero__caiko { animation: none; }
 }
 
 /* --- about: the story ------------------------------------------------------------ */
@@ -661,7 +647,7 @@ html { scroll-behavior: smooth; }
   .hero { min-height: 0; }
   .hero__grid,
   .story { grid-template-columns: 1fr; }
-  .hero__art { max-width: 520px; margin-top: 12px; }
+  .hero__art { width: min(100%, 420px); margin: 12px auto 0; }
 
   .visit,
   .visit + .visit {
