@@ -389,11 +389,14 @@ html { scroll-behavior: smooth; }
   animation: hero-spin 120s linear infinite;
 }
 
-/* Caiko, the Bookends mark, standing in the mandala */
+/* Caiko, the Bookends mark, standing in the mandala. The red C sticks out to
+   the left, so the image is shifted to put the stickman's head and body
+   (62.5% across the image) on the mandala's centre line. */
 .hero__caiko {
   position: relative;
   width: 46%;
   height: auto;
+  translate: -12.5% 0;
   transform-origin: 50% 100%;
   animation: hero-bob 3.6s ease-in-out infinite;
 }
