@@ -1,0 +1,15 @@
+Sample event photos, from Pexels (https://www.pexels.com/license/ : free to use, no attribution required).
+They stand in until Bookends' own event photos are added; replace the files and the EVENTS list in js/events.js.
+
+beshak-diwali-diyas       https://www.pexels.com/photo/4078516/
+aiko-sushi                https://www.pexels.com/photo/262889/
+capiche-fresh-pasta       https://www.pexels.com/photo/4377175/
+beshak-thali              https://www.pexels.com/photo/29148133/
+capiche-wood-fired-pizza  https://www.pexels.com/photo/905847/
+aiko-korean-bbq           https://www.pexels.com/photo/8288043/
+aiko-ramen                https://www.pexels.com/photo/31393431/
+capiche-pizzaiolo         https://www.pexels.com/photo/5953499/
+beshak-mithai             https://www.pexels.com/photo/8819769/
+beshak-biryani            https://www.pexels.com/photo/7340956/
+aiko-ramen-bar            https://www.pexels.com/photo/17565078/
+capiche-aperitivo         https://www.pexels.com/photo/6605275/

@@ -8,21 +8,35 @@
        { src: 'assets/events/diwali-2026.jpg', brand: 'beshak', title: 'Diwali dinner', date: 'Nov 2026' },
      brand: 'aiko' | 'beshak' | 'capiche'
      size:  'wide' (two columns) or 'tall' (two rows), for a few standout photos
+     thumb: an optional smaller copy (about 800px) for the grid; the viewer always shows src
      An entry without src shows a placeholder tile until its photo is added. */
-  // in this order, 6 regular + 3 wide + 3 tall tiles fill the 3-column grid edge to edge
+  // SAMPLE photos from Pexels (free to use; see assets/events/CREDITS.txt) until the real event photos
+  // are in. In this order, 6 regular + 3 wide + 3 tall tiles fill the 3-column grid edge to edge.
   const EVENTS = [
-    { src: '', brand: 'beshak',  size: 'wide', title: '[Event name]', date: '[Month Year]' },
-    { src: '', brand: 'aiko',                   title: '[Event name]', date: '[Month Year]' },
-    { src: '', brand: 'capiche', size: 'tall', title: '[Event name]', date: '[Month Year]' },
-    { src: '', brand: 'beshak',                 title: '[Event name]', date: '[Month Year]' },
-    { src: '', brand: 'capiche',                title: '[Event name]', date: '[Month Year]' },
-    { src: '', brand: 'aiko',    size: 'wide', title: '[Event name]', date: '[Month Year]' },
-    { src: '', brand: 'aiko',                   title: '[Event name]', date: '[Month Year]' },
-    { src: '', brand: 'capiche', size: 'tall', title: '[Event name]', date: '[Month Year]' },
-    { src: '', brand: 'beshak',  size: 'tall', title: '[Event name]', date: '[Month Year]' },
-    { src: '', brand: 'beshak',                 title: '[Event name]', date: '[Month Year]' },
-    { src: '', brand: 'aiko',    size: 'wide', title: '[Event name]', date: '[Month Year]' },
-    { src: '', brand: 'capiche',                title: '[Event name]', date: '[Month Year]' },
+    { src: 'assets/events/beshak-diwali-diyas.jpg', thumb: 'assets/events/beshak-diwali-diyas-sm.jpg', brand: 'beshak', size: 'wide', 
+      title: '[Diwali night]', date: '[Month Year]', alt: 'Lit diyas and marigold petals arranged on a rangoli' },
+    { src: 'assets/events/aiko-sushi.jpg', thumb: 'assets/events/aiko-sushi-sm.jpg', brand: 'aiko', 
+      title: '[Sushi evening]', date: '[Month Year]', alt: 'Two pieces of gunkan sushi topped with roe' },
+    { src: 'assets/events/capiche-fresh-pasta.jpg', thumb: 'assets/events/capiche-fresh-pasta-sm.jpg', brand: 'capiche', size: 'tall', 
+      title: '[Fresh pasta class]', date: '[Month Year]', alt: 'Hands lifting freshly cut tagliatelle' },
+    { src: 'assets/events/beshak-thali.jpg', thumb: 'assets/events/beshak-thali-sm.jpg', brand: 'beshak', 
+      title: '[Festive thali lunch]', date: '[Month Year]', alt: 'An Indian thali with naan, curries and dips' },
+    { src: 'assets/events/capiche-wood-fired-pizza.jpg', thumb: 'assets/events/capiche-wood-fired-pizza-sm.jpg', brand: 'capiche', 
+      title: '[Wood-fired pizza night]', date: '[Month Year]', alt: 'A pizza on a peel in a glowing wood-fired oven' },
+    { src: 'assets/events/aiko-korean-bbq.jpg', thumb: 'assets/events/aiko-korean-bbq-sm.jpg', brand: 'aiko', size: 'wide', 
+      title: '[Korean BBQ night]', date: '[Month Year]', alt: 'A Korean BBQ spread with grill, meat, greens and kimchi' },
+    { src: 'assets/events/aiko-ramen.jpg', thumb: 'assets/events/aiko-ramen-sm.jpg', brand: 'aiko', 
+      title: '[Ramen night]', date: '[Month Year]', alt: 'A bowl of ramen with egg, scallions and chopsticks' },
+    { src: 'assets/events/capiche-pizzaiolo.jpg', thumb: 'assets/events/capiche-pizzaiolo-sm.jpg', brand: 'capiche', size: 'tall', 
+      title: '[Meet the pizzaiolo]', date: '[Month Year]', alt: 'A chef topping a pizza in an open kitchen' },
+    { src: 'assets/events/beshak-mithai.jpg', thumb: 'assets/events/beshak-mithai-sm.jpg', brand: 'beshak', size: 'tall', 
+      title: '[Mithai & celebrations]', date: '[Month Year]', alt: 'A platter of Indian sweets held by a woman in festive dress' },
+    { src: 'assets/events/beshak-biryani.jpg', thumb: 'assets/events/beshak-biryani-sm.jpg', brand: 'beshak', 
+      title: '[Biryani supper club]', date: '[Month Year]', alt: 'A bowl of biryani topped with crispy onions' },
+    { src: 'assets/events/aiko-ramen-bar.jpg', thumb: 'assets/events/aiko-ramen-bar-sm.jpg', brand: 'aiko', size: 'wide', 
+      title: '[Noodle bar takeover]', date: '[Month Year]', alt: 'Noodles lifted from a bowl of ramen at a restaurant table' },
+    { src: 'assets/events/capiche-aperitivo.jpg', thumb: 'assets/events/capiche-aperitivo-sm.jpg', brand: 'capiche', 
+      title: '[Aperitivo with friends]', date: '[Month Year]', alt: 'Friends raising a toast over pizza' },
   ];
 
   const BRANDS = {
@@ -47,7 +61,8 @@
   // a photo, or a placeholder tile with the brand's landmark
   function media(ev, i, large = false) {
     if (ev.src) {
-      return `<img src="${ev.src}" alt="${ev.alt || `${ev.title}, ${BRANDS[ev.brand].name}`}"${large ? '' : ' loading="lazy"'}>`;
+      const file = large ? ev.src : (ev.thumb || ev.src);
+      return `<img src="${file}" alt="${ev.alt || `${ev.title}, ${BRANDS[ev.brand].name}`}"${large ? '' : ' loading="lazy" decoding="async"'}>`;
     }
     return `<span class="ph ph--${ev.brand}">${icon(iconFor(ev, i))}<span class="ph__label">[Event photo]</span></span>`;
   }
