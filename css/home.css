@@ -69,6 +69,12 @@ html { scroll-behavior: smooth; }
   text-decoration: none;
 }
 
+.site-header__brand img {
+  display: block;
+  width: auto;
+  height: 30px;
+}
+
 .site-header__nav {
   display: flex;
   gap: 28px;
@@ -603,6 +609,12 @@ html { scroll-behavior: smooth; }
 .footer__name {
   margin: 0;
   font: 600 26px/1.1 var(--font-display);
+}
+
+.footer__name img {
+  display: block;
+  width: 200px;
+  height: auto;
 }
 
 .footer__tag {
