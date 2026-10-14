@@ -56,6 +56,8 @@
   const jaw = T.parts.jaw;
   const tongue = T.parts.tongue;
   const ear = T.parts.ear;
+  const lidL = T.parts['lid-l'];
+  const lidR = T.parts['lid-r'];
   const RIG = Object.values(T.parts);
 
   /* --- placeholder art, used if a PNG is missing from /assets -------------- */
@@ -150,20 +152,20 @@
     props = [];
   }
   // a loose prop on the effects layer, positioned by its centre with x/y
-  function prop(cls, html, width) {
-    const el = make(`prop ${cls}`, html);
+  function prop(cls, html, width, parent = fx) {
+    const el = make(`prop ${cls}`, html, parent);
     if (width) el.style.width = `${width}px`;
     gsap.set(el, { xPercent: -50, yPercent: -50, autoAlpha: 0 });
     props.push(el);
     return el;
   }
   // something a character holds: moves, squashes and spins with it
-  function held(ch, cls, html, { width, left, top }) {
+  function held(ch, cls, html, { width, left, top, parent = ch.body }) {
     const el = document.createElement('span');
     el.className = `held ${cls}`;
     el.innerHTML = html;
     Object.assign(el.style, { width: `${width}px`, left: `${left}px`, top: `${top}px` });
-    ch.body.appendChild(el);
+    parent.appendChild(el);
     props.push(el);
     return el;
   }
@@ -433,7 +435,7 @@
     // measure the CSS resting layout with no transforms applied
     gsap.set([scene, wobble, mandala, title, sub, replayBtn, ...korean, ...italian, ...indian,
       ...[A, C, T].flatMap((c) => [c.root, c.lift, c.body, c.shadow, c.rider]).filter(Boolean), ...RIG],
-    { clearProps: 'transform,opacity,visibility' });
+    { clearProps: 'transform,opacity,visibility,zIndex' });
     RIG.filter((part) => part.dataset.pivot).forEach((part) => {
       const [px, py] = pair(part.dataset.pivot, '0.5 0.5');
       gsap.set(part, { transformOrigin: `${px * 100}% ${py * 100}%` });
@@ -486,8 +488,6 @@
 
     // the roar comes out of the tiger's mouth, where it stops after its walk
     const [roarFx, roarFy] = pair(T.img.dataset.roar, '0.5 0.42');
-    const roarX = walkCx - tw / 2 + tw * roarFx;
-    const roarY = m.t.top + th * roarFy;
     const rs = th * 0.8;
     const ringMax = Math.hypot(W, H) * 1.1;
 
@@ -503,7 +503,7 @@
     const ringR = (ms / 2) * 1.12;
     const clearX = m.title.halfW + size / 2 + 10;
     const clearY = m.title.halfH + size / 2 + 10;
-    const fromRoar = indian.map((el, i) => {
+    const indianPos = indian.map((el, i) => {
       const a = RING_ANGLES[i] * Math.PI / 180;
       let px = cx + Math.cos(a) * ringR * (portrait.matches ? 1 : 1.25);
       let py = m.title.cy + Math.sin(a) * ringR;
@@ -514,7 +514,7 @@
       px = gsap.utils.clamp(size / 2 + 6, W - size / 2 - 6, px);
       py = gsap.utils.clamp(size / 2 + 6, H - size / 2 - 6, py);
       Object.assign(el.style, { left: `${px}px`, top: `${py}px` });
-      return { x: roarX - px, y: roarY - py };
+      return { x: px, y: py };
     });
 
     // starting state
@@ -530,7 +530,7 @@
     gsap.set(bolt, { x: cx, y: floorY - fh * 0.6, scale: 0 });
     gsap.set(sushiHit, { x: cx + space, y: m.c.top + m.c.h * 0.38 });
     gsap.set(pizzaHit, { x: cx - space, y: m.a.top + m.a.h * 0.4 });
-    gsap.set(rings, { x: roarX, y: roarY, width: rs, height: rs });
+    gsap.set(rings, { width: rs, height: rs });
     gsap.set([...korean, ...italian, ...indian], { scale: 0, autoAlpha: 0 });
     gsap.set(mandala, { left: cx, top: m.title.cy, width: ms, height: ms, xPercent: -50, yPercent: -50, scale: 0.3, autoAlpha: 0 });
     gsap.set(T.rider, { transformOrigin: '50% 100%' });
@@ -539,19 +539,226 @@
 
     tl = gsap.timeline({ paused: true, onComplete: () => document.dispatchEvent(new Event('intro:done')) });
 
-    // the countries pop in as the two arrive (every opening)
-    tl.to(korean, { scale: 1, autoAlpha: 1, duration: 0.45, ease: 'back.out(2.2)', stagger: 0.05 }, 0.05)
-      .to(italian, { scale: 1, autoAlpha: 1, duration: 0.45, ease: 'back.out(2.2)', stagger: 0.05 }, 0.17);
+    /* --- the tiger act, as building blocks the openings can use -------------- */
 
-    // 1–3 · the opening act (see openings.js): it ends with Aiko and Capiche inside the cloud at `clash`
+    const STEP = 0.4;
+    const EXIT_STEP = 0.34;
+    const poofScale = Math.max((tw * 1.3) / cw, 1.6);
+    const mouthAt = (tcx) => ({ x: tcx - tw / 2 + tw * roarFx, y: m.t.top + th * roarFy });
+    const saddleAt = (tcx) => ({ x: tcx - tw / 2 + riderLeft + rw * seatX, y: m.t.top + riderTop + rh * seatY });
+
+    // the tiger is already on stage, standing with its centre at `tcx`
+    function tigerOn(tcx) {
+      gsap.set(T.root, { x: tx(tcx) });
+      gsap.set(T.lift, { y: 0, autoAlpha: 1 });
+      gsap.set(T.shadow, { scale: 1, opacity: 1 });
+    }
+
+    // eyes shut / open (both, 'left' or 'right')
+    function eyes(at, state, which = 'both') {
+      const els = which === 'left' ? [lidL] : which === 'right' ? [lidR] : [lidL, lidR];
+      tl.set(els, { autoAlpha: state === 'shut' ? 1 : 0 }, at);
+    }
+
+    // a quick bite: jaw down and up
+    function chomp(at, times = 1) {
+      for (let i = 0; i < times; i++) {
+        const t0 = at + i * 0.22;
+        tl.to(jaw, { y: th * 0.045, duration: 0.08, ease: 'power2.out' }, t0)
+          .to(tongue, { y: th * 0.022, duration: 0.08, ease: 'power2.out' }, t0)
+          .to([jaw, tongue], { y: 0, duration: 0.1, ease: 'power2.in' }, t0 + 0.1);
+      }
+      return at + times * 0.22;
+    }
+
+    // the cloud churns with the two inside: things fly out, heads pop up
+    function brawl(from, to, peeks = []) {
+      tl.add(cloudWobble(to - from - 0.1, cw), from + 0.1)
+        .add(cloudBits(to - from - 0.4, cx, cloudY - ch * 0.1, cw * 0.62), from + 0.1)
+        .add(peek(A, -1, peekA), from + 0.3)
+        .add(peek(C, 1, peekC), from + 0.8);
+      peeks.forEach((at, i) => tl.add(i % 2 ? peek(C, 1, peekC) : peek(A, -1, peekA), at));
+    }
+
+    // trots into the top-left corner, crouches, and springs down in an arc to `landX`; returns landing time
+    function leap(at, landX) {
+      const JUMP = at + 0.6;
+      const LEAP = 0.8;
+      const LAND = JUMP + LEAP;
+      tl.set(T.lift, { autoAlpha: 1 }, at)
+        .to(T.root, { x: tx(-tw * 0.05), duration: JUMP - at - 0.1, ease: 'power2.out' }, at)
+        .add(gait(2, 0.17), at)
+        .add(squash(T, 0.12, 0.3), JUMP - 0.12)
+        .to(T.root, { x: tx(landX), duration: LEAP, ease: 'none' }, JUMP)
+        .to(T.lift, {
+          keyframes: [
+            { y: ledge - th * 0.3, duration: LEAP * 0.3, ease: 'power2.out' },
+            { y: 0, duration: LEAP * 0.7, ease: 'power2.in' },
+          ],
+        }, JUMP)
+        .to(T.body, {
+          keyframes: [
+            { rotation: -8, duration: LEAP * 0.25, ease: 'power1.out' },
+            { rotation: 16, duration: LEAP * 0.75, ease: 'power1.in' },
+          ],
+        }, JUMP)
+        .to(T.shadow, { scale: 1, opacity: 1, duration: LEAP, ease: 'power2.in' }, JUMP)
+        .to([foreFar, foreNear], { skewX: 24, duration: LEAP * 0.6, ease: 'power2.out' }, JUMP)
+        .to([hindNear, hindFar], { skewX: -24, duration: LEAP * 0.6, ease: 'power2.out' }, JUMP)
+        .to(tail, { rotation: 22, duration: LEAP * 0.5, ease: 'power2.out' }, JUMP)
+        .to(LEGS, { skewX: 0, duration: 0.25, ease: 'back.out(2)' }, LAND)
+        .to(head, { keyframes: [{ rotation: -6, duration: LEAP * 0.3, ease: 'power2.out' }, { rotation: 5, duration: LEAP * 0.7, ease: 'power1.in' }] }, JUMP)
+        .to(head, { rotation: 0, duration: 0.3, ease: 'back.out(2)' }, LAND)
+        .to(tail, { rotation: 0, duration: 0.25, ease: 'power2.out' }, LAND)
+        .to(T.body, { rotation: 0, duration: 0.3, ease: 'back.out(3)' }, LAND)
+        .add(squash(T, 0.2), LAND)
+        .add(shake(16, 0.4), LAND)
+        .add(dustPuff(landX, floorY, tw * 0.6), LAND);
+      return LAND;
+    }
+
+    // one shake of the head, like a cat shaking off a jump; ear flapping
+    function headShake(at) {
+      const sx = th * 0.045;
+      tl.to(head, {
+        keyframes: [
+          { x: -sx, rotation: -5, duration: 0.07, ease: 'sine.out' },
+          { x: sx, rotation: 5, duration: 0.09, ease: 'sine.inOut' },
+          { x: -sx * 0.8, rotation: -4, duration: 0.09, ease: 'sine.inOut' },
+          { x: sx * 0.55, rotation: 2.6, duration: 0.09, ease: 'sine.inOut' },
+          { x: -sx * 0.25, rotation: -1.2, duration: 0.08, ease: 'sine.inOut' },
+          { x: 0, rotation: 0, duration: 0.12, ease: 'sine.out' },
+        ],
+      }, at)
+        .to(ear, { keyframes: { rotation: [10, -6, 8, -3, 0] }, duration: 0.5, ease: 'none' }, at);
+      return at + 0.55;
+    }
+
+    // the roar: head up, jaw wide, shockwave from its mouth; the countries react.
+    // With `bloom`, India's mandala and icons burst out too. Returns when it's over.
+    function roarAt(at, tcx, { bloom = true, base = 1 } = {}) {
+      const mo = mouthAt(tcx);
+      tl.set(rings, { x: mo.x, y: mo.y }, at)
+        .to(T.body, {
+          keyframes: [
+            { scale: base * 1.12, duration: 0.14, ease: 'power2.out' },
+            { scale: base, duration: 0.55, ease: 'elastic.out(1, 0.4)' },
+          ],
+        }, at)
+        .fromTo(rings, { width: rs * 0.3, height: rs * 0.3, autoAlpha: 1 },
+          { width: ringMax, height: ringMax, autoAlpha: 0, duration: 1, ease: 'power2.out', stagger: 0.15, immediateRender: false }, at)
+        .add(shake(9, 0.5), at + 0.02)
+        .to(tail, { keyframes: [{ rotation: 28, duration: 0.15, ease: 'power2.out' }, { rotation: 0, duration: 0.6, ease: 'elastic.out(1, 0.4)' }] }, at + 0.2)
+        .to(head, {
+          keyframes: [
+            { rotation: 4, duration: 0.12, ease: 'power2.out' },
+            { rotation: -8, duration: 0.14, ease: 'power3.out' },
+            { rotation: -8, duration: 0.45 },
+            { rotation: 0, duration: 0.4, ease: 'power2.inOut' },
+          ],
+        }, at - 0.1)
+        .to(jaw, { x: 0, y: th * 0.06, rotation: 0, duration: 0.14, ease: 'back.out(2)' }, at + 0.02)
+        .to(tongue, { y: th * 0.03, duration: 0.14, ease: 'back.out(2)' }, at + 0.02)
+        .to(jaw, { y: 0, duration: 0.25, ease: 'power2.in' }, at + 0.62)
+        .to(tongue, { y: 0, duration: 0.25, ease: 'power2.in' }, at + 0.62)
+        .to(ear, { rotation: 7, duration: 0.1, ease: 'power2.out' }, at + 0.02)
+        .to(ear, { rotation: 0, duration: 0.5, ease: 'elastic.out(1, 0.4)' }, at + 0.7)
+        .to(T.rider, {
+          keyframes: [
+            { y: -rh * 0.14, rotation: -10, duration: 0.15, ease: 'power2.out' },
+            { y: 0, rotation: 0, duration: 0.45, ease: 'bounce.out' },
+          ],
+        }, at + 0.05)
+        .add(jolt(korean, -1, 2.2), at)
+        .add(jolt(italian, 1, 2.2), at);
+      if (bloom) {
+        tl.fromTo(mandala, { scale: 0.3, rotation: -90, autoAlpha: 0 },
+          { scale: 1, rotation: 0, autoAlpha: 1, duration: 1.4, ease: 'power3.out', immediateRender: false }, at)
+          .fromTo(indian, { x: (i) => mo.x - indianPos[i].x, y: (i) => mo.y - indianPos[i].y, scale: 0, autoAlpha: 0 },
+            { x: 0, y: 0, scale: 1, autoAlpha: 1, duration: 0.8, ease: 'back.out(1.6)', stagger: { each: 0.06, from: 'center' }, immediateRender: false }, at + 0.1);
+      }
+      return at + 1.15;
+    }
+
+    // the cloud clears: Aiko and Capiche are now Caiko, riding the tiger at `tcx`; returns when settled
+    function reveal(at, tcx) {
+      const s = saddleAt(tcx);
+      tl.to(cloud, { scale: poofScale * 1.35, autoAlpha: 0, duration: 0.45, ease: 'power2.out' }, at)
+        .add(dustPuff(tcx, floorY, tw * 0.7), at)
+        .fromTo(T.rider, { scale: 0.5, y: -th * 0.3 }, { scale: 1, y: 0, duration: 0.6, ease: 'back.out(2)', immediateRender: false }, at)
+        .add(heartsUp(s.x, m.t.top + riderTop, rh * 0.8), at + 0.3)
+        .to(head, { keyframes: [{ rotation: -5, duration: 0.3, ease: 'power2.out' }, { rotation: 0, duration: 0.3, ease: 'power2.inOut', delay: 0.1 }] }, at + 0.1)
+        .to(ear, { rotation: 8, duration: 0.07, yoyo: true, repeat: 3 }, at + 0.5)
+        .to(T.rider, { y: -rh * 0.15, duration: 0.16, ease: 'power2.out', yoyo: true, repeat: 1 }, at + 0.6);
+      return at + 1.0;
+    }
+
+    // both jump onto the tiger's back, a poof, and out comes Caiko riding; returns when settled
+    function mount(at, tcx) {
+      const s = saddleAt(tcx);
+      tl.add(hop(A, ax(s.x - m.a.w * 0.15), 0.45, fh * 0.8), at)
+        .add(hop(C, cxo(s.x + m.c.w * 0.15), 0.45, fh * 0.8), at + 0.06)
+        .set(cloud, { x: tcx, y: floorY - th * 0.5, zIndex: 5 }, at + 0.25)
+        .fromTo(cloud, { scale: 0.2, autoAlpha: 1 }, { scale: poofScale, duration: 0.3, ease: 'back.out(1.8)', immediateRender: false }, at + 0.25)
+        .add(cloudWobble(0.6, cw), at + 0.4)
+        .add(shake(12, 0.35), at + 0.4)
+        .set([A.root, C.root], { autoAlpha: 0 }, at + 0.5)
+        .set(T.rider, { autoAlpha: 1 }, at + 0.5);
+      return reveal(at + 1.0, tcx);
+    }
+
+    function titleIn(at) {
+      tl.to(skipBtn, { autoAlpha: 0, duration: 0.3 }, at - 0.3)
+        .to(title, { autoAlpha: 1, y: 0, duration: 0.9, ease: 'power3.out' }, at)
+        .to(sub, { autoAlpha: 1, y: 0, duration: 0.8, ease: 'power3.out' }, at + 0.25)
+        .to(replayBtn, { autoAlpha: 1, y: 0, duration: 0.6, ease: 'power2.out' }, at + 0.6);
+      return at + 1.2;
+    }
+
+    // walks off to the right (rider bobbing along); the title rises as it leaves
+    function exitRight(at, fromCx) {
+      const steps = gsap.utils.clamp(5, 9, Math.ceil((exitCx - fromCx) / (tw * 0.3)));
+      const end = at + steps * EXIT_STEP;
+      tl.add(walk(T, tx(exitCx), steps, EXIT_STEP, th * 0.035), at)
+        .add(gait(steps, EXIT_STEP), at)
+        .to(T.rider, { y: -rh * 0.05, duration: EXIT_STEP / 2, ease: 'sine.inOut', yoyo: true, repeat: steps * 2 - 1 }, at + 0.15)
+        .set(T.root, { autoAlpha: 0 }, end);
+      titleIn(at + (end - at) * 0.55);
+      return end;
+    }
+
+    // the original tiger act: leap in, shake, walk into the cloud, Caiko rides out, roar, exit
+    function standardAct(clash) {
+      const RUNIN = clash + 0.23;
+      const LAND = leap(RUNIN, landCx);
+      const WALK = LAND + 0.95;
+      const INSIDE = WALK + 3 * STEP;   // the tiger is fully inside the cloud
+      const VANISH = INSIDE + 0.55;     // the cloud clears: Caiko is riding
+      tl.set(cloud, { zIndex: 5 }, RUNIN + 0.6);
+      brawl(clash, VANISH, [LAND + 0.15, WALK + 0.3]);
+      headShake(LAND + 0.32);
+      tl.add(walk(T, tx(walkCx), 3, STEP, th * 0.035), WALK)
+        .add(gait(3, STEP), WALK)
+        .to(cloud, { y: floorY - th * 0.5, scale: poofScale, duration: INSIDE - WALK - STEP * 1.2, ease: 'power1.in' }, WALK + STEP * 1.2)
+        .add(shake(14, 0.4), INSIDE)
+        .set([A.root, C.root], { autoAlpha: 0 }, INSIDE + 0.25)
+        .set(T.rider, { autoAlpha: 1 }, INSIDE + 0.25);
+      const ROAR = reveal(VANISH, walkCx);
+      const EXIT = roarAt(ROAR, walkCx);
+      exitRight(EXIT, walkCx);
+    }
+
+    /* --- the opening act (openings.js) --------------------------------------- */
+
     const opening = OPENINGS[variant]({
-      tl, gsap, A, C, m, W, H, cx, floorY, fh, space, knock, windup, ax, cxo,
-      aOff, cOff, aFace, cFace, aHit, cHit, aMid, cMid,
-      cloud, cw, ch, cloudY, bolt, sushiHit, pizzaHit, korean, italian, hearts,
-      FOOD: HIT_FOOD, prop, held,
-      hop, hopInPlace, squash, shake, burst, strike, jolt, heartsUp, dustPuff,
+      tl, gsap, A, C, T, m, W, H, cx, floorY, fh, tw, th, space, knock, windup, ax, cxo, tx,
+      aOff, cOff, aFace, cFace, aHit, cHit, aMid, cMid, landCx, walkCx, exitCx, ledge, STEP,
+      cloud, cw, ch, cloudY, poofScale, bolt, sushiHit, pizzaHit, korean, italian, indian, hearts, mandala,
+      head, jaw, tongue, ear, tail, LEGS, rider: T.rider, rw, rh,
+      FOOD: HIT_FOOD, prop, held, bg, fx,
+      hop, hopInPlace, squash, shake, burst, strike, jolt, heartsUp, dustPuff, walk, gait, peek, peekA, peekC,
+      tigerOn, eyes, chomp, brawl, leap, headShake, roarAt, reveal, mount, titleIn, exitRight, mouthAt, saddleAt,
     });
-    const CLASH = opening.clash;
     (opening.bits || BITS).forEach((b, i) => {
       if (!bits[i]) return;
       const icon = b.trim().startsWith('<');
@@ -559,141 +766,14 @@
       bits[i].innerHTML = b;
     });
 
-    const RUNIN = CLASH + 0.23;
-    const JUMP = RUNIN + 0.6;
-    const LEAP = 0.8;
-    const LAND = JUMP + LEAP;
-    const STEP = 0.4;
-    const HEADSHAKE = LAND + 0.32;     // after landing, one shake of the head
-    const WALK = LAND + 0.95;
-    const INSIDE = WALK + 3 * STEP;   // the tiger is fully inside the cloud
-    const VANISH = INSIDE + 0.55;     // the cloud clears: Caiko is riding
-    const ROAR = VANISH + 1.0;        // then the tiger roars, rider and all
-    const EXIT = ROAR + 1.15;         // and walks out to the right
-    const EXIT_STEP = 0.34;
-    const exitSteps = gsap.utils.clamp(5, 9, Math.ceil((exitCx - walkCx) / (tw * 0.3)));
-    const END = EXIT + exitSteps * EXIT_STEP;
-    const TITLE = EXIT + (END - EXIT) * 0.55;
+    // the countries pop in as the two arrive (unless the opening brings them in itself)
+    if (!opening.ownCountries) {
+      tl.to(korean, { scale: 1, autoAlpha: 1, duration: 0.45, ease: 'back.out(2.2)', stagger: 0.05 }, 0.05)
+        .to(italian, { scale: 1, autoAlpha: 1, duration: 0.45, ease: 'back.out(2.2)', stagger: 0.05 }, 0.17);
+    }
 
-    // inside the cloud: it churns, things fly out, heads pop up (every opening)
-    tl.add(cloudWobble(VANISH - CLASH - 0.1, cw), CLASH + 0.1)
-      .add(cloudBits(VANISH - CLASH - 0.4, cx, cloudY - ch * 0.1, cw * 0.62), CLASH + 0.1)
-      .add(peek(A, -1, peekA), CLASH + 0.3)
-      .add(peek(C, 1, peekC), CLASH + 0.8)
-      .add(peek(A, -1, peekA), LAND + 0.15)
-      .add(peek(C, 1, peekC), WALK + 0.3);
-
-    // 4 · the tiger trots into the top-left corner, crouches, and springs down in an arc
-    tl.set(T.lift, { autoAlpha: 1 }, RUNIN)
-      .set(cloud, { zIndex: 5 }, JUMP)
-      .to(T.root, { x: tx(-tw * 0.05), duration: JUMP - RUNIN - 0.1, ease: 'power2.out' }, RUNIN)
-      .add(gait(2, 0.17), RUNIN)
-      .add(squash(T, 0.12, 0.3), JUMP - 0.12)
-      .to(T.root, { x: tx(landCx), duration: LEAP, ease: 'none' }, JUMP)
-      .to(T.lift, {
-        keyframes: [
-          { y: ledge - th * 0.3, duration: LEAP * 0.3, ease: 'power2.out' },
-          { y: 0, duration: LEAP * 0.7, ease: 'power2.in' },
-        ],
-      }, JUMP)
-      .to(T.body, {
-        keyframes: [
-          { rotation: -8, duration: LEAP * 0.25, ease: 'power1.out' },
-          { rotation: 16, duration: LEAP * 0.75, ease: 'power1.in' },
-        ],
-      }, JUMP)
-      .to(T.shadow, { scale: 1, opacity: 1, duration: LEAP, ease: 'power2.in' }, JUMP)
-      .to([foreFar, foreNear], { skewX: 24, duration: LEAP * 0.6, ease: 'power2.out' }, JUMP)
-      .to([hindNear, hindFar], { skewX: -24, duration: LEAP * 0.6, ease: 'power2.out' }, JUMP)
-      .to(tail, { rotation: 22, duration: LEAP * 0.5, ease: 'power2.out' }, JUMP)
-      .to(LEGS, { skewX: 0, duration: 0.25, ease: 'back.out(2)' }, LAND)
-      .to(head, { keyframes: [{ rotation: -6, duration: LEAP * 0.3, ease: 'power2.out' }, { rotation: 5, duration: LEAP * 0.7, ease: 'power1.in' }] }, JUMP)
-      .to(head, { rotation: 0, duration: 0.3, ease: 'back.out(2)' }, LAND)
-      .to(tail, { rotation: 0, duration: 0.25, ease: 'power2.out' }, LAND)
-      .to(T.body, { rotation: 0, duration: 0.3, ease: 'back.out(3)' }, LAND)
-      .add(squash(T, 0.2), LAND)
-      .add(shake(16, 0.4), LAND)
-      .add(dustPuff(landCx, floorY, tw * 0.6), LAND);
-
-    // …shakes its head once, like a cat shaking off the jump (side to side, settling), ear flapping
-    const sx = th * 0.045;
-    tl.to(head, {
-      keyframes: [
-        { x: -sx, rotation: -5, duration: 0.07, ease: 'sine.out' },
-        { x: sx, rotation: 5, duration: 0.09, ease: 'sine.inOut' },
-        { x: -sx * 0.8, rotation: -4, duration: 0.09, ease: 'sine.inOut' },
-        { x: sx * 0.55, rotation: 2.6, duration: 0.09, ease: 'sine.inOut' },
-        { x: -sx * 0.25, rotation: -1.2, duration: 0.08, ease: 'sine.inOut' },
-        { x: 0, rotation: 0, duration: 0.12, ease: 'sine.out' },
-      ],
-    }, HEADSHAKE)
-      .to(ear, { keyframes: { rotation: [10, -6, 8, -3, 0] }, duration: 0.5, ease: 'none' }, HEADSHAKE);
-
-    // …and walks three steps forward, straight into the brawl; the cloud swells and swallows it
-    const poofScale = Math.max((tw * 1.3) / cw, 1.6);
-    tl.add(walk(T, tx(walkCx), 3, STEP, th * 0.035), WALK)
-      .add(gait(3, STEP), WALK)
-      .to(cloud, { y: floorY - th * 0.5, scale: poofScale, duration: INSIDE - WALK - STEP * 1.2, ease: 'power1.in' }, WALK + STEP * 1.2)
-      .add(shake(14, 0.4), INSIDE)
-      .set([A.root, C.root], { autoAlpha: 0 }, INSIDE + 0.25)
-      .set(T.rider, { autoAlpha: 1 }, INSIDE + 0.25);
-
-    // 5 · the cloud vanishes: Aiko and Capiche are now one, Caiko, riding the tiger
-    tl.to(cloud, { scale: poofScale * 1.35, autoAlpha: 0, duration: 0.45, ease: 'power2.out' }, VANISH)
-      .add(dustPuff(walkCx, floorY, tw * 0.7), VANISH)
-      .fromTo(T.rider, { scale: 0.5, y: -th * 0.3 }, { scale: 1, y: 0, duration: 0.6, ease: 'back.out(2)', immediateRender: false }, VANISH)
-      .add(heartsUp(walkCx - tw / 2 + riderLeft + rw * seatX, m.t.top + riderTop, rh * 0.8), VANISH + 0.3)
-      .to(head, { keyframes: [{ rotation: -5, duration: 0.3, ease: 'power2.out' }, { rotation: 0, duration: 0.3, ease: 'power2.inOut', delay: 0.1 }] }, VANISH + 0.1)
-      .to(ear, { rotation: 8, duration: 0.07, yoyo: true, repeat: 3 }, VANISH + 0.5)
-      .to(T.rider, { y: -rh * 0.15, duration: 0.16, ease: 'power2.out', yoyo: true, repeat: 1 }, VANISH + 0.6);
-
-    // 6 · then the roar, Caiko on board: head up, jaw wide, shockwave from its mouth; the countries react
-    tl.to(T.body, {
-      keyframes: [
-        { scale: 1.12, duration: 0.14, ease: 'power2.out' },
-        { scale: 1, duration: 0.55, ease: 'elastic.out(1, 0.4)' },
-      ],
-    }, ROAR)
-      .fromTo(rings, { width: rs * 0.3, height: rs * 0.3, autoAlpha: 1 },
-        { width: ringMax, height: ringMax, autoAlpha: 0, duration: 1, ease: 'power2.out', stagger: 0.15, immediateRender: false }, ROAR)
-      .add(shake(9, 0.5), ROAR + 0.02)
-      .to(tail, { keyframes: [{ rotation: 28, duration: 0.15, ease: 'power2.out' }, { rotation: 0, duration: 0.6, ease: 'elastic.out(1, 0.4)' }] }, ROAR + 0.2)
-      .to(head, {
-        keyframes: [
-          { rotation: 4, duration: 0.12, ease: 'power2.out' },
-          { rotation: -8, duration: 0.14, ease: 'power3.out' },
-          { rotation: -8, duration: 0.45 },
-          { rotation: 0, duration: 0.4, ease: 'power2.inOut' },
-        ],
-      }, ROAR - 0.1)
-      .to(jaw, { x: 0, y: th * 0.06, rotation: 0, duration: 0.14, ease: 'back.out(2)' }, ROAR + 0.02)
-      .to(tongue, { y: th * 0.03, duration: 0.14, ease: 'back.out(2)' }, ROAR + 0.02)
-      .to(jaw, { y: 0, duration: 0.25, ease: 'power2.in' }, ROAR + 0.62)
-      .to(tongue, { y: 0, duration: 0.25, ease: 'power2.in' }, ROAR + 0.62)
-      .to(ear, { rotation: 7, duration: 0.1, ease: 'power2.out' }, ROAR + 0.02)
-      .to(ear, { rotation: 0, duration: 0.5, ease: 'elastic.out(1, 0.4)' }, ROAR + 0.7)
-      .to(T.rider, {
-        keyframes: [
-          { y: -rh * 0.14, rotation: -10, duration: 0.15, ease: 'power2.out' },
-          { y: 0, rotation: 0, duration: 0.45, ease: 'bounce.out' },
-        ],
-      }, ROAR + 0.05)
-      .add(jolt(korean, -1, 2.2), ROAR)
-      .add(jolt(italian, 1, 2.2), ROAR)
-      .fromTo(mandala, { scale: 0.3, rotation: -90, autoAlpha: 0 },
-        { scale: 1, rotation: 0, autoAlpha: 1, duration: 1.4, ease: 'power3.out', immediateRender: false }, ROAR)
-      .fromTo(indian, { x: (i) => fromRoar[i].x, y: (i) => fromRoar[i].y, scale: 0, autoAlpha: 0 },
-        { x: 0, y: 0, scale: 1, autoAlpha: 1, duration: 0.8, ease: 'back.out(1.6)', stagger: { each: 0.06, from: 'center' }, immediateRender: false }, ROAR + 0.1);
-
-    // 7 · and off they walk to the right, Caiko bobbing along; the title rises as they leave
-    tl.add(walk(T, tx(exitCx), exitSteps, EXIT_STEP, th * 0.035), EXIT)
-      .add(gait(exitSteps, EXIT_STEP), EXIT)
-      .to(T.rider, { y: -rh * 0.05, duration: EXIT_STEP / 2, ease: 'sine.inOut', yoyo: true, repeat: exitSteps * 2 - 1 }, EXIT + 0.15)
-      .set(T.root, { autoAlpha: 0 }, END)
-      .to(skipBtn, { autoAlpha: 0, duration: 0.3 }, TITLE - 0.3)
-      .to(title, { autoAlpha: 1, y: 0, duration: 0.9, ease: 'power3.out' }, TITLE)
-      .to(sub, { autoAlpha: 1, y: 0, duration: 0.8, ease: 'power3.out' }, TITLE + 0.25)
-      .to(replayBtn, { autoAlpha: 1, y: 0, duration: 0.6, ease: 'power2.out' }, TITLE + 0.6);
+    // openings that end in the cloud get the original tiger act; the others stage their own
+    if (!opening.own) standardAct(opening.clash);
 
     return tl;
   }

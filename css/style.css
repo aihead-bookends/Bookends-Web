@@ -190,6 +190,8 @@ body {
   z-index: 1;
 }
 
+.char .rig-lid { visibility: hidden; }
+
 .char .rig-head__part {
   position: absolute;
   inset: 0;
@@ -495,6 +497,13 @@ body {
 
 /* --- props used by the opening variations ---------------------------------- */
 
+/* props can also sit on the background layer (behind everyone), e.g. the host's door */
+.bg > .prop {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
 .prop svg,
 .held svg,
 .bit--icon svg {
@@ -527,19 +536,119 @@ body {
   text-shadow: .045em .045em 0 var(--ink);
 }
 
+.say--ink {
+  color: var(--ink);
+  text-shadow: none;
+}
+
+.say--small { font-size: clamp(16px, 3vmin, 34px); }
+
+.zzz {
+  font: italic 800 clamp(18px, 3.6vmin, 40px)/1 var(--font-display);
+  color: var(--ink);
+}
+
+/* the storybook: an open book with three spreads, pages fold at the spine */
+.book { aspect-ratio: 2.4; }
+
+.book > span { position: absolute; }
+
+.book__back {
+  top: -3%;
+  bottom: -3%;
+  width: 51.5%;
+  background: var(--accent);
+  border: 3px solid var(--ink);
+}
+
+.book__back--l { left: -1.5%; border-radius: 10px 0 0 10px; }
+.book__back--r { right: -1.5%; border-radius: 0 10px 10px 0; }
+
+.book__page {
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6%;
+  color: var(--ink);
+  background: var(--paper-light);
+  border: 3px solid var(--ink);
+}
+
+.book__page--l { left: 0; border-radius: 6px 0 0 6px; }
+.book__page--r { right: 0; border-radius: 0 6px 6px 0; }
+
+.book__art {
+  display: flex;
+  justify-content: center;
+  gap: 10%;
+  width: 78%;
+}
+
+.book__art svg { width: 40%; height: auto; }
+
+.book__label {
+  font: italic 600 clamp(14px, 2.6vmin, 30px)/1 var(--font-display);
+  color: var(--accent);
+}
+
+.book__spine {
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  z-index: 30;
+  width: 3px;
+  margin-left: -1.5px;
+  background: var(--ink);
+}
+
+.book__cover {
+  top: -3%;
+  bottom: -3%;
+  right: -1.5%;
+  z-index: 40;
+  width: 51.5%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6%;
+  background: var(--accent);
+  border: 3px solid var(--ink);
+  border-radius: 0 10px 10px 0;
+}
+
+.book__cover img {
+  width: 66%;
+  padding: 4%;
+  background: var(--paper-light);
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+}
+
+.book__cover b {
+  font: 600 clamp(14px, 2.8vmin, 32px)/1 var(--font-display);
+  color: var(--paper-light);
+}
+
 /* --- variation switcher (variation branch only) ---------------------------- */
 
 .variants {
   position: absolute;
   top: 12px;
-  left: 50%;
+  left: 0;
+  right: 0;
   z-index: 12;
   display: flex;
   gap: 4px;
+  width: max-content;
   max-width: calc(100% - 24px);
+  margin-inline: auto;
   padding: 4px;
   overflow-x: auto;
-  translate: -50% 0;
   background: rgba(17, 17, 17, .86);
   border-radius: 999px;
   scrollbar-width: none;
