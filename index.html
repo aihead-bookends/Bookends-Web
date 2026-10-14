@@ -100,7 +100,7 @@
     </header>
 
     <button class="btn skip" type="button">Skip intro</button>
-    <a class="scroll-cue" href="#about">Explore
+    <a class="scroll-cue" href="#home">Explore
       <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </a>
   </section>
@@ -111,18 +111,40 @@
        set in one list at the top of js/home.js.
        ================================================================ -->
 
-  <section class="section section--light" id="about" aria-labelledby="about-title">
-    <div class="wrap about">
-      <figure class="about__art reveal" aria-hidden="true">
-        <span class="about__mandala" data-mandala></span>
+  <!-- the first view after the intro -->
+  <section class="hero" id="home" aria-labelledby="hero-title">
+    <div class="wrap hero__grid">
+      <div class="hero__copy">
+        <p class="eyebrow reveal">Bookends Hospitality</p>
+        <h2 class="hero__title reveal" id="hero-title">Where Korea, India and Italy share a&nbsp;table.</h2>
+        <p class="lede reveal">Home of Aiko, Beshak and Capiche: three restaurants, three cuisines and one way of looking after you.</p>
+        <div class="hero__actions reveal">
+          <a class="btn btn--solid btn--lg" href="#reserve">Reserve a table</a>
+          <a class="btn btn--lg" href="#restaurants">Explore restaurants</a>
+        </div>
+        <ul class="hero__brands reveal" aria-label="Our restaurants">
+          <li><a href="#restaurants"><img src="assets/aiko.png" alt=""><span><b>Aiko</b><i>Korean</i></span></a></li>
+          <li><a href="#restaurants"><img class="is-wide" src="assets/tiger.png" alt=""><span><b>Beshak</b><i>Indian</i></span></a></li>
+          <li><a href="#restaurants"><img src="assets/capiche.png" alt=""><span><b>Capiche</b><i>Italian</i></span></a></li>
+        </ul>
+      </div>
+      <figure class="hero__art reveal" aria-hidden="true">
+        <span class="hero__mandala" data-mandala></span>
         <div class="ride">
-          <img class="ride__tiger" src="assets/tiger.png" alt="" loading="lazy">
-          <img class="ride__caiko" src="assets/caiko.png" alt="" loading="lazy">
+          <img class="ride__tiger" src="assets/tiger.png" alt="">
+          <img class="ride__caiko" src="assets/caiko.png" alt="">
         </div>
       </figure>
-      <div class="about__copy">
+    </div>
+  </section>
+
+  <section class="section" id="about" aria-labelledby="about-title">
+    <div class="wrap story">
+      <div class="story__head">
         <p class="eyebrow reveal">About Bookends</p>
         <h2 class="h2 reveal" id="about-title">Every good story needs its bookends.</h2>
+      </div>
+      <div class="story__body">
         <p class="reveal">[Tell the Bookends story here: who started it, when, and what ties Aiko, Beshak and Capiche together.]</p>
         <p class="reveal">[A second paragraph about the people, the service, or what guests can expect.]</p>
         <ul class="stats reveal">
@@ -134,11 +156,11 @@
     </div>
   </section>
 
-  <section class="section" id="restaurants" aria-labelledby="restaurants-title">
+  <section class="section section--light" id="restaurants" aria-labelledby="restaurants-title">
     <div class="wrap">
       <p class="eyebrow reveal">Our restaurants</p>
       <h2 class="h2 reveal" id="restaurants-title">Three kitchens. One house.</h2>
-      <p class="lede reveal">Korean, Indian and Italian: three very different kitchens, one way of looking after you.</p>
+      <p class="lede reveal">Three very different kitchens, each with its own room, its own menu and its own mood.</p>
 
       <div class="cards">
         <article class="card reveal" style="--d: 0">
@@ -189,7 +211,7 @@
     </div>
   </section>
 
-  <section class="section section--light" id="visit" aria-labelledby="visit-title">
+  <section class="section" id="visit" aria-labelledby="visit-title">
     <div class="wrap">
       <p class="eyebrow reveal">Locations &amp; hours</p>
       <h2 class="h2 reveal" id="visit-title">Come and find us.</h2>

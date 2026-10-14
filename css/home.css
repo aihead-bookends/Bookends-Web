@@ -266,34 +266,119 @@ html { scroll-behavior: smooth; }
   letter-spacing: .1em;
 }
 
-/* --- light band (About, Locations) ------------------------------------------ */
+/* --- light band (hero, restaurants) ------------------------------------------ */
 
 .section--light {
   background: var(--paper-light);
   border-block: 1px solid var(--line);
 }
 
-.about {
+/* cards and chips sit a shade darker on the light band */
+.section--light .card { background: var(--paper); }
+.section--light .card__dishes li { background: var(--paper-light); }
+
+/* --- hero: the first view after the intro ------------------------------------ */
+
+.hero {
+  display: flex;
+  align-items: center;
+  min-height: calc(100vh - var(--header-h));
+  min-height: calc(100svh - var(--header-h));
+  padding-block: clamp(64px, 8vw, 110px);
+  overflow: hidden;
+  scroll-margin-top: var(--header-h);
+  background: var(--paper-light);
+  border-bottom: 1px solid var(--line);
+}
+
+.hero__grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(32px, 6vw, 96px);
+  grid-template-columns: 1.05fr 1fr;
+  gap: clamp(32px, 5vw, 80px);
   align-items: center;
 }
 
-.about__art {
+.hero__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-variation-settings: 'opsz' 144;
+  font-size: clamp(42px, 5.8vw, 88px);
+  line-height: 1;
+  letter-spacing: -.025em;
+  text-wrap: balance;
+}
+
+.hero .lede { margin-top: 22px; }
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: clamp(28px, 3.4vw, 40px);
+}
+
+.btn--lg {
+  min-height: 52px;
+  padding: 14px 26px;
+  font-size: 13px;
+}
+
+.hero__brands {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(16px, 2.6vw, 32px);
+  margin: clamp(36px, 4.5vw, 56px) 0 0;
+  padding: clamp(20px, 2.4vw, 28px) 0 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+
+.hero__brands a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.hero__brands img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.hero__brands img.is-wide { width: 64px; }
+
+.hero__brands span { display: grid; gap: 3px; }
+
+.hero__brands b { font: 600 17px/1 var(--font-display); }
+
+.hero__brands i {
+  font: italic 500 13px/1 var(--font-display);
+  color: var(--accent);
+}
+
+.hero__brands a:hover b { text-decoration: underline; text-underline-offset: 4px; }
+
+.hero__art {
   position: relative;
   margin: 0;
   padding-top: 24%;
 }
 
-.about__mandala {
+.hero__mandala {
   position: absolute;
-  inset: -4% 6% -4%;
+  inset: -2% 4% -6%;
   color: var(--ink);
   opacity: .1;
 }
 
-.about__mandala svg { width: 100%; height: 100%; }
+.hero__mandala svg {
+  width: 100%;
+  height: 100%;
+  animation: hero-spin 120s linear infinite;
+}
 
 /* Caiko riding the tiger, placed with the same saddle/seat points as the intro */
 .ride {
@@ -303,17 +388,50 @@ html { scroll-behavior: smooth; }
 
 .ride img { position: absolute; display: block; }
 
-.ride__tiger { inset: 0; width: 100%; height: 100%; }
+.ride__tiger {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 100%;
+  animation: hero-breathe 3.6s ease-in-out infinite;
+}
 
-.ride__caiko { width: 30.7%; left: 23%; top: -33.7%; }
+.ride__caiko {
+  width: 30.7%;
+  left: 23%;
+  top: -33.7%;
+  transform-origin: 50% 100%;
+  animation: hero-bob 3.6s ease-in-out infinite;
+}
 
-.about__copy p:not(.eyebrow) {
-  max-width: 54ch;
-  margin: 18px 0 0;
+@keyframes hero-spin { to { transform: rotate(360deg); } }
+@keyframes hero-breathe { 50% { transform: scale(1.012, 1.025); } }
+@keyframes hero-bob { 50% { transform: translateY(-3%) rotate(-2deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__mandala svg,
+  .ride__tiger,
+  .ride__caiko { animation: none; }
+}
+
+/* --- about: the story ------------------------------------------------------------ */
+
+.story {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: clamp(28px, 6vw, 96px);
+  align-items: start;
+}
+
+.story__body p {
+  max-width: 56ch;
+  margin: 0 0 18px;
   font-size: 17px;
   line-height: 1.65;
   color: var(--ink-soft);
 }
+
+.story__body .stats { margin-top: 36px; }
 
 .stats {
   display: flex;
@@ -528,8 +646,10 @@ html { scroll-behavior: smooth; }
   .reserve,
   .visits { grid-template-columns: 1fr; }
 
-  .about { grid-template-columns: 1fr; }
-  .about__art { max-width: 520px; }
+  .hero { min-height: 0; }
+  .hero__grid,
+  .story { grid-template-columns: 1fr; }
+  .hero__art { max-width: 520px; margin-top: 12px; }
 
   .visit,
   .visit + .visit {
