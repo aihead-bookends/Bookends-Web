@@ -1,17 +1,33 @@
-Intro audio (plays only during the intro on index.html, after "Enter with sound").
+Intro audio (plays only during the intro on index.html).
 
-bossa-antigua.m4a   Music: "Bossa Antigua" by Kevin MacLeod (incompetech.com)
-                    Licensed under Creative Commons: By Attribution 4.0 License
+sitar-tabla.m4a     Music: "Sitar Tabla Fusion Beat" by BudgetPixel AI
+                    https://budgetpixel.com/background-music/sitar-tabla-fusion-beat-592eb3d7
+                    Licensed under Creative Commons Attribution 4.0
                     https://creativecommons.org/licenses/by/4.0/
                     Credit is REQUIRED: it is shown in the footer of index.html.
-                    Source: https://incompetech.com/music/royalty-free/mp3-royaltyfree/Bossa%20Antigua.mp3
-                    (re-encoded to AAC 96 kbps)
+                    Re-encoded to AAC 96 kbps, otherwise unchanged.
 
-roar.m4a            A 2.6 s cut of "Lion raring-sound1TamilNadu178.ogg", public domain.
-                    https://commons.wikimedia.org/wiki/File:Lion_raring-sound1TamilNadu178.ogg
+slurp.m4a           "End Of Drink Slurp" by BudgetPixel AI
+                    https://budgetpixel.com/sfx/end-of-drink-slurp-b9364e6f
+                    Licensed under Creative Commons Attribution 4.0
+                    Credit is REQUIRED: it is shown in the footer of index.html.
+                    Changed: cut to 1 s (1.05–2.05 s of the original), faded, AAC 64 kbps.
 
-thunder.m4a         A 1.8 s cut of "Tonitrus.ogg", public domain.
-                    https://commons.wikimedia.org/wiki/File:Tonitrus.ogg
+purr.m4a            "Cat purr" (s0436), BigSoundBank, CC0 (public domain)
+                    https://bigsoundbank.com/cat-purr-s0436.html
+                    A 1.75 s cut (5.25–7.0 s), faded, AAC 64 kbps.
 
-All other effects (hops, whooshes, punch, slap, scuffle, thud, steps, poof,
-sparkle, chime) are generated in the browser by js/sound.js.
+clink.m4a           "Cheers, table glass #1" (s1323), BigSoundBank, CC0 (public domain)
+                    https://bigsoundbank.com/cheers-table-glass-1-s1323.html
+                    AAC 64 kbps.
+
+voices/*.m4a        The characters' lines, generated with Kokoro-82M (open-source
+                    text-to-speech, Apache License 2.0, https://huggingface.co/hexgrad/Kokoro-82M):
+                    Aiko in English (voice af_bella), Capiche in Italian (im_nicola:
+                    "Pizza!", "Ciai!", "Cin cin!"), the tiger in Hindi (hm_omega:
+                    "चाय?", "टा-डा!"). Silence trimmed, levelled, AAC 64 kbps.
+                    No credit required.
+
+All other sounds (the "!@#$%" gibberish, hops, steps, whooshes, cup toss
+and catch, steam, gulp, the giant cup's thunk and knocks, ta-da, sparkle,
+chime) are generated in the browser by js/sound.js.

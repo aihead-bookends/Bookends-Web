@@ -55,43 +55,34 @@
         </div></div>
       </div>
 
-      <div class="cloud" id="cloud" aria-hidden="true">
-        <div class="cloud__wobble">
-          <div class="cloud__layer cloud__layer--outline"></div>
-          <div class="cloud__layer cloud__layer--fill"></div>
-        </div>
-      </div>
-
       <div class="char char--tiger" data-char="tiger">
         <span class="char__shadow"></span>
         <div class="char__lift"><div class="char__body">
-          <!-- data-roar: where the roar comes from; data-saddle: where Caiko sits (fractions of the image) -->
-          <img data-src="assets/tiger/body.png" data-roar="0.87 0.44" data-saddle="0.42 0.17" alt="Beshak tiger logo" draggable="false">
+          <!-- data-saddle: where Caiko sits (fractions of the image) -->
+          <img data-src="assets/tiger/body.png" data-saddle="0.42 0.17" alt="Beshak tiger logo" draggable="false">
           <!-- the tiger's moving parts sit behind its body; data-pivot is each joint (fractions of the image) -->
           <img class="rig rig--tail" data-part="tail" data-src="assets/tiger/tail.png" data-pivot="0.1154 0.7831" data-placeholder="none" alt="" draggable="false">
           <img class="rig rig--far" data-part="leg-hind-far" data-src="assets/tiger/leg-hind-far.png" data-pivot="0.4359 0.6961" data-placeholder="none" alt="" draggable="false">
           <img class="rig rig--far" data-part="leg-fore-far" data-src="assets/tiger/leg-fore-far.png" data-pivot="0.7179 0.6613" data-placeholder="none" alt="" draggable="false">
           <img class="rig" data-part="leg-hind-near" data-src="assets/tiger/leg-hind-near.png" data-pivot="0.1551 0.7483" data-placeholder="none" alt="" draggable="false">
           <img class="rig" data-part="leg-fore-near" data-src="assets/tiger/leg-fore-near.png" data-pivot="0.8814 0.6613" data-placeholder="none" alt="" draggable="false">
-          <!-- the head nods, looks and roars; the jaw and ear move inside it -->
+          <!-- the head nods, looks and talks; the jaw, ear and eyelids move inside it -->
           <div class="rig-head" data-part="head-rig" data-pivot="0.7788 0.3016">
             <img class="rig-head__part" data-part="head" data-src="assets/tiger/head.png" data-placeholder="none" alt="" draggable="false">
             <img class="rig-head__part" data-part="tongue" data-src="assets/tiger/tongue.png" data-placeholder="none" alt="" draggable="false">
             <img class="rig-head__part" data-part="jaw" data-src="assets/tiger/jaw.png" data-pivot="0.8333 0.4246" data-placeholder="none" alt="" draggable="false">
             <img class="rig-head__part" data-part="ear" data-src="assets/tiger/ear.png" data-pivot="0.9583 0.2065" data-placeholder="none" alt="" draggable="false">
+            <!-- closed eyelids: hidden unless the tiger winks or purrs -->
+            <img class="rig-head__part rig-lid" data-part="lid-l" data-src="assets/tiger/lid-l.png" data-placeholder="none" alt="" draggable="false">
+            <img class="rig-head__part rig-lid" data-part="lid-r" data-src="assets/tiger/lid-r.png" data-placeholder="none" alt="" draggable="false">
           </div>
           <!-- data-seat: the point of Caiko that rests on the saddle -->
           <img class="rider" data-src="assets/caiko.png" data-seat="0.62 0.76" data-placeholder="caiko" alt="Caiko: Aiko and Capiche together" draggable="false">
         </div></div>
       </div>
 
-      <!-- bursts, flying symbols, roar rings and dust are added here by intro.js -->
-      <div class="fx" aria-hidden="true">
-        <span class="bolt"><svg viewBox="0 0 64 64" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M37 2L11 36h18l-6 26 30-38H35l8-22z"/>
-          <path class="bolt__sparks" d="M7 13l6 4M56 7l-4 6M59 45l-7-1M5 50l7-4M48 58l-3-6"/>
-        </svg></span>
-      </div>
+      <!-- cups, steam, words, hearts and dust are added here by intro.js -->
+      <div class="fx" aria-hidden="true"></div>
     </div>
 
     <header class="title">
@@ -321,7 +312,7 @@
         <a href="#reserve">Reservations</a>
       </div>
     </div>
-    <p class="footer__legal wrap"><span>© <span data-year>2026</span> Bookends Hospitality</span><span class="footer__credit">Music: “Bossa Antigua” by Kevin MacLeod (<a href="https://incompetech.com">incompetech.com</a>), licensed under <a href="https://creativecommons.org/licenses/by/4.0/" rel="license">CC BY 4.0</a></span></p>
+    <p class="footer__legal wrap"><span>© <span data-year>2026</span> Bookends Hospitality</span><span class="footer__credit">Intro music: <a href="https://budgetpixel.com/background-music/sitar-tabla-fusion-beat-592eb3d7">“Sitar Tabla Fusion Beat”</a> and slurp sound: <a href="https://budgetpixel.com/sfx/end-of-drink-slurp-b9364e6f">“End Of Drink Slurp”</a> by BudgetPixel AI, licensed under <a href="https://creativecommons.org/licenses/by/4.0/" rel="license">CC BY 4.0</a> (shortened)</span></p>
   </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>

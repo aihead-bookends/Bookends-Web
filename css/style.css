@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Bookends Hospitality: fight intro
+   Bookends Hospitality: chai intro
    This stylesheet lays out the FINAL "bookends" pose. intro.js animates into it.
    ========================================================================== */
 
@@ -9,7 +9,6 @@
   --ink: #111111;
   --ink-soft: rgba(17, 17, 17, .62);
   --accent: #C8553D;
-  --stroke: 3px;
 
   /* stage geometry */
   --floor: 62%;                         /* where everyone stands, from the top */
@@ -19,7 +18,6 @@
   --tw-max: 36vw;                       /* tiger max width (it's wide: width usually wins) */
   --aiko-x: 20%;
   --capiche-x: 80%;
-  --bs: clamp(84px, 16vmin, 170px);     /* sushi / pizza hit burst size */
   --doodle: clamp(34px, 6.5vmin, 80px); /* background icon size */
 
   --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
@@ -205,6 +203,9 @@ body {
   max-height: none;
 }
 
+/* closed eyelids: shown only while the tiger winks or purrs */
+.char .rig-lid { visibility: hidden; }
+
 /* Caiko rides on the tiger's back; intro.js places it on the saddle */
 .char .rider {
   position: absolute;
@@ -258,33 +259,6 @@ body {
   bottom: calc(var(--s) * -.03);
 }
 
-/* --- brawl cloud ---------------------------------------------------------- */
-
-.cloud {
-  position: absolute;
-  left: 0;
-  top: 0;
-  z-index: 3;
-  pointer-events: none;
-  visibility: hidden;
-}
-
-.cloud__wobble,
-.cloud__layer {
-  position: absolute;
-  inset: 0;
-}
-
-.puff {
-  position: absolute;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: var(--paper-light);
-}
-
-/* outlines sit under the fills, so overlapping puffs read as one cloud */
-.cloud__layer--outline .puff { box-shadow: 0 0 0 var(--stroke) var(--ink); }
-
 /* --- effects -------------------------------------------------------------- */
 
 .fx {
@@ -301,81 +275,9 @@ body {
   visibility: hidden;
 }
 
-.bolt {
-  width: clamp(84px, 18vmin, 200px);
-  aspect-ratio: 1;
-}
-
-.bolt svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
-.bolt path {
-  fill: #FFFFFF;
-  stroke: var(--ink);
-  stroke-width: 3.4;
-}
-
-.bolt .bolt__sparks {
-  fill: none;
-  stroke-width: 2.6;
-}
-
-.burst {
-  width: var(--bs);
-  aspect-ratio: 1;
-  display: grid;
-  place-items: center;
-}
-
-.burst > svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
-.burst polygon {
-  fill: var(--paper-light);
-  stroke: var(--ink);
-  stroke-width: 3;
-  stroke-linejoin: round;
-}
-
-.burst__food {
-  position: relative;
-  display: block;
-  width: 64%;
-  aspect-ratio: 1;
-  transform: rotate(-10deg);
-}
-
-.burst__food svg {
-  display: block;
-  width: 100%;
-  overflow: visible;
-}
-
-.bit {
-  font: 900 clamp(16px, 3.6vmin, 36px)/1 var(--font-display);
-  color: var(--ink);
-  white-space: nowrap;
-}
-
-.bit--accent { color: var(--accent); }
-
 .heart {
   font: 900 clamp(18px, 3.4vmin, 34px)/1 var(--font-display);
   color: var(--accent);
-}
-
-.ring {
-  border-radius: 50%;
-  border: 3px solid var(--ink);
 }
 
 .dust {
@@ -385,6 +287,36 @@ body {
   background: var(--paper-light);
   box-shadow: 0 0 0 2px var(--ink);
 }
+
+/* props: the chai tray, cups and steam (on the effects layer or carried by a character) */
+.prop svg,
+.held svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.held {
+  position: absolute;
+  pointer-events: none;
+}
+
+/* what they say: Sushi! Chai? Cheers! */
+.say {
+  font: italic 900 clamp(24px, 5vmin, 60px)/1 var(--font-display);
+  color: var(--accent);
+  letter-spacing: -.01em;
+  white-space: nowrap;
+  text-shadow: .045em .045em 0 var(--ink);
+}
+
+.say--ink {
+  color: var(--ink);
+  text-shadow: none;
+}
+
+.say--small { font-size: clamp(16px, 3vmin, 34px); }
 
 /* --- title ---------------------------------------------------------------- */
 
