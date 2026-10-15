@@ -40,7 +40,7 @@
   ];
 
   const BRANDS = {
-    aiko:    { name: 'Aiko',    cuisine: 'Korean',  icons: ['seoulTower', 'palace', 'lantern', 'mugunghwa', 'fan', 'taegeuk'] },
+    aiko:    { name: 'Aiko',    cuisine: 'Pan-Asian', icons: ['torii', 'pagoda', 'lantern', 'blossom', 'fan', 'bamboo'] },
     beshak:  { name: 'Beshak',  cuisine: 'Indian',  icons: ['tajMahal', 'lotus', 'peacock', 'diya', 'elephant', 'indiaGate'] },
     capiche: { name: 'Capiche', cuisine: 'Italian', icons: ['colosseum', 'pisa', 'gondola', 'vespa', 'olive', 'mask'] },
   };

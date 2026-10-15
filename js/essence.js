@@ -1,6 +1,6 @@
 /* ==========================================================================
-   The background: the essence of each brand's country, as ink line art.
-   Aiko → Korea, Beshak → India, Capiche → Italy.
+   The background: the essence of each brand's cuisine, as ink line art.
+   Aiko → Pan-Asian (East Asia), Beshak → India, Capiche → Italy.
    Each icon is drawn on a 64×64 grid in currentColor; shapes with class "f"
    get a soft accent fill from style.css.
    ========================================================================== */
@@ -20,30 +20,41 @@ window.BOOKENDS_ESSENCE = {
   },
 
   icons: {
-    /* Korea · Aiko */
-    seoulTower: `
-      <path d="M32 4v9"/>
-      <path d="M25 13h14l-2 9H27z"/>
-      <rect class="f" x="27.5" y="15" width="9" height="4"/>
-      <path d="M29 22l-2 28M35 22l2 28M27.8 32h8.4M27.2 40h9.6"/>
-      <path d="M4 58c8-8 18-10 28-10s20 2 28 10"/>`,
-    palace: `
+    /* Pan-Asian · Aiko */
+    torii: `
+      <path class="f" d="M4 11c12 4 44 4 56 0l-2 7c-12 3-40 3-52 0z"/>
+      <path d="M11 26h42M32 18v8"/>
+      <path d="M18 18l-2 40M46 18l2 40"/>
+      <path d="M10 58h12M42 58h12"/>`,
+    pagoda: `
+      <path d="M32 3v8"/>
+      <path d="M21 17c5 0 8-2 11-6 3 4 6 6 11 6"/>
+      <path d="M25 17v7h14v-7"/>
+      <path d="M15 30c6 0 11-3 17-6 6 3 11 6 17 6"/>
+      <path d="M21 30v8h22v-8"/>
+      <path d="M9 44c7 0 15-3 23-6 8 3 16 6 23 6"/>
+      <path d="M17 44v14h30V44"/>
+      <rect class="f" x="28.5" y="48" width="7" height="10"/>
+      <path d="M7 58h50"/>`,
+    temple: `
       <path d="M4 24c10 2 18-4 28-12 10 8 18 14 28 12"/>
       <path d="M10 24c2 3 6 4 10 4h24c4 0 8-1 10-4"/>
       <rect class="f" x="14" y="31" width="36" height="5"/>
       <path d="M14 28v24M26 28v24M38 28v24M50 28v24"/>
       <path d="M8 52h48M5 58h54"/>`,
-    taegeuk: `
-      <circle cx="32" cy="32" r="22"/>
-      <path class="f" d="M10 32A22 22 0 0 1 54 32A11 11 0 0 1 32 32A11 11 0 0 0 10 32z"/>
-      <path d="M8 12l5 5M12 8l5 5M47 13l5-5M51 17l5-5M8 52l5-5M12 56l5-5M47 51l5 5M51 47l5 5"/>`,
-    mugunghwa: `
+    bamboo: `
+      <path d="M24 60V5M38 60V14"/>
+      <path d="M20 18h8M20 32h8M20 46h8M34 26h8M34 40h8M34 53h8"/>
+      <path class="f" d="M25 17c6-7 13-8 20-5-6 5-13 7-20 5z"/>
+      <path class="f" d="M23 31c-6-6-13-7-19-4 6 5 13 6 19 4z"/>
+      <path class="f" d="M39 39c6-6 12-6 18-3-6 4-12 5-18 3z"/>`,
+    blossom: `
       <g transform="translate(32 33)">
-        <path d="M0-5C-9-9-11-22 0-27C11-22 9-9 0-5z"/>
-        <path d="M0-5C-9-9-11-22 0-27C11-22 9-9 0-5z" transform="rotate(72)"/>
-        <path d="M0-5C-9-9-11-22 0-27C11-22 9-9 0-5z" transform="rotate(144)"/>
-        <path d="M0-5C-9-9-11-22 0-27C11-22 9-9 0-5z" transform="rotate(216)"/>
-        <path d="M0-5C-9-9-11-22 0-27C11-22 9-9 0-5z" transform="rotate(288)"/>
+        <path d="M0-5C-8-9-10-20-4-26L0-22L4-26C10-20 8-9 0-5z"/>
+        <path d="M0-5C-8-9-10-20-4-26L0-22L4-26C10-20 8-9 0-5z" transform="rotate(72)"/>
+        <path d="M0-5C-8-9-10-20-4-26L0-22L4-26C10-20 8-9 0-5z" transform="rotate(144)"/>
+        <path d="M0-5C-8-9-10-20-4-26L0-22L4-26C10-20 8-9 0-5z" transform="rotate(216)"/>
+        <path d="M0-5C-8-9-10-20-4-26L0-22L4-26C10-20 8-9 0-5z" transform="rotate(288)"/>
       </g>
       <circle class="f" cx="32" cy="33" r="5"/>`,
     lantern: `
@@ -133,7 +144,7 @@ window.BOOKENDS_ESSENCE = {
 
   // which icons each brand brings; cycled to fill its slots
   sets: {
-    aiko: ['seoulTower', 'palace', 'taegeuk', 'mugunghwa', 'lantern', 'fan'],
+    aiko: ['torii', 'pagoda', 'blossom', 'temple', 'lantern', 'bamboo', 'fan'],
     capiche: ['colosseum', 'pisa', 'gondola', 'vespa', 'olive', 'mask'],
     beshak: ['tajMahal', 'lotus', 'peacock', 'diya', 'elephant', 'indiaGate', 'lotus', 'peacock'],
   },

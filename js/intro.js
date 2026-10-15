@@ -5,7 +5,7 @@
    tray into the air; it comes down as a giant kulhad over the two of them,
    and when it lifts they are one, Caiko, who flips up onto the tiger's back.
    The tiger carries Caiko off to the right and the title appears, ringed by
-   the essence of Korea, India and Italy.
+   the essence of Aiko's Pan-Asia, India and Italy.
 
    Dev aid: add ?t=5.5 to the URL to freeze the timeline at 5.5 seconds.
    ========================================================================== */
@@ -423,7 +423,7 @@
     Object.assign(T.rider.style, { left: `${riderLeft}px`, top: `${riderTop}px` });
     const saddle = { x: tcx - tw / 2 + riderLeft + rw * seatX, y: m.t.top + riderTop + rh * seatY };
 
-    // background: Korea on Aiko's side, Italy mirrored on Capiche's side,
+    // background: Pan-Asia on Aiko's side, Italy mirrored on Capiche's side,
     // India ringing a mandala behind the title
     const slots = portrait.matches ? ESSENCE.layout.portrait : ESSENCE.layout.landscape;
     slots.forEach(([x, y], i) => {
