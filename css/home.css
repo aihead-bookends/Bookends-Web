@@ -699,7 +699,8 @@ html { scroll-behavior: smooth; }
   .hero { min-height: 0; }
   .hero__grid,
   .story { grid-template-columns: 1fr; }
-  .hero__art { width: min(100%, 420px); margin: 12px auto 0; }
+  /* stacked: the Caiko + mandala art comes first, then the words */
+  .hero__art { order: -1; width: min(78%, 340px); margin: 0 auto 4px; }
 
   .visit,
   .visit + .visit {
