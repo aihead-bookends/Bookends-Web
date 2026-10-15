@@ -367,6 +367,30 @@ html { scroll-behavior: smooth; }
 
 .hero__brands a:hover b { text-decoration: underline; text-underline-offset: 4px; }
 
+/* phones: all three brands in one row, each logo above its name */
+@media (max-width: 600px) {
+  .hero__brands {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .hero__brands a {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .hero__brands img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .hero__brands img.is-wide { width: 60px; }
+
+  .hero__brands b { font-size: 16px; }
+}
+
 .hero__art {
   position: relative;
   display: grid;
