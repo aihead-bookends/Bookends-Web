@@ -4,8 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Bookends Hospitality</title>
-  <meta name="description" content="Bookends Hospitality: home of Aiko (Korean), Beshak (Indian) and Capiche (Italian).">
+  <meta name="description" content="Bookends Hospitality: home of Aiko (Korean), Beshak (Indian) and Capiche (Italian), with seven outlets across Surat and Ahmedabad.">
   <meta name="theme-color" content="#F3ECDF">
+  <!-- favicon: the Caiko logo, the official Bookends Hospitality mark -->
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/icon-64.png">
+  <link rel="apple-touch-icon" href="assets/icon-180.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,19 +19,23 @@
   <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
+
   <!-- appears once you scroll past the intro -->
   <header class="site-header" id="site-header">
-    <a class="site-header__brand" href="#top">Bookends</a>
+    <a class="site-header__brand" href="#top"><img src="assets/logo-black.png" width="1518" height="417" alt="Bookends Hospitality"></a>
     <nav class="site-header__nav" aria-label="Main">
-      <a href="#restaurants">Restaurants</a>
       <a href="#about">About</a>
+      <a href="#brands">Our brands</a>
       <a href="#visit">Visit</a>
+      <a href="events.html">Events</a>
     </nav>
     <a class="btn btn--solid site-header__cta" href="#reserve">Reserve</a>
   </header>
 
   <main id="top">
   <section class="stage" id="stage" aria-labelledby="brand-title">
+    <!-- drifts and fades as the page scrolls on to the home page (js/home.js) -->
+    <div class="stage__inner" id="stage-inner">
     <div class="scene" id="scene">
 
       <!-- Korea / India / Italy line art and the mandala are added here by intro.js -->
@@ -65,13 +73,13 @@
           <img class="rig rig--far" data-part="leg-fore-far" data-src="assets/tiger/leg-fore-far.png" data-pivot="0.7179 0.6613" data-placeholder="none" alt="" draggable="false">
           <img class="rig" data-part="leg-hind-near" data-src="assets/tiger/leg-hind-near.png" data-pivot="0.1551 0.7483" data-placeholder="none" alt="" draggable="false">
           <img class="rig" data-part="leg-fore-near" data-src="assets/tiger/leg-fore-near.png" data-pivot="0.8814 0.6613" data-placeholder="none" alt="" draggable="false">
-          <!-- the head nods, looks and roars; the jaw and ear move inside it -->
+          <!-- the head nods, looks, talks and roars; the jaw, ear and eyelids move inside it -->
           <div class="rig-head" data-part="head-rig" data-pivot="0.7788 0.3016">
             <img class="rig-head__part" data-part="head" data-src="assets/tiger/head.png" data-placeholder="none" alt="" draggable="false">
             <img class="rig-head__part" data-part="tongue" data-src="assets/tiger/tongue.png" data-placeholder="none" alt="" draggable="false">
             <img class="rig-head__part" data-part="jaw" data-src="assets/tiger/jaw.png" data-pivot="0.8333 0.4246" data-placeholder="none" alt="" draggable="false">
             <img class="rig-head__part" data-part="ear" data-src="assets/tiger/ear.png" data-pivot="0.9583 0.2065" data-placeholder="none" alt="" draggable="false">
-            <!-- closed eyelids: hidden unless the tiger is asleep -->
+            <!-- closed eyelids: hidden unless the tiger sleeps, winks or purrs -->
             <img class="rig-head__part rig-lid" data-part="lid-l" data-src="assets/tiger/lid-l.png" data-placeholder="none" alt="" draggable="false">
             <img class="rig-head__part rig-lid" data-part="lid-r" data-src="assets/tiger/lid-r.png" data-placeholder="none" alt="" draggable="false">
           </div>
@@ -80,7 +88,7 @@
         </div></div>
       </div>
 
-      <!-- bursts, flying symbols, roar rings and dust are added here by intro.js -->
+      <!-- bursts, flying symbols, roar rings, props, words and dust are added here by intro.js -->
       <div class="fx" aria-hidden="true">
         <span class="bolt"><svg viewBox="0 0 64 64" stroke-linecap="round" stroke-linejoin="round">
           <path d="M37 2L11 36h18l-6 26 30-38H35l8-22z"/>
@@ -91,16 +99,17 @@
 
     <header class="title">
       <h1 id="brand-title">Bookends Hospitality</h1>
-      <ul class="brands" aria-label="Our restaurants">
-        <li><span class="brands__name">Aiko</span> <span class="brands__cuisine">Korean</span></li>
-        <li><span class="brands__name">Beshak</span> <span class="brands__cuisine">Indian</span></li>
-        <li><span class="brands__name">Capiche</span> <span class="brands__cuisine">Italian</span></li>
+      <ul class="brands" aria-label="Our brands">
+        <li><span class="brands__name">Aiko</span></li>
+        <li><span class="brands__name">Beshak</span></li>
+        <li><span class="brands__name">Capiche</span></li>
       </ul>
       <button class="btn replay" type="button">
         <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Replay
       </button>
     </header>
+    </div>
 
     <button class="btn skip" type="button">Skip intro</button>
     <!-- variation branch: pick which opening act plays before the tiger -->
@@ -123,7 +132,16 @@
       <button type="button" data-variant="photo">14 · Photo</button>
       <button type="button" data-variant="tickle">15 · Tickle</button>
     </nav>
-    <a class="scroll-cue" href="#restaurants">Explore
+    <!-- sound on / off, only while the intro plays; says "Tap for sound" until the browser allows audio (js/sound.js) -->
+    <button class="sound" id="sound-toggle" type="button" aria-pressed="false" aria-label="Turn sound on">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/>
+        <g class="sound__waves"><path d="M15.5 9a4 4 0 0 1 0 6"/><path d="M18 6.5a7.5 7.5 0 0 1 0 11"/></g>
+        <g class="sound__off"><path d="M16 9.5l5 5M21 9.5l-5 5"/></g>
+      </svg>
+      <span class="sound__label">Tap for sound</span>
+    </button>
+    <a class="scroll-cue" href="#home">Explore
       <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </a>
   </section>
@@ -134,11 +152,54 @@
        set in one list at the top of js/home.js.
        ================================================================ -->
 
-  <section class="section" id="restaurants" aria-labelledby="restaurants-title">
+  <!-- the first view after the intro -->
+  <section class="hero" id="home" aria-labelledby="hero-title">
+    <div class="wrap hero__grid">
+      <div class="hero__copy">
+        <p class="eyebrow reveal" style="--d: 0">Bookends Hospitality</p>
+        <h2 class="hero__title reveal" style="--d: 1" id="hero-title">Where Korea, India and Italy share a&nbsp;table.</h2>
+        <p class="lede reveal" style="--d: 2">Home of Aiko, Beshak and Capiche: three brands, seven outlets across Surat and Ahmedabad, and one way of looking after you.</p>
+        <div class="hero__actions reveal" style="--d: 3">
+          <a class="btn btn--solid btn--lg" href="#reserve">Reserve a table</a>
+          <a class="btn btn--lg" href="#brands">Explore our brands</a>
+        </div>
+        <ul class="hero__brands reveal" style="--d: 4" aria-label="Our brands">
+          <li><a href="#brands"><img src="assets/aiko.png" alt=""><span><b>Aiko</b><i>Korean</i></span></a></li>
+          <li><a href="#brands"><img class="is-wide" src="assets/tiger.png" alt=""><span><b>Beshak</b><i>Indian</i></span></a></li>
+          <li><a href="#brands"><img src="assets/capiche.png" alt=""><span><b>Capiche</b><i>Italian</i></span></a></li>
+        </ul>
+      </div>
+      <figure class="hero__art reveal" style="--d: 1" aria-hidden="true">
+        <span class="hero__mandala" data-mandala></span>
+        <img class="hero__caiko" src="assets/caiko.png" width="594" height="714" alt="">
+      </figure>
+    </div>
+  </section>
+
+  <section class="section" id="about" aria-labelledby="about-title">
+    <div class="wrap story">
+      <div class="story__head">
+        <p class="eyebrow reveal">About Bookends</p>
+        <h2 class="h2 reveal" id="about-title">Every good story needs its bookends.</h2>
+      </div>
+      <div class="story__body">
+        <p class="reveal">[Tell the Bookends story here: who started it, when, and what ties Aiko, Beshak and Capiche together.]</p>
+        <p class="reveal">[A second paragraph about the people, the service, or what guests can expect.]</p>
+        <ul class="stats reveal">
+          <li><strong>3</strong><span>Brands</span></li>
+          <li><strong>7</strong><span>Outlets</span></li>
+          <li><strong>2</strong><span>Cities</span></li>
+          <li><strong>2019</strong><span>Since</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--light" id="brands" aria-labelledby="brands-title">
     <div class="wrap">
-      <p class="eyebrow reveal">Our restaurants</p>
-      <h2 class="h2 reveal" id="restaurants-title">Three kitchens. One house.</h2>
-      <p class="lede reveal">Korean, Indian and Italian: three very different kitchens, one way of looking after you.</p>
+      <p class="eyebrow reveal">Our brands</p>
+      <h2 class="h2 reveal" id="brands-title">Three brands. One house.</h2>
+      <p class="lede reveal">Aiko, Beshak and Capiche are the brands of Bookends Hospitality, each with its own cuisine, its own menu and its own mood.</p>
 
       <div class="cards">
         <article class="card reveal" style="--d: 0">
@@ -150,8 +211,9 @@
           <ul class="card__dishes" aria-label="Signature dishes">
             <li>Sushi</li><li>Ramen</li><li>[Signature dish]</li>
           </ul>
+          <p class="card__where">2 outlets · Surat &amp; Ahmedabad</p>
           <div class="card__actions">
-            <a class="btn btn--solid" data-link="aiko.booking" href="#reserve">Reserve a table</a>
+            <a class="btn btn--solid" href="#reserve">Reserve a table</a>
             <a class="btn" data-link="aiko.menu" href="#">View menu</a>
           </div>
         </article>
@@ -165,8 +227,9 @@
           <ul class="card__dishes" aria-label="Signature dishes">
             <li>[Signature dish]</li><li>[Signature dish]</li><li>[Signature dish]</li>
           </ul>
+          <p class="card__where">1 outlet · Dumas Road, Surat</p>
           <div class="card__actions">
-            <a class="btn btn--solid" data-link="beshak.booking" href="#reserve">Reserve a table</a>
+            <a class="btn btn--solid" href="#reserve">Reserve a table</a>
             <a class="btn" data-link="beshak.menu" href="#">View menu</a>
           </div>
         </article>
@@ -180,34 +243,12 @@
           <ul class="card__dishes" aria-label="Signature dishes">
             <li>Pizza</li><li>[Signature dish]</li><li>[Signature dish]</li>
           </ul>
+          <p class="card__where">4 outlets · Surat &amp; Ahmedabad</p>
           <div class="card__actions">
-            <a class="btn btn--solid" data-link="capiche.booking" href="#reserve">Reserve a table</a>
+            <a class="btn btn--solid" href="#reserve">Reserve a table</a>
             <a class="btn" data-link="capiche.menu" href="#">View menu</a>
           </div>
         </article>
-      </div>
-    </div>
-  </section>
-
-  <section class="section section--about" id="about" aria-labelledby="about-title">
-    <div class="wrap about">
-      <figure class="about__art reveal" aria-hidden="true">
-        <span class="about__mandala" data-mandala></span>
-        <div class="ride">
-          <img class="ride__tiger" src="assets/tiger.png" alt="" loading="lazy">
-          <img class="ride__caiko" src="assets/caiko.png" alt="" loading="lazy">
-        </div>
-      </figure>
-      <div class="about__copy">
-        <p class="eyebrow reveal">About Bookends</p>
-        <h2 class="h2 reveal" id="about-title">Every good story needs its bookends.</h2>
-        <p class="reveal">[Tell the Bookends story here: who started it, when, and what ties Aiko, Beshak and Capiche together.]</p>
-        <p class="reveal">[A second paragraph about the people, the service, or what guests can expect.]</p>
-        <ul class="stats reveal">
-          <li><strong>3</strong><span>Restaurants</span></li>
-          <li><strong>3</strong><span>Cuisines</span></li>
-          <li><strong>[Year]</strong><span>Since</span></li>
-        </ul>
       </div>
     </div>
   </section>
@@ -216,38 +257,95 @@
     <div class="wrap">
       <p class="eyebrow reveal">Locations &amp; hours</p>
       <h2 class="h2 reveal" id="visit-title">Come and find us.</h2>
+      <p class="lede reveal">Seven outlets across Surat and Ahmedabad.</p>
 
-      <div class="visits">
-        <article class="visit reveal" style="--d: 0">
-          <h3 class="visit__name">Aiko <span>Korean</span></h3>
-          <address class="visit__address">[Street address]<br>[Area, City, PIN]</address>
-          <dl class="visit__hours">
-            <dt>Mon – Fri</dt><dd>[12:00 – 23:00]</dd>
-            <dt>Sat – Sun</dt><dd>[12:00 – 23:30]</dd>
-          </dl>
-          <p class="visit__phone"><a data-link="aiko.phone" href="#">[Phone number]</a></p>
-          <a class="link-arrow" data-link="aiko.maps" href="#">Get directions →</a>
-        </article>
-        <article class="visit reveal" style="--d: 1">
-          <h3 class="visit__name">Beshak <span>Indian</span></h3>
-          <address class="visit__address">[Street address]<br>[Area, City, PIN]</address>
-          <dl class="visit__hours">
-            <dt>Mon – Fri</dt><dd>[12:00 – 23:00]</dd>
-            <dt>Sat – Sun</dt><dd>[12:00 – 23:30]</dd>
-          </dl>
-          <p class="visit__phone"><a data-link="beshak.phone" href="#">[Phone number]</a></p>
-          <a class="link-arrow" data-link="beshak.maps" href="#">Get directions →</a>
-        </article>
-        <article class="visit reveal" style="--d: 2">
-          <h3 class="visit__name">Capiche <span>Italian</span></h3>
-          <address class="visit__address">[Street address]<br>[Area, City, PIN]</address>
-          <dl class="visit__hours">
-            <dt>Mon – Fri</dt><dd>[12:00 – 23:00]</dd>
-            <dt>Sat – Sun</dt><dd>[12:00 – 23:30]</dd>
-          </dl>
-          <p class="visit__phone"><a data-link="capiche.phone" href="#">[Phone number]</a></p>
-          <a class="link-arrow" data-link="capiche.maps" href="#">Get directions →</a>
-        </article>
+      <div class="city" aria-labelledby="city-surat">
+        <h3 class="city__name reveal" id="city-surat">Surat <span>4 outlets</span></h3>
+        <div class="outlets">
+          <article class="outlet reveal" style="--d: 0">
+            <p class="outlet__brand"><img src="assets/aiko.png" alt="" loading="lazy"><b>Aiko</b> <span>Korean</span></p>
+            <h4 class="outlet__name">Aiko Surat</h4>
+            <address class="outlet__address">[Street address, area]<br>Surat – [PIN]</address>
+            <p class="outlet__hours">[Open daily · 12:00 – 23:00]</p>
+            <p class="outlet__phone"><a data-link="aiko-surat.phone" href="#">[Phone number]</a></p>
+            <p class="outlet__links">
+              <a class="link-arrow" data-link="aiko-surat.maps" href="#">Directions →</a>
+              <a class="link-arrow" data-link="aiko-surat.booking" href="#">Reserve →</a>
+            </p>
+          </article>
+          <article class="outlet reveal" style="--d: 1">
+            <p class="outlet__brand"><img class="is-wide" src="assets/tiger.png" alt="" loading="lazy"><b>Beshak</b> <span>Indian</span></p>
+            <h4 class="outlet__name">Beshak Dumas Road</h4>
+            <address class="outlet__address">[Building, street], Dumas Road<br>Surat – [PIN]</address>
+            <p class="outlet__hours">[Open daily · 12:00 – 23:00]</p>
+            <p class="outlet__phone"><a data-link="beshak-dumas.phone" href="#">[Phone number]</a></p>
+            <p class="outlet__links">
+              <a class="link-arrow" data-link="beshak-dumas.maps" href="#">Directions →</a>
+              <a class="link-arrow" data-link="beshak-dumas.booking" href="#">Reserve →</a>
+            </p>
+          </article>
+          <article class="outlet reveal" style="--d: 2">
+            <p class="outlet__brand"><img src="assets/capiche.png" alt="" loading="lazy"><b>Capiche</b> <span>Italian</span></p>
+            <h4 class="outlet__name">Capiche Piplod</h4>
+            <address class="outlet__address">[Building, street], Piplod<br>Surat – [PIN]</address>
+            <p class="outlet__hours">[Open daily · 12:00 – 23:00]</p>
+            <p class="outlet__phone"><a data-link="capiche-piplod.phone" href="#">[Phone number]</a></p>
+            <p class="outlet__links">
+              <a class="link-arrow" data-link="capiche-piplod.maps" href="#">Directions →</a>
+              <a class="link-arrow" data-link="capiche-piplod.booking" href="#">Reserve →</a>
+            </p>
+          </article>
+          <article class="outlet reveal" style="--d: 3">
+            <p class="outlet__brand"><img src="assets/capiche.png" alt="" loading="lazy"><b>Capiche</b> <span>Italian</span></p>
+            <h4 class="outlet__name">Capiche Vesu</h4>
+            <address class="outlet__address">[Building, street], Vesu<br>Surat – [PIN]</address>
+            <p class="outlet__hours">[Open daily · 12:00 – 23:00]</p>
+            <p class="outlet__phone"><a data-link="capiche-vesu.phone" href="#">[Phone number]</a></p>
+            <p class="outlet__links">
+              <a class="link-arrow" data-link="capiche-vesu.maps" href="#">Directions →</a>
+              <a class="link-arrow" data-link="capiche-vesu.booking" href="#">Reserve →</a>
+            </p>
+          </article>
+        </div>
+      </div>
+
+      <div class="city" aria-labelledby="city-ahmedabad">
+        <h3 class="city__name reveal" id="city-ahmedabad">Ahmedabad <span>3 outlets</span></h3>
+        <div class="outlets">
+          <article class="outlet reveal" style="--d: 0">
+            <p class="outlet__brand"><img src="assets/aiko.png" alt="" loading="lazy"><b>Aiko</b> <span>Korean</span></p>
+            <h4 class="outlet__name">Aiko Ahmedabad</h4>
+            <address class="outlet__address">[Street address, area]<br>Ahmedabad – [PIN]</address>
+            <p class="outlet__hours">[Open daily · 12:00 – 23:00]</p>
+            <p class="outlet__phone"><a data-link="aiko-ahmedabad.phone" href="#">[Phone number]</a></p>
+            <p class="outlet__links">
+              <a class="link-arrow" data-link="aiko-ahmedabad.maps" href="#">Directions →</a>
+              <a class="link-arrow" data-link="aiko-ahmedabad.booking" href="#">Reserve →</a>
+            </p>
+          </article>
+          <article class="outlet reveal" style="--d: 1">
+            <p class="outlet__brand"><img src="assets/capiche.png" alt="" loading="lazy"><b>Capiche</b> <span>Italian</span></p>
+            <h4 class="outlet__name">Capiche Ambli</h4>
+            <address class="outlet__address">[Building, street], Ambli<br>Ahmedabad – [PIN]</address>
+            <p class="outlet__hours">[Open daily · 12:00 – 23:00]</p>
+            <p class="outlet__phone"><a data-link="capiche-ambli.phone" href="#">[Phone number]</a></p>
+            <p class="outlet__links">
+              <a class="link-arrow" data-link="capiche-ambli.maps" href="#">Directions →</a>
+              <a class="link-arrow" data-link="capiche-ambli.booking" href="#">Reserve →</a>
+            </p>
+          </article>
+          <article class="outlet reveal" style="--d: 2">
+            <p class="outlet__brand"><img src="assets/capiche.png" alt="" loading="lazy"><b>Capiche</b> <span>Italian</span></p>
+            <h4 class="outlet__name">Capiche University</h4>
+            <address class="outlet__address">[Building, street], [University area]<br>Ahmedabad – [PIN]</address>
+            <p class="outlet__hours">[Open daily · 12:00 – 23:00]</p>
+            <p class="outlet__phone"><a data-link="capiche-university.phone" href="#">[Phone number]</a></p>
+            <p class="outlet__links">
+              <a class="link-arrow" data-link="capiche-university.maps" href="#">Directions →</a>
+              <a class="link-arrow" data-link="capiche-university.booking" href="#">Reserve →</a>
+            </p>
+          </article>
+        </div>
       </div>
     </div>
   </section>
@@ -256,24 +354,40 @@
     <div class="wrap">
       <p class="eyebrow reveal">Reservations</p>
       <h2 class="h2 reveal" id="reserve-title">Book your table.</h2>
-      <p class="lede reveal">Pick a restaurant and reserve online in a few taps.</p>
+      <p class="lede reveal">Pick your outlet and reserve online in a few taps.</p>
 
       <div class="reserve">
-        <a class="reserve__option reveal" style="--d: 0" data-link="aiko.booking" href="#">
-          <img class="reserve__logo" src="assets/aiko.png" alt="" loading="lazy">
-          <span><span class="reserve__name">Aiko</span><span class="reserve__cuisine">Korean</span></span>
-          <span class="reserve__go">Reserve →</span>
-        </a>
-        <a class="reserve__option reveal" style="--d: 1" data-link="beshak.booking" href="#">
-          <img class="reserve__logo" src="assets/tiger.png" alt="" loading="lazy">
-          <span><span class="reserve__name">Beshak</span><span class="reserve__cuisine">Indian</span></span>
-          <span class="reserve__go">Reserve →</span>
-        </a>
-        <a class="reserve__option reveal" style="--d: 2" data-link="capiche.booking" href="#">
-          <img class="reserve__logo" src="assets/capiche.png" alt="" loading="lazy">
-          <span><span class="reserve__name">Capiche</span><span class="reserve__cuisine">Italian</span></span>
-          <span class="reserve__go">Reserve →</span>
-        </a>
+        <div class="reserve__brand reveal" style="--d: 0">
+          <div class="reserve__head">
+            <img class="reserve__logo" src="assets/aiko.png" alt="" loading="lazy">
+            <span><span class="reserve__name">Aiko</span><span class="reserve__cuisine">Korean</span></span>
+          </div>
+          <div class="reserve__outlets" role="group" aria-label="Reserve at Aiko">
+            <a class="reserve__pill" data-link="aiko-surat.booking" href="#">Surat</a>
+            <a class="reserve__pill" data-link="aiko-ahmedabad.booking" href="#">Ahmedabad</a>
+          </div>
+        </div>
+        <div class="reserve__brand reveal" style="--d: 1">
+          <div class="reserve__head">
+            <img class="reserve__logo" src="assets/tiger.png" alt="" loading="lazy">
+            <span><span class="reserve__name">Beshak</span><span class="reserve__cuisine">Indian</span></span>
+          </div>
+          <div class="reserve__outlets" role="group" aria-label="Reserve at Beshak">
+            <a class="reserve__pill" data-link="beshak-dumas.booking" href="#">Dumas Road<small>Surat</small></a>
+          </div>
+        </div>
+        <div class="reserve__brand reveal" style="--d: 2">
+          <div class="reserve__head">
+            <img class="reserve__logo" src="assets/capiche.png" alt="" loading="lazy">
+            <span><span class="reserve__name">Capiche</span><span class="reserve__cuisine">Italian</span></span>
+          </div>
+          <div class="reserve__outlets" role="group" aria-label="Reserve at Capiche">
+            <a class="reserve__pill" data-link="capiche-piplod.booking" href="#">Piplod<small>Surat</small></a>
+            <a class="reserve__pill" data-link="capiche-vesu.booking" href="#">Vesu<small>Surat</small></a>
+            <a class="reserve__pill" data-link="capiche-ambli.booking" href="#">Ambli<small>Ahmedabad</small></a>
+            <a class="reserve__pill" data-link="capiche-university.booking" href="#">University<small>Ahmedabad</small></a>
+          </div>
+        </div>
       </div>
 
       <p class="reserve__note reveal">Large group or private event? Call <a data-link="group.phone" href="#">[Phone number]</a> or message us on <a data-link="group.instagram" href="#">Instagram</a>.</p>
@@ -284,14 +398,16 @@
   <footer class="site-footer" id="contact">
     <div class="wrap footer">
       <div class="footer__brand">
-        <p class="footer__name">Bookends Hospitality</p>
+        <p class="footer__name"><img src="assets/logo-black.png" width="1518" height="417" alt="Bookends Hospitality" loading="lazy"></p>
         <p class="footer__tag">Aiko · Beshak · Capiche</p>
+        <p class="footer__tag">Surat · Ahmedabad</p>
       </div>
-      <nav class="footer__col" aria-label="Restaurants">
-        <h3>Restaurants</h3>
-        <a href="#restaurants">Aiko</a>
-        <a href="#restaurants">Beshak</a>
-        <a href="#restaurants">Capiche</a>
+      <nav class="footer__col" aria-label="Our brands">
+        <h3>Our brands</h3>
+        <a href="#brands">Aiko</a>
+        <a href="#brands">Beshak</a>
+        <a href="#brands">Capiche</a>
+        <a href="events.html">Events</a>
       </nav>
       <div class="footer__col">
         <h3>Follow</h3>
@@ -306,11 +422,12 @@
         <a href="#reserve">Reservations</a>
       </div>
     </div>
-    <p class="footer__legal wrap">© <span data-year>2026</span> Bookends Hospitality</p>
+    <p class="footer__legal wrap"><span>© <span data-year>2026</span> Bookends Hospitality</span><span class="footer__credit">Intro music: <a href="https://budgetpixel.com/background-music/sitar-tabla-fusion-beat-592eb3d7">“Sitar Tabla Fusion Beat”</a> and slurp sound: <a href="https://budgetpixel.com/sfx/end-of-drink-slurp-b9364e6f">“End Of Drink Slurp”</a> by BudgetPixel AI, licensed under <a href="https://creativecommons.org/licenses/by/4.0/" rel="license">CC BY 4.0</a> (shortened)</span></p>
   </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="js/essence.js"></script>
+  <script src="js/sound.js"></script>
   <script src="js/openings.js"></script>
   <script src="js/intro.js"></script>
   <script src="js/home.js"></script>
