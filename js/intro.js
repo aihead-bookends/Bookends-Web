@@ -25,6 +25,9 @@
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const portrait = window.matchMedia('(max-aspect-ratio: 4/5)');
   const ESSENCE = window.BOOKENDS_ESSENCE;
+  const SOUND = window.BOOKENDS_SOUND;     // js/sound.js: the Enter screen, music and effects
+  let quietCues = false;                    // true while skipping, so jumped-over cues stay silent
+  const sfx = (...args) => { if (!quietCues && SOUND) SOUND.fx(...args); };
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   const pair = (str, fallback) => (str || fallback).split(' ').map(Number);
 
@@ -707,6 +710,31 @@
       .to(sub, { autoAlpha: 1, y: 0, duration: 0.8, ease: 'power3.out' }, TITLE + 0.25)
       .to(replayBtn, { autoAlpha: 1, y: 0, duration: 0.6, ease: 'power2.out' }, TITLE + 0.6);
 
+    // 8 · sound cues (js/sound.js): each plays as the playhead passes it
+    const cue = (at, name, ...args) => tl.call(sfx, [name, ...args], at);
+    [0.5, 0.62, 0.97, 1.09].forEach((t) => cue(t, 'hop'));          // the two land from their hops
+    cue(FACEOFF + 0.28, 'thunder');                                  // the bolt strikes
+    cue(HIT1 + 0.16, 'whoosh');
+    cue(IMPACT1, 'punch');                                           // sushi!
+    cue(HIT2 + 0.16, 'whoosh');
+    cue(IMPACT2, 'slap');                                            // pizza!
+    cue(BRAWL + 0.12, 'whoosh');
+    cue(CLASH, 'punch');
+    cue(CLASH + 0.05, 'scuffle', INSIDE - CLASH - 0.1);              // the dust-up in the cloud
+    cue(RUNIN, 'step', 0.12);
+    cue(RUNIN + 0.17, 'step', 0.12);
+    cue(JUMP, 'whoosh', true);                                       // the tiger leaps
+    cue(LAND, 'thud');                                               // and lands
+    cue(WALK + STEP * 0.98, 'step');
+    cue(WALK + STEP * 1.98, 'step');
+    cue(INSIDE, 'poof');                                             // the cloud swallows it
+    cue(VANISH, 'poof');
+    cue(VANISH + 0.1, 'sparkle');                                    // Caiko appears
+    cue(ROAR - 0.08, 'roar');
+    for (let i = 0; i < exitSteps; i++) cue(EXIT + (i + 1) * EXIT_STEP, 'step', 0.18 * (1 - (i / exitSteps) * 0.7));
+    cue(TITLE - 0.4, 'music-out');
+    cue(TITLE + 0.1, 'chime');
+
     return tl;
   }
 
@@ -729,7 +757,10 @@
 
   function skip() {
     if (!tl || tl.progress() === 1) return;
+    document.dispatchEvent(new Event('intro:skip'));
+    quietCues = true;
     tl.progress(1);
+    quietCues = false;
     replayBtn.focus({ preventScroll: true });
   }
 
@@ -747,6 +778,7 @@
     }
 
     createFx();
+    if (SOUND) await SOUND.ready;      // the Enter screen: with or without sound
     play();
 
     skipBtn.addEventListener('click', skip);
@@ -773,8 +805,11 @@
         const time = tl.time();
         const paused = tl.paused();
         build();
-        if (done) tl.progress(1);
-        else if (paused) tl.pause(time);
+        if (done) {
+          quietCues = true;
+          tl.progress(1);
+          quietCues = false;
+        } else if (paused) tl.pause(time);
         else tl.play(time);
       }, 120);
     });

@@ -1,0 +1,17 @@
+Intro audio (plays only during the intro on index.html, after "Enter with sound").
+
+bossa-antigua.m4a   Music: "Bossa Antigua" by Kevin MacLeod (incompetech.com)
+                    Licensed under Creative Commons: By Attribution 4.0 License
+                    https://creativecommons.org/licenses/by/4.0/
+                    Credit is REQUIRED: it is shown in the footer of index.html.
+                    Source: https://incompetech.com/music/royalty-free/mp3-royaltyfree/Bossa%20Antigua.mp3
+                    (re-encoded to AAC 96 kbps)
+
+roar.m4a            A 2.6 s cut of "Lion raring-sound1TamilNadu178.ogg", public domain.
+                    https://commons.wikimedia.org/wiki/File:Lion_raring-sound1TamilNadu178.ogg
+
+thunder.m4a         A 1.8 s cut of "Tonitrus.ogg", public domain.
+                    https://commons.wikimedia.org/wiki/File:Tonitrus.ogg
+
+All other effects (hops, whooshes, punch, slap, scuffle, thud, steps, poof,
+sparkle, chime) are generated in the browser by js/sound.js.
