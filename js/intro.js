@@ -25,7 +25,7 @@
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const portrait = window.matchMedia('(max-aspect-ratio: 4/5)');
   const ESSENCE = window.BOOKENDS_ESSENCE;
-  const SOUND = window.BOOKENDS_SOUND;     // js/sound.js: the Enter screen, music and effects
+  const SOUND = window.BOOKENDS_SOUND;     // js/sound.js: music and effects for the intro
   let quietCues = false;                    // true while skipping, so jumped-over cues stay silent
   const sfx = (...args) => { if (!quietCues && SOUND) SOUND.fx(...args); };
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -778,7 +778,6 @@
     }
 
     createFx();
-    if (SOUND) await SOUND.ready;      // the Enter screen: with or without sound
     play();
 
     skipBtn.addEventListener('click', skip);

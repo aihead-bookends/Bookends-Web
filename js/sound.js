@@ -1,10 +1,14 @@
 /* ==========================================================================
    Bookends Hospitality: sound for the intro only
-   An Enter screen asks "with sound / without sound" before the intro starts
-   (browsers only allow sound after a click). With sound, music plays under
-   the fight and fades out as the title appears, and effects play on cue
-   (intro.js calls BOOKENDS_SOUND.fx('punch') etc. at each moment). The rest
-   of the site is silent.
+   Sound is on by default: music under the fight (fading out at the title)
+   and effects on cue (intro.js calls BOOKENDS_SOUND.fx('punch') etc. at each
+   moment). The rest of the site is silent.
+
+   Browsers only let a page make sound once the visitor has clicked, tapped
+   or pressed a key. So the music tries to start with the intro; if the
+   browser says no, it starts on the visitor's first click, tap or key press,
+   and the sound button shows "Tap for sound" until then. Muting with the
+   button is remembered for the next visit.
 
    Recordings: roar and thunder (public domain, see assets/audio/CREDITS.txt).
    Every other effect is generated here with Web Audio.
@@ -16,12 +20,10 @@ window.BOOKENDS_SOUND = (() => {
   const SAMPLES = { roar: 'assets/audio/roar.m4a', thunder: 'assets/audio/thunder.m4a' };
   const MUSIC_LEVEL = 0.4;
   const FX_LEVEL = 0.9;
+  const PREF_KEY = 'bookends-sound';   // 'off' once the visitor mutes
 
   const stage = document.getElementById('stage');
-  const gate = document.getElementById('gate');
   const btn = document.getElementById('sound-toggle');
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const devFreeze = new URLSearchParams(location.search).has('t');
 
   let ctx = null;
   let out = null;           // master: compressor → speakers
@@ -31,9 +33,12 @@ window.BOOKENDS_SOUND = (() => {
   const buffers = {};       // decoded roar / thunder
   const live = new Set();   // effect nodes still sounding (stopped on skip)
 
-  let soundOn = false;      // the visitor's choice (Enter screen / button)
+  const pref = (() => { try { return localStorage.getItem(PREF_KEY); } catch (e) { return null; } })();
+  const savePref = (v) => { try { localStorage.setItem(PREF_KEY, v); } catch (e) { /* private mode */ } };
+
+  let soundOn = pref !== 'off';   // on by default
   let introRunning = false;
-  let away = false;         // scrolled past the intro
+  let away = false;               // scrolled past the intro
 
   const music = new Audio();
   music.src = MUSIC;
@@ -46,7 +51,9 @@ window.BOOKENDS_SOUND = (() => {
     raw[k] = fetch(url).then((r) => (r.ok ? r.arrayBuffer() : null)).catch(() => null);
   });
 
-  /* --- the audio graph (created inside a click, as browsers require) ------ */
+  const audible = () => !!ctx && ctx.state === 'running';
+
+  /* --- the audio graph (only once the browser allows sound) ---------------- */
 
   function setup() {
     if (ctx) {
@@ -56,6 +63,8 @@ window.BOOKENDS_SOUND = (() => {
     const AC = window.AudioContext || window.webkitAudioContext;
     if (!AC) return;
     ctx = new AC();
+    ctx.onstatechange = () => refresh(0.8);
+    if (ctx.state === 'suspended') ctx.resume();
     out = ctx.createDynamicsCompressor();
     out.threshold.value = -14;
     out.ratio.value = 4;
@@ -67,6 +76,7 @@ window.BOOKENDS_SOUND = (() => {
     fxGain.gain.value = FX_LEVEL;
     fxGain.connect(out);
     try { ctx.createMediaElementSource(music).connect(musicGain); } catch (e) { /* plays unmixed */ }
+    music.volume = 1;
 
     noise = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
     const d = noise.getChannelData(0);
@@ -99,16 +109,19 @@ window.BOOKENDS_SOUND = (() => {
     if (level === 0) pauseTimer = setTimeout(() => music.pause(), seconds * 1000 + 50);
   }
 
-  // music plays only while the intro runs, the visitor wants sound, and the intro is on screen
+  // music plays only while the intro runs, sound is on, and the intro is on screen
   function refresh(seconds = 0.8, cut = true) {
     const want = soundOn && introRunning && !away;
     if (!want && cut) stopFx();
-    if (ctx) musicTo(want ? MUSIC_LEVEL : 0, seconds);
+    if (ctx) musicTo(want && audible() ? MUSIC_LEVEL : 0, seconds);
     if (btn) {
-      btn.setAttribute('aria-pressed', String(soundOn));
-      btn.setAttribute('aria-label', soundOn ? 'Turn sound off' : 'Turn sound on');
-      btn.title = soundOn ? 'Sound on' : 'Sound off';
-      btn.classList.toggle('is-playing', soundOn);
+      const waiting = soundOn && !audible();      // on, but the browser is still waiting for a tap
+      const playing = soundOn && audible();
+      btn.setAttribute('aria-pressed', String(playing));
+      btn.setAttribute('aria-label', playing ? 'Turn sound off' : 'Turn sound on');
+      btn.title = playing ? 'Sound on' : waiting ? 'Tap for sound' : 'Sound off';
+      btn.classList.toggle('is-playing', playing);
+      btn.classList.toggle('is-waiting', waiting && introRunning);
     }
   }
 
@@ -238,33 +251,57 @@ window.BOOKENDS_SOUND = (() => {
     },
   };
 
-  /* --- the Enter screen ------------------------------------------------------------- */
+  /* --- starting the sound ---------------------------------------------------- */
 
-  const needsGate = !!(gate && stage && !reduceMotion && !devFreeze && window.gsap);
-  const ready = new Promise((resolve) => {
-    if (!needsGate) {
-      if (gate) gate.hidden = true;
-      resolve();
-      return;
-    }
-    document.documentElement.classList.add('is-gated');
-    const primary = gate.querySelector('[data-enter="sound"]');
-    if (primary) primary.focus({ preventScroll: true });
-    gate.querySelectorAll('[data-enter]').forEach((b) => b.addEventListener('click', () => {
-      soundOn = b.dataset.enter === 'sound';
-      if (soundOn) setup();
-      gate.classList.add('is-leaving');
-      document.documentElement.classList.remove('is-gated');
-      setTimeout(() => { gate.hidden = true; }, 600);
-      resolve();
-    }, { once: true }));
-  });
+  // with the intro: try to play straight away (some browsers allow it, e.g. sites
+  // you often play sound on); if not, wait for the first click, tap or key press
+  function tryAutoplay() {
+    if (!soundOn || ctx) return;
+    music.preload = 'auto';
+    music.volume = 0;                       // silent probe; the mixer sets the real level
+    const p = music.play();
+    if (!p || !p.then) return;
+    p.then(() => {
+      setup();
+      refresh(1.2);
+    }).catch(() => {
+      music.volume = 1;
+      refresh(0);                           // shows "Tap for sound"
+    });
+  }
+
+  // Safari only lets music start if play() is called right inside the tap
+  function primeMusic() {
+    music.preload = 'auto';
+    if (music.paused) music.play().catch(() => {});   // silent until the mixer fades it in
+  }
+
+  const FIRST = ['pointerdown', 'keydown', 'touchend'];
+  function onFirst(e) {
+    const t = e.target instanceof Element ? e.target : null;
+    if (t && (btn && btn.contains(t))) return;             // the button handles itself
+    if (t && t.closest('.skip')) return;                   // skipping: no point starting sound
+    if (e.type === 'keydown' && e.key === 'Escape') return;
+    if (!soundOn || audible()) { disarm(); return; }
+    if (!introRunning || away) return;                     // the rest of the site stays silent
+    setup();                                               // inside the tap: allowed now
+    primeMusic();
+    refresh(1.2);
+    if (ctx) disarm();
+  }
+  function disarm() {
+    FIRST.forEach((type) => window.removeEventListener(type, onFirst, true));
+  }
+  FIRST.forEach((type) => window.addEventListener(type, onFirst, true));
 
   /* --- the intro tells us what is happening ------------------------------------- */
 
   document.addEventListener('intro:start', () => {
     introRunning = true;
-    if (soundOn && ctx) music.currentTime = 0;
+    away = false;
+    music.currentTime = 0;
+    if (soundOn && !ctx) tryAutoplay();
+    else if (soundOn) setup();                // Replay is a click, so this is allowed
     refresh(1.2);
   });
   document.addEventListener('intro:skip', () => { introRunning = false; refresh(0.6); });
@@ -283,21 +320,27 @@ window.BOOKENDS_SOUND = (() => {
     else if (soundOn && introRunning && !away) { ctx.resume(); music.play().catch(() => {}); }
   });
 
-  // the sound button on the intro
+  // the sound button on the intro: "Tap for sound" → on → off
   if (btn) {
     btn.addEventListener('click', () => {
-      soundOn = !soundOn;
-      if (soundOn) setup();
+      if (soundOn && audible()) {
+        soundOn = false;
+        savePref('off');
+      } else {
+        soundOn = true;
+        savePref('on');
+        setup();
+        if (introRunning) primeMusic();
+      }
       refresh(0.6);
     });
     refresh(0);
   }
 
   return {
-    ready,
     // intro.js calls this at each moment of the fight
     fx(name, ...args) {
-      if (!ctx || !soundOn || away || !introRunning || document.hidden) return;
+      if (!audible() || !soundOn || away || !introRunning || document.hidden) return;
       if (name === 'music-out') { musicTo(0, 2.5); return; }
       if (FX[name]) FX[name](...args);
     },

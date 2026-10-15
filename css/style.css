@@ -494,75 +494,6 @@ body {
 .no-anim .replay,
 .no-anim .char { display: none; }
 
-/* --- Enter screen: with or without sound (index only) ------------------------- */
-
-.gate { display: none; }
-
-.js .gate {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: grid;
-  place-items: center;
-  padding: 24px 16px;
-  background:
-    radial-gradient(120% 90% at 50% 45%, rgba(255, 255, 255, .4), rgba(255, 255, 255, 0) 60%),
-    var(--paper);
-  transition: opacity .6s ease, visibility .6s;
-}
-
-.js .gate[hidden] { display: none; }
-
-.gate.is-leaving {
-  opacity: 0;
-  visibility: hidden;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .js .gate { display: none; }
-}
-
-html.is-gated,
-html.is-gated body { overflow: hidden; }
-
-.gate__inner {
-  display: grid;
-  justify-items: center;
-  gap: clamp(14px, 2.4vmin, 22px);
-  text-align: center;
-}
-
-.gate__mark {
-  width: clamp(72px, 13vmin, 120px);
-  height: auto;
-  translate: -12.5% 0;          /* centre Caiko's body, not the red C */
-  transform-origin: 50% 100%;
-  animation: gate-bob 3.2s ease-in-out infinite;
-}
-
-@keyframes gate-bob { 50% { transform: translateY(-5%) rotate(-3deg); } }
-
-.gate__logo {
-  width: clamp(180px, 34vmin, 320px);
-  height: auto;
-}
-
-.gate__title {
-  margin: clamp(6px, 1.4vmin, 14px) 0 0;
-  font: italic 500 clamp(17px, 2.4vmin, 22px)/1.35 var(--font-display);
-  color: var(--ink-soft);
-}
-
-.gate__actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 6px;
-}
-
-.gate .btn svg { flex: none; }
-
 /* --- sound button, on the intro only ----------------------------------------- */
 
 .sound {
@@ -591,6 +522,38 @@ html.is-gated body { overflow: hidden; }
   outline-offset: 3px;
 }
 
+.sound__label { display: none; }
+
+/* waiting for the browser to allow audio: a pill that invites a tap */
+.sound.is-waiting {
+  grid-auto-flow: column;
+  gap: 8px;
+  width: auto;
+  padding: 0 16px 0 12px;
+  border-radius: 999px;
+  font: 600 11px/1 var(--font-ui);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.sound.is-waiting .sound__label { display: inline; }
+
+.sound.is-waiting::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border: 2px solid var(--accent);
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+  animation: sound-invite 2.2s ease-out .8s infinite;
+}
+
+@keyframes sound-invite {
+  0% { opacity: .7; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.25, 1.6); }
+}
+
 .sound .sound__waves { display: none; }
 .sound.is-playing .sound__waves { display: inline; animation: sound-pulse 1.6s ease-in-out infinite; }
 .sound.is-playing .sound__off { display: none; }
@@ -606,5 +569,5 @@ html.is-gated body { overflow: hidden; }
 
 @media (prefers-reduced-motion: reduce) {
   .sound.is-playing .sound__waves,
-  .gate__mark { animation: none; }
+  .sound.is-waiting::after { animation: none; }
 }
