@@ -5,12 +5,24 @@
   'use strict';
 
   /* All outside links live here. Fill one in and every button that uses it
-     updates: booking/menu/maps/instagram are full URLs, phone is a number,
+     updates: booking / menu / maps / instagram are full URLs, phone is a number,
      email an address. An empty one keeps its button but goes nowhere. */
   const LINKS = {
-    aiko:    { booking: '', menu: '', maps: '', phone: '', instagram: '' },
-    beshak:  { booking: '', menu: '', maps: '', phone: '', instagram: '' },
-    capiche: { booking: '', menu: '', maps: '', phone: '', instagram: '' },
+    // each brand
+    aiko:    { menu: '', instagram: '' },
+    beshak:  { menu: '', instagram: '' },
+    capiche: { menu: '', instagram: '' },
+
+    // each outlet: its booking page, Google Maps link and phone number
+    'aiko-surat':         { booking: '', maps: '', phone: '' },
+    'aiko-ahmedabad':     { booking: '', maps: '', phone: '' },
+    'beshak-dumas':       { booking: '', maps: '', phone: '' },   // Dumas Road, Surat
+    'capiche-piplod':     { booking: '', maps: '', phone: '' },   // Surat
+    'capiche-vesu':       { booking: '', maps: '', phone: '' },   // Surat
+    'capiche-ambli':      { booking: '', maps: '', phone: '' },   // Ahmedabad
+    'capiche-university': { booking: '', maps: '', phone: '' },   // Ahmedabad
+
+    // Bookends Hospitality itself
     group:   { phone: '', email: '', instagram: '' },
   };
 

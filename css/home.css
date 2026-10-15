@@ -260,6 +260,14 @@ html { scroll-behavior: smooth; }
   border-radius: 999px;
 }
 
+.card__where {
+  margin: -8px 0 22px;
+  font: 500 12px/1.4 var(--font-ui);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
 .card__actions {
   display: flex;
   flex-wrap: wrap;
@@ -521,7 +529,8 @@ html { scroll-behavior: smooth; }
 
 .stats {
   display: flex;
-  gap: clamp(24px, 4vw, 48px);
+  flex-wrap: wrap;
+  gap: 20px clamp(24px, 4vw, 48px);
   margin: 36px 0 0;
   padding: 0;
   list-style: none;
@@ -541,57 +550,96 @@ html { scroll-behavior: smooth; }
   color: var(--ink-soft);
 }
 
-/* --- locations & hours ----------------------------------------------------- */
+/* --- locations & hours: outlets by city ------------------------------------- */
 
-.visits {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  margin-top: clamp(40px, 6vw, 64px);
-  border-top: 2px solid var(--ink);
-}
+.city { margin-top: clamp(40px, 6vw, 64px); }
 
-.visit {
-  padding: 28px clamp(16px, 2.5vw, 32px) 8px 0;
-}
+.city + .city { margin-top: clamp(36px, 5vw, 56px); }
 
-.visit + .visit {
-  padding-left: clamp(16px, 2.5vw, 32px);
-  border-left: 1px solid var(--line);
-}
-
-.visit__name {
+.city__name {
   display: flex;
   align-items: baseline;
-  gap: 10px;
-  margin: 0 0 16px;
-  font: 600 28px/1 var(--font-display);
+  gap: 12px;
+  margin: 0 0 18px;
+  padding-bottom: 14px;
+  font: 600 clamp(26px, 3vw, 34px)/1 var(--font-display);
+  border-bottom: 2px solid var(--ink);
 }
 
-.visit__name span {
-  font: italic 500 15px/1 var(--font-display);
-  color: var(--accent);
-}
-
-.visit__address {
-  margin: 0 0 16px;
-  font-style: normal;
-  line-height: 1.6;
+.city__name span {
+  font: 500 12px/1 var(--font-ui);
+  letter-spacing: .2em;
+  text-transform: uppercase;
   color: var(--ink-soft);
 }
 
-.visit__hours {
+.outlets {
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 6px 18px;
-  margin: 0 0 16px;
-  font-size: 15px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(12px, 1.6vw, 20px);
 }
 
-.visit__hours dt { color: var(--ink-soft); }
-.visit__hours dd { margin: 0; font-variant-numeric: tabular-nums; }
+.outlet {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background: var(--paper-light);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+}
 
-.visit__phone { margin: 0 0 14px; }
-.visit__phone a { color: var(--ink); text-decoration: none; }
+.outlet__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  font-size: 13px;
+}
+
+.outlet__brand img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+.outlet__brand img.is-wide { width: 44px; }
+
+.outlet__brand b { font: 600 15px/1 var(--font-display); }
+
+.outlet__brand span {
+  font: italic 500 13px/1 var(--font-display);
+  color: var(--accent);
+}
+
+.outlet__name {
+  margin: 0 0 10px;
+  font: 600 22px/1.1 var(--font-display);
+  letter-spacing: -.01em;
+}
+
+.outlet__address {
+  margin: 0 0 10px;
+  font-style: normal;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.outlet__hours {
+  margin: 0 0 6px;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.outlet__phone { margin: 0 0 16px; font-size: 14px; }
+.outlet__phone a { color: var(--ink); text-decoration: none; }
+
+.outlet__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  margin: auto 0 0;
+}
 
 .link-arrow {
   font: 600 14px/1 var(--font-ui);
@@ -613,37 +661,30 @@ html { scroll-behavior: smooth; }
 
 .reserve {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr 1fr 1.5fr;
   gap: 16px;
   margin-top: clamp(36px, 5vw, 56px);
 }
 
-.reserve__option {
-  display: grid;
-  grid-template-columns: 72px 1fr auto;
-  align-items: center;
-  gap: 16px;
-  padding: 18px 20px;
+.reserve__brand {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 20px;
   color: var(--ink);
-  text-decoration: none;
   background: var(--paper-light);
   border-radius: 18px;
-  transition: transform .2s ease, box-shadow .2s ease;
 }
 
-.reserve__option:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, .35);
-}
-
-.reserve__option:focus-visible {
-  outline: 2px solid var(--accent-on-dark);
-  outline-offset: 3px;
+.reserve__head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 
 .reserve__logo {
-  width: 72px;
-  height: 56px;
+  width: 64px;
+  height: 48px;
   object-fit: contain;
 }
 
@@ -659,11 +700,42 @@ html { scroll-behavior: smooth; }
   color: var(--accent);
 }
 
-.reserve__go {
-  font: 600 12px/1 var(--font-ui);
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  white-space: nowrap;
+.reserve__outlets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.reserve__pill {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  min-height: 44px;
+  padding: 8px 16px;
+  font: 600 13px/1.1 var(--font-ui);
+  color: var(--paper);
+  text-decoration: none;
+  background: var(--ink);
+  border-radius: 14px;
+  transition: background-color .2s, transform .2s;
+}
+
+.reserve__pill small {
+  font: 500 11px/1 var(--font-ui);
+  letter-spacing: .06em;
+  color: rgba(243, 236, 223, .7);
+}
+
+.reserve__pill:hover {
+  background: var(--accent);
+  transform: translateY(-2px);
+}
+
+.reserve__pill:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }
 
 .reserve__note {
@@ -741,17 +813,11 @@ html { scroll-behavior: smooth; }
 
 @media (max-width: 900px) {
   .cards,
-  .reserve,
-  .visits { grid-template-columns: 1fr; }
+  .reserve { grid-template-columns: 1fr; }
+
+  .outlets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
   .story { grid-template-columns: 1fr; }
-
-  .visit,
-  .visit + .visit {
-    padding: 24px 0;
-    border-left: 0;
-    border-bottom: 1px solid var(--line);
-  }
 
   .footer { grid-template-columns: 1fr 1fr; }
   .footer__brand { grid-column: 1 / -1; }
@@ -759,6 +825,5 @@ html { scroll-behavior: smooth; }
 
 @media (max-width: 420px) {
   .card__actions .btn { flex: 1 1 100%; justify-content: center; }
-  .reserve__option { grid-template-columns: 56px 1fr auto; gap: 12px; padding: 16px; }
-  .reserve__logo { width: 56px; height: 44px; }
+  .outlets { grid-template-columns: 1fr; }
 }
