@@ -24,6 +24,9 @@
 
     // Bookends Hospitality itself
     group:   { phone: '', email: '', instagram: '' },
+
+    // press articles on the Success stories page
+    press:   { article1: '', article2: '', article3: '' },
   };
 
   const ESSENCE = window.BOOKENDS_ESSENCE;

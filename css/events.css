@@ -1,46 +1,9 @@
 /* ==========================================================================
-   Bookends Hospitality: events page (on top of style.css and home.css)
+   Bookends Hospitality: events page (on top of style.css, home.css and pages.css)
    ========================================================================== */
-
-.page main { padding-top: var(--header-h); }
 
 .is-locked,
 .is-locked body { overflow: hidden; }
-
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-}
-
-/* the header link for the page you're on */
-.site-header__nav a[aria-current="page"] {
-  color: var(--ink);
-  text-decoration: underline;
-  text-decoration-color: var(--accent);
-  text-decoration-thickness: 2px;
-  text-underline-offset: 8px;
-}
-
-/* --- page heading ----------------------------------------------------------- */
-
-.page-head {
-  padding-block: clamp(56px, 8vw, 110px) clamp(28px, 4vw, 48px);
-  background: var(--paper-light);
-  border-bottom: 1px solid var(--line);
-}
-
-.page-head__grid {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: clamp(24px, 5vw, 80px);
-  align-items: end;
-}
-
-.page-head .lede { margin: 0 0 28px; }
 
 /* --- gallery ---------------------------------------------------------------- */
 
@@ -257,29 +220,6 @@
   margin-top: clamp(32px, 4vw, 48px);
 }
 
-.btn--light {
-  color: var(--ink);
-  background: var(--paper-light);
-  border-color: var(--paper-light);
-}
-
-.btn--light:hover {
-  color: var(--paper-light);
-  background: var(--accent);
-  border-color: var(--accent);
-}
-
-.btn--outline-light {
-  color: var(--paper-light);
-  border-color: rgba(243, 236, 223, .45);
-}
-
-.btn--outline-light:hover {
-  color: var(--ink);
-  background: var(--paper-light);
-  border-color: var(--paper-light);
-}
-
 /* --- lightbox ----------------------------------------------------------------- */
 
 .lightbox {
@@ -420,7 +360,6 @@
 /* --- small screens ------------------------------------------------------------ */
 
 @media (max-width: 900px) {
-  .page-head__grid,
   .host { grid-template-columns: 1fr; }
 }
 
