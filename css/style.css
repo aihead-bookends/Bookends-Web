@@ -634,6 +634,41 @@ body {
   color: var(--paper-light);
 }
 
+/* Holi: soft clouds of coloured powder; --c is the colour */
+.powder {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--c) 35%, transparent);
+}
+
+.powder--pinch { background: radial-gradient(closest-side, var(--c) 62%, transparent); }
+
+/* "Say paneer!": the instant photo from the tiger's camera, and its flash */
+.polaroid__frame {
+  display: block;
+  padding: 7% 7% 24%;
+  background: #FFFFFF;
+  border: 3px solid var(--ink);
+  border-radius: 3px;
+  box-shadow: 4px 6px 0 rgba(17, 17, 17, .14);
+}
+
+.polaroid__pic {
+  display: block;
+  background: #2B2522;          /* develops to paper in the timeline */
+}
+
+.polaroid__pic img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  padding: 8%;
+  opacity: 0;
+}
+
+.flash { background: #FFFFFF; }
+
 /* --- variation switcher (variation branch only) ---------------------------- */
 
 .variants {
@@ -663,6 +698,17 @@ body {
   border: 0;
   border-radius: 999px;
   cursor: pointer;
+}
+
+.variants__label {
+  flex: none;
+  align-self: center;
+  padding: 0 4px 0 10px;
+  font: 600 10px/1 var(--font-ui);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(243, 236, 223, .55);
+  border-left: 1px solid rgba(243, 236, 223, .25);
 }
 
 .variants button:hover { background: rgba(243, 236, 223, .14); }

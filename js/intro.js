@@ -526,6 +526,7 @@
     gsap.set(T.shadow, { scale: 0.2, opacity: 0 });
     gsap.set(cloud, { x: cx, y: cloudY, width: cw, height: ch, xPercent: -50, yPercent: -50, scale: 0, autoAlpha: 0, zIndex: 3 });
     gsap.set(puffPairs.flat(), { scale: 1 });
+    gsap.set(puffPairs.flat(), { clearProps: 'backgroundColor' }); // an opening may tint the cloud
     gsap.set([bolt, sushiHit, pizzaHit, ...bits, ...rings, ...dust, ...hearts], { xPercent: -50, yPercent: -50, autoAlpha: 0, scale: 1, rotation: 0 });
     gsap.set(bolt, { x: cx, y: floorY - fh * 0.6, scale: 0 });
     gsap.set(sushiHit, { x: cx + space, y: m.c.top + m.c.h * 0.38 });
@@ -634,6 +635,14 @@
       return at + 0.55;
     }
 
+    // India's mandala opens behind the title and its icons fly out from `from` (a stage point)
+    function bloomAt(at, from) {
+      tl.fromTo(mandala, { scale: 0.3, rotation: -90, autoAlpha: 0 },
+        { scale: 1, rotation: 0, autoAlpha: 1, duration: 1.4, ease: 'power3.out', immediateRender: false }, at)
+        .fromTo(indian, { x: (i) => from.x - indianPos[i].x, y: (i) => from.y - indianPos[i].y, scale: 0, autoAlpha: 0 },
+          { x: 0, y: 0, scale: 1, autoAlpha: 1, duration: 0.8, ease: 'back.out(1.6)', stagger: { each: 0.06, from: 'center' }, immediateRender: false }, at + 0.1);
+    }
+
     // the roar: head up, jaw wide, shockwave from its mouth; the countries react.
     // With `bloom`, India's mandala and icons burst out too. Returns when it's over.
     function roarAt(at, tcx, { bloom = true, base = 1 } = {}) {
@@ -671,12 +680,7 @@
         }, at + 0.05)
         .add(jolt(korean, -1, 2.2), at)
         .add(jolt(italian, 1, 2.2), at);
-      if (bloom) {
-        tl.fromTo(mandala, { scale: 0.3, rotation: -90, autoAlpha: 0 },
-          { scale: 1, rotation: 0, autoAlpha: 1, duration: 1.4, ease: 'power3.out', immediateRender: false }, at)
-          .fromTo(indian, { x: (i) => mo.x - indianPos[i].x, y: (i) => mo.y - indianPos[i].y, scale: 0, autoAlpha: 0 },
-            { x: 0, y: 0, scale: 1, autoAlpha: 1, duration: 0.8, ease: 'back.out(1.6)', stagger: { each: 0.06, from: 'center' }, immediateRender: false }, at + 0.1);
-      }
+      if (bloom) bloomAt(at, mo);
       return at + 1.15;
     }
 
@@ -757,7 +761,8 @@
       head, jaw, tongue, ear, tail, LEGS, rider: T.rider, rw, rh,
       FOOD: HIT_FOOD, prop, held, bg, fx,
       hop, hopInPlace, squash, shake, burst, strike, jolt, heartsUp, dustPuff, walk, gait, peek, peekA, peekC,
-      tigerOn, eyes, chomp, brawl, leap, headShake, roarAt, reveal, mount, titleIn, exitRight, mouthAt, saddleAt,
+      tigerOn, eyes, chomp, brawl, leap, headShake, roarAt, bloomAt, reveal, mount, titleIn, exitRight, mouthAt, saddleAt,
+      cloudFill: puffPairs.map((pp) => pp[1]),
     });
     (opening.bits || BITS).forEach((b, i) => {
       if (!bits[i]) return;

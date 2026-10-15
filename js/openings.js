@@ -61,6 +61,42 @@ window.BOOKENDS_OPENINGS = (() => {
       <circle cx="78" cy="118" r="4" fill="#F6C453" stroke-width="2.4"/></svg>`,
     card: `<svg viewBox="0 0 48 60"><rect x="3" y="3" width="42" height="54" rx="5" fill="#FBF6EC" stroke="#111" stroke-width="3"/>
       <text x="24" y="41" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="900" font-size="26" fill="#C8553D">10</text></svg>`,
+    // a brass tray with a chai kettle on its left half (the cups are separate, so they can be handed out)
+    chaiTray: `<svg viewBox="0 0 120 64" stroke="#111" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M40 32c8-2 12-10 16-19" fill="none" stroke-width="6.5"/>
+      <path d="M40 32c8-2 12-10 16-19" fill="none" stroke="#D8CFBE" stroke-width="2.6"/>
+      <path d="M13 28c-9 2-9 15 0 17" fill="none" stroke-width="3.6"/>
+      <path d="M15 20h26c4 10 4 26-2 34H17c-6-8-6-24-2-34z" fill="#D8CFBE"/>
+      <path d="M19 20c2-7 18-7 20 0z" fill="#B9AE98"/>
+      <circle cx="29" cy="12" r="2.6" fill="#111"/>
+      <ellipse cx="60" cy="56" rx="56" ry="6" fill="#E9A23B"/></svg>`,
+    kulhad: `<svg viewBox="0 0 40 44" stroke="#111" stroke-width="2.6" stroke-linejoin="round">
+      <path d="M4 9l5 31h22l5-31z" fill="#C8553D"/>
+      <path d="M9 21h22" fill="none" stroke="#E9A27E" stroke-width="2"/>
+      <ellipse cx="20" cy="9" rx="16" ry="4.5" fill="#C99A62"/></svg>`,
+    // a thali of Holi colours: pink, yellow, green, blue
+    thali: `<svg viewBox="0 0 120 44" stroke="#111" stroke-width="2.6" stroke-linejoin="round">
+      <ellipse cx="60" cy="36" rx="56" ry="7" fill="#E9A23B"/>
+      <path d="M13 36c4-15 19-15 23 0z" fill="#E83E8C"/>
+      <path d="M34 36c4-18 21-18 25 0z" fill="#F6C453"/>
+      <path d="M57 36c4-15 19-15 23 0z" fill="#2FA36B"/>
+      <path d="M78 36c4-18 21-18 25 0z" fill="#3D7DD8"/></svg>`,
+    // an old box camera on a tripod, lens to the right
+    camera: `<svg viewBox="0 0 80 130" stroke="#111" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M30 52L10 128M30 52l20 76M30 52v76" fill="none"/>
+      <rect x="10" y="9" width="12" height="9" rx="2" fill="#FBF6EC"/>
+      <path d="M46 24l20-8v40l-20-8z" fill="#C8553D"/>
+      <rect x="6" y="16" width="42" height="38" rx="5" fill="#3A2E28"/>
+      <circle cx="70" cy="36" r="9" fill="#FBF6EC"/><circle cx="70" cy="36" r="4" fill="#111"/></svg>`,
+    // a giant kulhad, upside down: it comes down over the two of them like a magician's cup
+    bigKulhad: `<svg viewBox="0 0 100 112" stroke="#111" stroke-width="3" stroke-linejoin="round">
+      <path d="M24 8h52l18 96H6z" fill="#C8553D"/>
+      <path d="M24 8c0-7 52-7 52 0z" fill="#A8432F"/>
+      <path d="M18 40h64M12 74h76" fill="none" stroke="#E9A27E" stroke-width="3"/>
+      <path d="M28 57l7-7 7 7 7-7 7 7 7-7 7 7" fill="none" stroke="#F3E3C3" stroke-width="2.6" stroke-linecap="round"/>
+      <ellipse cx="50" cy="104" rx="44" ry="5" fill="#8E3A28"/></svg>`,
+    flashStar: `<svg viewBox="0 0 100 100"><polygon points="50,2 60,36 98,30 68,54 88,96 50,70 12,96 32,54 2,30 40,36"
+      fill="#FFF7C2" stroke="#111" stroke-width="3" stroke-linejoin="round"/></svg>`,
   };
 
   /* --- shared building blocks ---------------------------------------------- */
@@ -129,23 +165,31 @@ window.BOOKENDS_OPENINGS = (() => {
 
   const gone = (c, els, at) => c.tl.to(els, { autoAlpha: 0, scale: 0.4, duration: 0.2, ease: 'power2.in' }, at);
 
+  // a stand-off at aFace/cFace: both bob on their toes, a spark flies between them
+  function faceoff(c, at) {
+    const { tl, A, C, fh, floorY, bolt } = c;
+    tl.to([A.lift, C.lift], { y: -fh * 0.04, duration: 0.16, ease: 'sine.inOut', yoyo: true, repeat: 5, stagger: 0.08 }, at)
+      .to(A.body, { rotation: -7, duration: 0.3 }, at)
+      .to(C.body, { keyframes: { rotation: [8, -8, 8, -6, 0] }, duration: 0.7, ease: 'none' }, at + 0.15)
+      .fromTo(bolt, { autoAlpha: 1, scale: 0, rotation: -25, y: floorY - fh * 0.6 - fh * 0.4 },
+        { scale: 1, rotation: 0, y: floorY - fh * 0.6, duration: 0.18, ease: 'back.out(2.5)', immediateRender: false }, at + 0.2)
+      .to(bolt.firstElementChild, { keyframes: { opacity: [0.25, 1, 0.4, 1] }, duration: 0.3, ease: 'none' }, at + 0.38)
+      .add(c.shake(7, 0.22), at + 0.25)
+      .to(bolt, { autoAlpha: 0, scale: 1.35, duration: 0.25, ease: 'power2.in' }, at + 0.85);
+  }
+
   /* --- 0 · fight (the original) --------------------------------------------- */
 
   function fight(c) {
-    const { tl, A, C, fh, floorY, bolt } = c;
     enter(c);
-    const FACEOFF = 1.25;
-    const HIT1 = 2.15;
-    const HIT2 = 3.25;
+    faceoff(c, 1.25);
+    trade(c, 2.15, 3.25);
+    return { clash: charge(c, 4.3) };
+  }
 
-    tl.to([A.lift, C.lift], { y: -fh * 0.04, duration: 0.16, ease: 'sine.inOut', yoyo: true, repeat: 5, stagger: 0.08 }, FACEOFF)
-      .to(A.body, { rotation: -7, duration: 0.3 }, FACEOFF)
-      .to(C.body, { keyframes: { rotation: [8, -8, 8, -6, 0] }, duration: 0.7, ease: 'none' }, FACEOFF + 0.15)
-      .fromTo(bolt, { autoAlpha: 1, scale: 0, rotation: -25, y: floorY - fh * 0.6 - fh * 0.4 },
-        { scale: 1, rotation: 0, y: floorY - fh * 0.6, duration: 0.18, ease: 'back.out(2.5)', immediateRender: false }, FACEOFF + 0.2)
-      .to(bolt.firstElementChild, { keyframes: { opacity: [0.25, 1, 0.4, 1] }, duration: 0.3, ease: 'none' }, FACEOFF + 0.38)
-      .add(c.shake(7, 0.22), FACEOFF + 0.25)
-      .to(bolt, { autoAlpha: 0, scale: 1.35, duration: 0.25, ease: 'power2.in' }, FACEOFF + 0.85);
+  // one hit each, from aFace/cFace: Aiko lands a sushi, Capiche slaps back with a pizza
+  function trade(c, HIT1, HIT2) {
+    const { tl, A, C } = c;
 
     // Aiko strikes, Capiche spins away
     const IMPACT1 = HIT1 + 0.3;
@@ -174,8 +218,6 @@ window.BOOKENDS_OPENINGS = (() => {
         ],
       }, IMPACT2)
       .to(A.root, { x: c.aFace, duration: 0.3, ease: 'power2.inOut' }, IMPACT2 + 0.55);
-
-    return { clash: charge(c, 4.3) };
   }
 
   /* --- 1 · cook-off: Aiko flips sushi, Capiche spins pizza dough ------------ */
@@ -946,5 +988,516 @@ window.BOOKENDS_OPENINGS = (() => {
     return { own: true };
   }
 
-  return { fight, cookoff, sharing, noodle, dance, race, sleeping, chef, host, guest, storybook, judge };
+  /* --- no-roar concepts: the tiger makes peace without a roar ---------------- */
+
+  // the tiger walks in from off the left edge to `tcx`; returns when it stops
+  function strollIn(c, at, tcx, steps, stepDur) {
+    const { tl, gsap, T, th } = c;
+    gsap.set(T.lift, { y: 0, autoAlpha: 1 });
+    gsap.set(T.shadow, { scale: 1, opacity: 1 });
+    tl.add(c.walk(T, c.tx(tcx), steps, stepDur, th * 0.035), at)
+      .add(c.gait(steps, stepDur), at);
+    return at + steps * stepDur;
+  }
+
+  // a contented tiger: eyes shut, head rocks, tail curls
+  function purr(c, at, tcx) {
+    const { tl, fh, head, tail } = c;
+    c.eyes(at, 'shut');
+    tl.to(head, { keyframes: { rotation: [4, -3, 4, 0] }, duration: 1, ease: 'sine.inOut' }, at)
+      .to(tail, { keyframes: { rotation: [-16, 10, -12, 0] }, duration: 1, ease: 'sine.inOut' }, at);
+    c.eyes(at + 1, 'open');
+    const ht = headTop(c, tcx);
+    say(c, 'purrr…', at + 0.1, ht.x, ht.y - fh * 0.12, 0.55, 'say say--ink say--small');
+  }
+
+  // a wink with the near eye
+  function wink(c, at) {
+    c.eyes(at, 'shut', 'right');
+    c.eyes(at + 0.3, 'open', 'right');
+    c.tl.to(c.head, { rotation: 4, duration: 0.15, yoyo: true, repeat: 1 }, at);
+  }
+
+  // the shared ending: both hop on, Caiko rides out of the poof, India's mandala
+  // blooms from the saddle (where the roar used to do it), and off they go
+  function rideOff(c, at, tcx) {
+    const ride = c.mount(at, tcx);
+    c.bloomAt(ride - 1, c.saddleAt(tcx));
+    c.exitRight(ride, tcx);
+  }
+
+  /* --- 12 · chai break ------------------------------------------------------- */
+
+  function chai(c) {
+    const { tl, gsap, A, C, T, fh, cx, W, tw, th, head, ear, floorY } = c;
+    // they argue a little right of centre, leaving room for the tiger on the left
+    const pc = cx + W * 0.12;
+    const aSt = c.ax(pc - W * 0.1);
+    const cSt = c.cxo(pc + W * 0.1);
+    const tcx = Math.max(tw / 2 + 12, aX(c, aSt) - c.m.a.w / 2 - tw / 2 - W * 0.03);
+    enter(c, aSt, cSt);
+
+    // Sushi! Pizza! SUSHI!! PIZZA!!
+    const shout = (text, at, isA, big = false) => {
+      const ch = isA ? A : C;
+      const x = isA ? aX(c, aSt) - fh * 0.12 : cX(c, cSt) + fh * 0.12;
+      say(c, text, at, x, (isA ? c.m.a.top : c.m.c.top) - fh * 0.14, 0.3, big ? 'say' : 'say say--small');
+      tl.add(c.hopInPlace(ch, fh * (big ? 0.16 : 0.09), 0.26), at)
+        .to(ch.body, { rotation: isA ? 9 : -9, duration: 0.13, yoyo: true, repeat: 1 }, at);
+    };
+    shout('Sushi!', 1.3, true);
+    shout('Pizza!', 1.7, false);
+    shout('Sushi!!', 2.1, true, true);
+    shout('PIZZA!!', 2.5, false, true);
+    // nose to nose
+    tl.to(A.root, { x: aSt + W * 0.025, duration: 0.2, ease: 'power2.out' }, 2.95)
+      .to(C.root, { x: cSt - W * 0.025, duration: 0.2, ease: 'power2.out' }, 2.95)
+      .to(A.body, { rotation: 12, duration: 0.2 }, 2.95)
+      .to(C.body, { rotation: -12, duration: 0.2 }, 2.95)
+      .to([A.lift, C.lift], { y: -fh * 0.03, duration: 0.05, yoyo: true, repeat: 9 }, 3.1)
+      .add(c.shake(6, 0.3), 3.1);
+    say(c, '!@#$%', 3.35, pc, c.m.a.top - fh * 0.4, 0.45);
+
+    // meanwhile the tiger strolls in, with chai on its back
+    const trW = tw * 0.34;
+    const trH = trW * (64 / 120);
+    const trLeft = tw * 0.42 - trW / 2;
+    const trTop = th * 0.18 - trH * 0.9;
+    const tray = c.held(T, 'chai', ART.chaiTray, { width: trW, left: trLeft, top: trTop });
+    const cupW = trW * 0.17;
+    const cupH = cupW * 1.1;
+    const onTray = [0.64, 0.84].map((f) => ({ left: trLeft + trW * f - cupW / 2, top: trTop + trH * (52 / 64) - cupH }));
+    const trayCups = onTray.map((p) => c.held(T, 'chai', ART.kulhad, { width: cupW, ...p }));
+    const ARRIVE = strollIn(c, 1.3, tcx, 7, 0.34);
+
+    // "Chai?" They stop mid-shout and turn round
+    const ht = headTop(c, tcx);
+    say(c, 'Chai?', ARRIVE + 0.25, ht.x, ht.y - fh * 0.15, 0.6, 'say say--ink');
+    c.chomp(ARRIVE + 0.25);
+    tl.to(ear, { rotation: 8, duration: 0.07, yoyo: true, repeat: 3 }, ARRIVE + 0.3)
+      .to([A.body, C.body], { rotation: 0, scaleY: 1.1, scaleX: 0.92, duration: 0.1 }, ARRIVE + 0.35)
+      .to([A.body, C.body], { rotation: -8, scaleY: 1, scaleX: 1, duration: 0.25 }, ARRIVE + 0.75)
+      .to(A.root, { x: aSt, duration: 0.25 }, ARRIVE + 0.75)
+      .to(C.root, { x: cSt, duration: 0.25 }, ARRIVE + 0.75);
+
+    const YES = ARRIVE + 1.0;
+    say(c, 'Chai!!', YES, pc, c.m.a.top - fh * 0.2, 0.45);
+    tl.add(c.hopInPlace(A, fh * 0.3, 0.4), YES)
+      .add(c.hopInPlace(C, fh * 0.3, 0.4), YES + 0.06)
+      .to([A.body, C.body], { rotation: 0, duration: 0.2 }, YES);
+
+    // a cup each, tossed off the tray
+    const SERVE = YES + 0.45;
+    const hands = [aHand(c, aSt), cHand(c, cSt)];
+    const handCupW = fh * 0.2;
+    tl.to(head, { keyframes: { rotation: [-6, 0] }, duration: 0.35 }, SERVE - 0.05);
+    const cups = onTray.map((p, i) => {
+      const cup = c.prop('dish', ART.kulhad, handCupW);
+      const from = { x: tcx - tw / 2 + p.left + cupW / 2, y: c.m.t.top + p.top + cupH / 2 };
+      const to = { x: hands[i].x, y: hands[i].y - handCupW * 0.4 };
+      const at = SERVE + i * 0.2;
+      tl.set(trayCups[i], { autoAlpha: 0 }, at)
+        .set(cup, { autoAlpha: 1, scale: cupW / handCupW }, at)
+        .to(cup, { scale: 1, duration: 0.5, ease: 'power1.out' }, at);
+      arc(c, cup, from, to, at, 0.5, fh * 0.5, 360);
+      return cup;
+    });
+
+    // steam curls up; a sip… aah
+    const SIP = SERVE + 0.8;
+    hands.forEach((hand, i) => {
+      for (let k = 0; k < 4; k++) {
+        const wisp = c.prop('dish', ART.steam, handCupW * 0.35);
+        const at = SIP - 0.2 + k * 0.35;
+        tl.fromTo(wisp, { x: hand.x + (k % 2 ? 1 : -1) * handCupW * 0.12, y: hand.y - handCupW * 0.9, autoAlpha: 1, scale: 0.6 },
+          { y: hand.y - handCupW * 2.2, scale: 1.1, autoAlpha: 0, duration: 1, ease: 'sine.out', immediateRender: false }, at);
+      }
+    });
+    tl.to(cups[0], { rotation: -30, x: `-=${handCupW * 0.3}`, duration: 0.25, yoyo: true, repeat: 1, repeatDelay: 0.4 }, SIP)
+      .to(cups[1], { rotation: 30, x: `+=${handCupW * 0.3}`, duration: 0.25, yoyo: true, repeat: 1, repeatDelay: 0.4 }, SIP + 0.1)
+      .to(A.body, { rotation: -6, duration: 0.25, yoyo: true, repeat: 1, repeatDelay: 0.4 }, SIP)
+      .to(C.body, { rotation: 6, duration: 0.25, yoyo: true, repeat: 1, repeatDelay: 0.4 }, SIP + 0.1);
+    say(c, 'aah…', SIP + 0.75, pc, c.m.a.top - fh * 0.18, 0.45, 'say say--ink');
+
+    // they look at each other, and make up; the tiger purrs
+    const MAKEUP = SIP + 1.1;
+    tl.to(A.body, { rotation: 10, duration: 0.25 }, MAKEUP)
+      .to(C.body, { rotation: -10, duration: 0.25 }, MAKEUP)
+      .add(c.heartsUp(pc, c.m.a.top, fh * 0.8), MAKEUP + 0.15);
+    purr(c, MAKEUP + 0.1, tcx);
+
+    // "Cheers!" They shuffle up close and clink cups
+    const CHEERS = MAKEUP + 0.7;
+    const clinkY = Math.min(hands[0].y, hands[1].y) - handCupW * 0.6;
+    tl.to([A.body, C.body], { rotation: 0, duration: 0.2 }, CHEERS)
+      .add(c.hop(A, c.ax(pc - c.m.a.w * 0.42), 0.35, fh * 0.12), CHEERS)
+      .add(c.hop(C, c.cxo(pc + c.m.c.w * 0.42), 0.35, fh * 0.12), CHEERS)
+      .to(cups[0], { x: pc - handCupW * 0.45, y: clinkY, rotation: 20, duration: 0.35, ease: 'power2.inOut' }, CHEERS)
+      .to(cups[1], { x: pc + handCupW * 0.45, y: clinkY, rotation: -20, duration: 0.35, ease: 'power2.inOut' }, CHEERS);
+    const CLINK = CHEERS + 0.35;
+    const spark = c.prop('dish', ART.flashStar, fh * 0.28);
+    tl.fromTo(spark, { x: pc, y: clinkY - handCupW * 0.3, autoAlpha: 1, scale: 0, rotation: -20 },
+      { scale: 1, rotation: 0, duration: 0.12, ease: 'power2.out', immediateRender: false }, CLINK)
+      .to(spark, { autoAlpha: 0, scale: 1.3, duration: 0.2 }, CLINK + 0.2)
+      .add(c.shake(4, 0.15), CLINK)
+      .to(cups[0], { rotation: -40, duration: 0.2 }, CLINK + 0.35)     // and a last gulp
+      .to(cups[1], { rotation: 40, duration: 0.2 }, CLINK + 0.35);
+    say(c, 'Cheers!', CLINK, pc, c.m.a.top - fh * 0.3, 0.45);
+    gone(c, cups, CLINK + 0.6);
+
+    // the tiger bucks its tray into the air: it turns into a giant kulhad and comes down over them
+    const FLIP = CLINK + 0.65;
+    const bigW = c.m.a.w + c.m.c.w;
+    const bigH = bigW * (112 / 100);
+    const restY = floorY - bigH * 0.46;               // the rim sits just over the floor line, hiding their feet
+    const trayAt = { x: tcx - tw / 2 + trLeft + trW / 2, y: c.m.t.top + trTop + trH / 2 };
+    const high = { x: pc, y: restY - fh * 0.6 };
+    const flying = c.prop('dish', ART.chaiTray, trW);
+    const big = c.prop('dish', ART.bigKulhad, bigW);
+    gsap.set(big, { transformOrigin: '50% 100%' });
+    tl.add(c.squash(T, 0.1, 0.4), FLIP)
+      .to(head, { keyframes: { rotation: [-8, 0] }, duration: 0.4 }, FLIP)
+      .set(tray, { autoAlpha: 0 }, FLIP)
+      .set(flying, { autoAlpha: 1 }, FLIP);
+    arc(c, flying, trayAt, high, FLIP, 0.45, fh * 0.3, 540);
+    const SWAP = FLIP + 0.45;
+    tl.to(flying, { autoAlpha: 0, scale: 1.4, duration: 0.12 }, SWAP)
+      .fromTo(big, { x: high.x, y: high.y, autoAlpha: 1, scale: 0.35, rotation: -160 },
+        { scale: 1, rotation: 0, duration: 0.22, ease: 'back.out(1.6)', immediateRender: false }, SWAP)
+      .to(big, { y: restY, duration: 0.28, ease: 'power3.in' }, SWAP + 0.25);
+    const LAND = SWAP + 0.53;
+    tl.set([A.root, C.root], { autoAlpha: 0 }, LAND - 0.03)
+      .to(big, { keyframes: [{ scaleY: 0.86, scaleX: 1.08, duration: 0.07 }, { scaleY: 1, scaleX: 1, duration: 0.5, ease: 'elastic.out(1, 0.4)' }] }, LAND)
+      .add(c.shake(11, 0.3), LAND)
+      .add(c.dustPuff(pc, floorY, bigW * 0.6), LAND);
+
+    // under the cup, the two become one: Caiko stands where they were
+    const [seatX, seatY] = c.rider.dataset.seat.split(' ').map(Number);
+    const saddle = c.saddleAt(tcx);
+    const stand = { x: pc - (saddle.x + c.rw * (0.5 - seatX)), y: floorY - (saddle.y + c.rh * (1 - seatY)) };
+    tl.set(c.rider, { autoAlpha: 1, x: stand.x, y: stand.y }, LAND + 0.05);
+
+    // something's going on in there… steam escapes, the cup jumps twice
+    [0.4, 0.75].forEach((dt, i) => {
+      tl.to(big, {
+        keyframes: [
+          { y: restY - fh * 0.035, rotation: i ? 3 : -3, duration: 0.1, ease: 'power2.out' },
+          { y: restY, rotation: 0, duration: 0.14, ease: 'power2.in' },
+        ],
+      }, LAND + dt);
+    });
+    for (let k = 0; k < 3; k++) {
+      const wisp = c.prop('dish', ART.steam, bigW * 0.1);
+      tl.fromTo(wisp, { x: pc + (k - 1) * bigW * 0.14, y: floorY - bigH, autoAlpha: 1, scale: 0.6 },
+        { y: floorY - bigH - bigW * 0.4, scale: 1.2, autoAlpha: 0, duration: 0.9, ease: 'sine.out', immediateRender: false }, LAND + 0.25 + k * 0.22);
+    }
+    wink(c, LAND + 0.45);
+
+    // "Ta-da!" The cup flies off, and there's Caiko
+    const LIFT = LAND + 1.05;
+    say(c, 'Ta-da!', LIFT - 0.15, ht.x, ht.y - fh * 0.15, 0.5, 'say say--ink');
+    tl.to(big, { y: restY - fh * 0.25, rotation: 12, duration: 0.2, ease: 'power2.out' }, LIFT)
+      .to(big, { y: -bigH, rotation: 200, autoAlpha: 0, duration: 0.55, ease: 'power2.in' }, LIFT + 0.2)
+      .fromTo(c.rider, { scaleY: 0.8, scaleX: 1.12 }, { scaleY: 1, scaleX: 1, duration: 0.5, ease: 'elastic.out(1, 0.4)', immediateRender: false }, LIFT + 0.05)
+      .add(c.heartsUp(pc, floorY - c.rh, c.rh * 0.7), LIFT + 0.1);
+
+    // a flip up onto the tiger's back
+    const HOP = LIFT + 0.5;
+    const hopDur = 0.6;
+    const SEAT = HOP + hopDur;
+    tl.set(c.rider, { transformOrigin: '50% 50%' }, HOP)
+      .to(c.rider, { x: 0, duration: hopDur, ease: 'none' }, HOP)
+      .to(c.rider, {
+        keyframes: [
+          { y: Math.min(stand.y, 0) - fh * 0.3, duration: hopDur / 2, ease: 'power2.out' },
+          { y: 0, duration: hopDur / 2, ease: 'power2.in' },
+        ],
+      }, HOP)
+      .to(c.rider, { rotation: -360, duration: hopDur, ease: 'power1.inOut' }, HOP)
+      .set(c.rider, { rotation: 0, transformOrigin: '50% 100%' }, SEAT)
+      .to(c.rider, { keyframes: [{ scaleY: 0.85, scaleX: 1.1, duration: 0.07 }, { scaleY: 1, scaleX: 1, duration: 0.4, ease: 'elastic.out(1, 0.4)' }] }, SEAT)
+      .add(c.squash(T, 0.1, 0.45), SEAT)
+      .add(c.shake(5, 0.2), SEAT)
+      .to(ear, { rotation: 8, duration: 0.07, yoyo: true, repeat: 3 }, SEAT + 0.1);
+    c.bloomAt(SEAT, saddle);
+    c.exitRight(SEAT + 0.45, tcx);
+    return { own: true };
+  }
+
+  /* --- 13 · holi ------------------------------------------------------------- */
+
+  const HOLI = ['#E83E8C', '#F6C453', '#2FA36B', '#3D7DD8'];
+  const HOLI_SOFT = ['#F6B9D3', '#FBE3A2', '#A9DDBF', '#B7CEF2'];   // the cloud, once coloured
+
+  // a puff of coloured powder that blooms and drifts off
+  function powder(c, colour, at, x, y, size, linger = 0.5) {
+    const p = c.prop('powder', '', size);
+    p.style.setProperty('--c', colour);
+    c.tl.fromTo(p, { x, y, autoAlpha: 0.95, scale: 0.2 }, { scale: 1, duration: 0.35, ease: 'power2.out', immediateRender: false }, at)
+      .to(p, { autoAlpha: 0, scale: 1.3, y: y - size * 0.2, duration: 0.7, ease: 'power1.in' }, at + 0.35 + linger);
+  }
+
+  // a handful of colour thrown from one point to another, landing in a puff
+  function fling(c, colour, from, to, at, height, size) {
+    const pinch = c.prop('powder powder--pinch', '', c.fh * 0.16);
+    pinch.style.setProperty('--c', colour);
+    c.tl.set(pinch, { autoAlpha: 1, scale: 1 }, at);
+    arc(c, pinch, from, to, at, 0.4, height, 0);
+    c.tl.set(pinch, { autoAlpha: 0 }, at + 0.4);
+    powder(c, colour, at + 0.4, to.x, to.y, size, 0.4);
+    return at + 0.4;
+  }
+
+  // smudges of colour that stay on a character: [x, y, colour, size] as fractions of its art
+  const SPLAT = (colour) => `<svg viewBox="0 0 40 40"><path fill="${colour}" d="M20 3c4 0 5 5 9 4s6 3 5 7 4 7 1 10-1 8-5 8-5 5-9 4-6-4-10-3-6-4-4-8-5-6-2-10 2-7 6-8 5-8 9-8z"/></svg>`;
+  function splats(c, ch, spots) {
+    const { w, h } = ch === c.A ? c.m.a : c.m.c;
+    return spots.map(([fx, fy, colour, size]) => {
+      const s = c.held(ch, 'splat', SPLAT(colour), { width: w * size, left: w * (fx - size / 2), top: h * fy - (w * size) / 2 });
+      c.gsap.set(s, { autoAlpha: 0 });
+      return s;
+    });
+  }
+
+  function holi(c) {
+    const { tl, A, C, T, fh, cx, tw, th, head, tail, cloud, cloudY, cw, ch, cloudFill } = c;
+    enter(c);
+    faceoff(c, 1.25);
+    const clash = charge(c, 2.2);
+
+    // the tiger strolls up with a thali of colours on its back
+    const tcx = c.landCx;
+    const thW = tw * 0.36;
+    const thH = thW * (44 / 120);
+    const thLeft = tw * 0.42 - thW / 2;
+    const thTop = th * 0.18 - thH * 0.85;
+    const thali = c.held(T, 'thali', ART.thali, { width: thW, left: thLeft, top: thTop });
+    const ARRIVE = strollIn(c, 2.0, tcx, 5, 0.36);
+    wink(c, ARRIVE + 0.1);
+
+    // four flicks of the head: four colours land on the brawl, and the cloud takes them on
+    const mounds = [25, 46, 68, 90].map((u) => ({ x: tcx - tw / 2 + thLeft + thW * (u / 120), y: c.m.t.top + thTop + thH * 0.45 }));
+    const targets = [[-0.24, -0.18], [0.16, -0.3], [-0.04, 0.12], [0.28, 0.02]].map(([dx, dy]) => ({ x: cx + cw * dx, y: cloudY + ch * dy }));
+    HOLI.forEach((colour, i) => {
+      const at = ARRIVE + 0.55 + i * 0.22;
+      tl.to(head, { keyframes: { rotation: [-7, 2] }, duration: 0.2, ease: 'power2.out' }, at - 0.05);
+      const land = fling(c, colour, mounds[i], targets[i], at, th * 0.45, cw * 0.5);
+      tl.to(cloudFill.filter((_, k) => k % 4 === i), { backgroundColor: HOLI_SOFT[i], duration: 0.25 }, land);
+    });
+    tl.to(head, { rotation: 0, duration: 0.25 }, ARRIVE + 1.4)
+      .to(tail, { keyframes: { rotation: [-14, 14, -10, 10, 0] }, duration: 1.2, ease: 'sine.inOut' }, ARRIVE + 0.5);
+
+    // the brawl bursts in a blast of colour; out tumble two very colourful fighters
+    const POP = ARRIVE + 1.75;
+    c.brawl(clash, POP, [3.4, ARRIVE + 1.1]);
+    tl.to(cloud, { scale: 1.5, autoAlpha: 0, duration: 0.4, ease: 'power2.out' }, POP)
+      .add(c.shake(10, 0.3), POP);
+    HOLI.forEach((colour, i) => {
+      const a = (i / 4) * Math.PI * 2 + 0.5;
+      powder(c, colour, POP + i * 0.04, cx + Math.cos(a) * cw * 0.3, cloudY + Math.sin(a) * ch * 0.25, cw * 0.75, 0.45);
+    });
+    for (let k = 0; k < 10; k++) {
+      const fleck = c.prop('powder powder--pinch', '', fh * 0.09);
+      fleck.style.setProperty('--c', HOLI[k % 4]);
+      const a = -Math.PI * (0.08 + 0.84 * (k / 9));
+      tl.fromTo(fleck, { x: cx, y: cloudY, autoAlpha: 1, scale: 0.4 },
+        { x: cx + Math.cos(a) * cw * 0.85, y: cloudY + Math.sin(a) * ch * 0.85, scale: 1, duration: 0.55, ease: 'power2.out', immediateRender: false }, POP)
+        .to(fleck, { autoAlpha: 0, duration: 0.2 }, POP + 0.45);
+    }
+    // they land clear of the tiger
+    const shift = Math.max(0, tcx + tw / 2 + c.m.a.w / 2 + 6 - aX(c, c.aFace));
+    const aTo = c.aFace + shift;
+    const cTo = c.cFace + shift;
+    const colourA = splats(c, A, [[0.5, 0.17, HOLI[0], 0.42], [0.28, 0.62, HOLI[1], 0.34], [0.74, 0.84, HOLI[3], 0.3]]);
+    const colourC = splats(c, C, [[0.4, 0.28, HOLI[1], 0.32], [0.64, 0.6, HOLI[2], 0.3], [0.3, 0.78, HOLI[3], 0.28]]);
+    tl.add(c.hop(A, aTo, 0.45, fh * 0.3), POP)
+      .add(c.hop(C, cTo, 0.45, fh * 0.3), POP)
+      .to(A.body, { rotation: -360, duration: 0.45 }, POP)
+      .to(C.body, { rotation: 360, duration: 0.45 }, POP)
+      .set([A.body, C.body], { rotation: 0 }, POP + 0.46)
+      .fromTo([...colourA, ...colourC], { autoAlpha: 0, scale: 0 },
+        { autoAlpha: 0.95, scale: 1, duration: 0.2, ease: 'back.out(3)', stagger: 0.03, immediateRender: false }, POP + 0.05)
+      .add(c.squash(A, 0.15), POP + 0.45)
+      .add(c.squash(C, 0.15), POP + 0.45);
+    const mid = (aX(c, aTo) + cX(c, cTo)) / 2;
+    say(c, '?!', POP + 0.55, mid, c.m.a.top - fh * 0.15, 0.3, 'say say--ink');
+
+    // "Happy Holi!" — and they throw colour at each other, laughing
+    const HH = POP + 0.9;
+    say(c, 'Happy Holi!', HH, headTop(c, tcx).x, c.m.t.top - fh * 0.2, 0.6);
+    tl.to(tail, { keyframes: { rotation: [-14, 14, 0] }, duration: 0.5 }, HH);
+    const THROW = HH + 0.6;
+    const atA = { x: aX(c, aTo), y: c.m.a.top + c.m.a.h * 0.35 };
+    const atC = { x: cX(c, cTo), y: c.m.c.top + c.m.c.h * 0.4 };
+    tl.add(c.hopInPlace(A, fh * 0.15, 0.25), THROW - 0.1)
+      .add(c.hopInPlace(C, fh * 0.15, 0.25), THROW + 0.2);
+    fling(c, HOLI[0], aHand(c, aTo), atC, THROW, fh * 0.35, fh * 0.7);
+    fling(c, HOLI[2], cHand(c, cTo), atA, THROW + 0.3, fh * 0.35, fh * 0.7);
+    say(c, 'Ha ha!', THROW + 0.8, mid, c.m.a.top - fh * 0.2, 0.4);
+    tl.add(c.heartsUp(mid, c.m.a.top, fh * 0.8), THROW + 0.9);
+
+    const RIDE = THROW + 1.4;
+    tl.set(thali, { autoAlpha: 0 }, RIDE + 0.5);      // hidden by the (still colourful) poof
+    rideOff(c, RIDE, tcx);
+    return { own: true };
+  }
+
+  /* --- 14 · say paneer! ------------------------------------------------------ */
+
+  function photo(c) {
+    const { tl, gsap, A, C, fh, cx, W, H, tw, th, floorY, ear } = c;
+    // the fight happens a little right of centre, so the tiger has room on the left
+    const tcx = c.landCx;
+    const s = Math.max(0, tcx + tw / 2 + W * 0.04 + c.windup * 2 - (aX(c, c.aFace) - c.m.a.w / 2));
+    const f = { ...c, aFace: c.aFace + s, aHit: c.aHit + s, cFace: c.cFace + s, cHit: c.cHit + s };
+    gsap.set([c.sushiHit, c.pizzaHit], { x: `+=${s}` });
+    enter(c, f.aFace, f.cFace);
+    trade(f, 1.4, 2.5);
+
+    // the tiger wanders in while they wind up for round three
+    const ARRIVE = strollIn(c, 1.8, tcx, 5, 0.36);
+    const WIND = ARRIVE + 0.05;
+    tl.to(A.root, { x: f.aFace - c.windup * 2, duration: 0.25, ease: 'power2.out' }, WIND)
+      .to(C.root, { x: f.cFace + c.windup * 2, duration: 0.25, ease: 'power2.out' }, WIND)
+      .to(A.body, { rotation: -16, duration: 0.25 }, WIND)
+      .to(C.body, { rotation: 16, duration: 0.25 }, WIND);
+
+    // "Smile!" They freeze… and scramble into a pose, side by side
+    const ht = headTop(c, tcx);
+    const SMILE = WIND + 0.3;
+    say(c, 'Smile!', SMILE, ht.x, ht.y - fh * 0.15, 0.5, 'say say--ink');
+    c.chomp(SMILE);
+    tl.to([A.body, C.body], { scaleY: 1.1, scaleX: 0.92, duration: 0.1 }, SMILE + 0.05)
+      .to([A.body, C.body], { scaleY: 1, scaleX: 1, rotation: 0, duration: 0.2 }, SMILE + 0.4);
+
+    // the camera stands at the tiger's chest, so its face stays in view
+    const camH = th * 0.52;
+    const camW = camH * (80 / 130);
+    const cam = { x: tcx - tw / 2 + tw * 0.96, y: floorY - camH / 2 };
+    const poseMid = Math.max(cx + W * 0.08, cam.x + camW / 2 + (c.m.a.w + c.m.c.w) / 2 + W * 0.03);
+    const aPose = c.ax(poseMid - c.m.a.w * 0.42);
+    const cPose = c.cxo(poseMid + c.m.c.w * 0.42);
+    const POSE = SMILE + 0.45;
+    tl.add(c.hop(A, aPose, 0.4, fh * 0.3), POSE)
+      .add(c.hop(C, cPose, 0.4, fh * 0.3), POSE + 0.05)
+      .to(A.body, { rotation: 10, duration: 0.2, ease: 'back.out(2)' }, POSE + 0.45)
+      .to(C.body, { rotation: -10, duration: 0.2, ease: 'back.out(2)' }, POSE + 0.5);
+
+    // up comes the camera
+    const camera = c.prop('dish', ART.camera, camW);
+    gsap.set(camera, { transformOrigin: '50% 100%' });
+    tl.fromTo(camera, { x: cam.x, y: cam.y, autoAlpha: 1, scaleY: 0 },
+      { scaleY: 1, duration: 0.35, ease: 'back.out(2)', immediateRender: false }, POSE + 0.15);
+    say(c, 'Say paneer!', POSE + 0.55, ht.x, ht.y - fh * 0.15, 0.55, 'say say--ink');
+    tl.to(ear, { rotation: 8, duration: 0.07, yoyo: true, repeat: 3 }, POSE + 0.6);
+    say(c, 'PANEER!', POSE + 1.1, poseMid, c.m.a.top - fh * 0.2, 0.3);
+    tl.add(c.hopInPlace(A, fh * 0.1, 0.22), POSE + 1.1)
+      .add(c.hopInPlace(C, fh * 0.1, 0.22), POSE + 1.1);
+
+    // FLASH
+    const FLASH = POSE + 1.45;
+    const bulb = { x: cam.x - camW / 2 + camW * 0.2, y: cam.y - camH / 2 + camH * 0.105 };
+    const star = c.prop('dish', ART.flashStar, camW * 0.9);
+    const flash = c.prop('flash', '', W);
+    flash.style.height = `${H}px`;
+    tl.fromTo(star, { x: bulb.x, y: bulb.y, autoAlpha: 1, scale: 0, rotation: -20 },
+      { scale: 1, rotation: 0, duration: 0.12, ease: 'power2.out', immediateRender: false }, FLASH)
+      .to(star, { autoAlpha: 0, scale: 1.3, duration: 0.2 }, FLASH + 0.2)
+      .fromTo(flash, { x: W / 2, y: H / 2, autoAlpha: 0.95 }, { autoAlpha: 0, duration: 0.6, ease: 'power2.in', immediateRender: false }, FLASH + 0.04)
+      .add(c.shake(5, 0.2), FLASH)
+      .to([A.body, C.body], { scaleY: 0.88, scaleX: 1.08, duration: 0.08, yoyo: true, repeat: 1 }, FLASH + 0.05);
+    c.eyes(FLASH, 'shut');
+    c.eyes(FLASH + 0.3, 'open');
+
+    // out slides the photo, and it develops… into the two of them as one
+    const picW = fh * 0.6;
+    const pic = c.prop('polaroid', '<span class="polaroid__frame"><span class="polaroid__pic"><img src="assets/caiko.png" alt=""></span></span>', picW);
+    const slot = { x: cam.x - camW * 0.2, y: cam.y - camH * 0.38 };
+    const hang = { x: poseMid, y: c.m.a.top - fh * 0.55 };
+    const OUT = FLASH + 0.4;
+    tl.fromTo(pic, { autoAlpha: 1, scale: 0.3, rotation: -10 }, { scale: 1, rotation: 6, duration: 0.6, ease: 'power2.out', immediateRender: false }, OUT)
+      .to(pic, { keyframes: { rotation: [-4, 3, -1, 0] }, duration: 0.9, ease: 'sine.inOut' }, OUT + 0.6)
+      .to(pic.querySelector('.polaroid__pic'), { backgroundColor: '#FBF6EC', duration: 1 }, OUT + 0.6)
+      .to(pic.querySelector('img'), { opacity: 1, duration: 1 }, OUT + 0.7);
+    arc(c, pic, slot, hang, OUT, 0.6, fh * 0.12, 0);
+
+    // aww
+    const AWW = OUT + 1.3;
+    tl.to([A.body, C.body], { rotation: 0, duration: 0.2 }, AWW)
+      .add(c.hopInPlace(A, fh * 0.25, 0.35), AWW)
+      .add(c.hopInPlace(C, fh * 0.25, 0.35), AWW + 0.05)
+      .add(c.heartsUp(poseMid, c.m.a.top + fh * 0.2, fh * 0.6), AWW + 0.2);
+
+    // the photo and the camera tidy away; on they hop
+    const RIDE = AWW + 0.9;
+    tl.to(pic, { y: `-=${fh * 0.3}`, autoAlpha: 0, duration: 0.4, ease: 'power2.in' }, RIDE - 0.2)
+      .to(camera, { scaleY: 0, autoAlpha: 0, duration: 0.3, ease: 'power2.in' }, RIDE - 0.2);
+    rideOff(c, RIDE, tcx);
+    return { own: true };
+  }
+
+  /* --- 15 · the tickle ------------------------------------------------------- */
+
+  function tickle(c) {
+    const { tl, A, C, T, fh, cx, W, tw, th, tail, cloud, cloudY, cw, ch, floorY } = c;
+    enter(c);
+    const clash = charge(c, 1.3);
+
+    // the tiger tiptoes up to the brawl…
+    const tcx = Math.max(tw / 2 + 12, cx - cw / 2 - tw * 0.42);
+    const TIP = 1.8;
+    const ARRIVE = strollIn(c, TIP, tcx, 6, 0.36);
+    tl.to(T.body, { scaleY: 1.06, scaleX: 0.97, duration: 0.25 }, TIP)
+      .to(T.body, { scaleY: 1, scaleX: 1, duration: 0.2 }, ARRIVE - 0.25);
+    say(c, 'tip… tip… tip…', TIP + 0.9, tcx, c.m.t.top - fh * 0.12, 0.8, 'say say--ink say--small');
+
+    // …turns its back on it, winks at us…
+    const TURN = ARRIVE + 0.1;
+    tl.to(T.body, { scaleX: -1, duration: 0.3, ease: 'power2.inOut' }, TURN);
+    wink(c, TURN + 0.4);
+
+    // …and tickles it with its tail. The fight turns into giggles
+    const TICKLE = TURN + 0.6;
+    const tailTip = { x: tcx + tw / 2 - tw * 0.04, y: c.m.t.top + th * 0.7 };
+    tl.to(tail, { keyframes: { rotation: [24, -4, 26, -2, 24, -6, 22, 0] }, duration: 1.3, ease: 'sine.inOut' }, TICKLE);
+    say(c, 'tickle tickle', TICKLE + 0.1, tailTip.x, tailTip.y + th * 0.45, 0.6, 'say say--ink say--small');
+    [['hee!', 0.35, -0.32, -0.45], ['ha ha!', 0.65, 0.22, -0.55], ['hihi!', 0.95, -0.12, -0.68], ['hahaha!', 1.2, 0.3, -0.4]]
+      .forEach(([text, dt, dx, dy]) => say(c, text, TICKLE + dt, cx + cw * dx, cloudY + ch * dy, 0.3, 'say say--small'));
+    const POP = TICKLE + 1.4;
+    c.brawl(clash, POP, [TICKLE + 0.2, TICKLE + 0.5, TICKLE + 0.8]);
+
+    // the cloud bursts; out they tumble, still giggling
+    tl.to(cloud, { scale: 1.4, autoAlpha: 0, duration: 0.4, ease: 'power2.out' }, POP)
+      .add(c.dustPuff(cx, floorY, cw * 0.6), POP);
+    const aOut = c.ax(Math.max(cx + W * 0.04, tcx + tw / 2 + c.m.a.w / 2 + 8));
+    const cOut = c.cxo(aX(c, aOut) + (c.m.a.w + c.m.c.w) / 2 + W * 0.04);
+    tl.add(c.hop(A, aOut, 0.5, fh * 0.35), POP)
+      .add(c.hop(C, cOut, 0.5, fh * 0.35), POP + 0.05)
+      .to([A.body, C.body], { rotation: 360, duration: 0.5 }, POP)
+      .set([A.body, C.body], { rotation: 0 }, POP + 0.56);
+    const LOL = POP + 0.6;
+    const mid = (aX(c, aOut) + cX(c, cOut)) / 2;
+    tl.to([A.body, C.body], { keyframes: { rotation: [-22, 18, -22, 18, -12, 0] }, duration: 1.1, ease: 'sine.inOut' }, LOL);
+    for (let i = 0; i < 4; i++) {
+      tl.add(c.hopInPlace(A, fh * 0.08, 0.2), LOL + i * 0.25)
+        .add(c.hopInPlace(C, fh * 0.08, 0.2), LOL + 0.1 + i * 0.25);
+    }
+    say(c, 'HA HA HA!', LOL + 0.1, mid, c.m.a.top - fh * 0.2, 0.6);
+
+    // the tiger turns back round: "Friends?" They look at each other…
+    const BACK = LOL + 0.5;
+    tl.to(T.body, { scaleX: 1, duration: 0.3, ease: 'power2.inOut' }, BACK);
+    say(c, 'Friends?', BACK + 0.35, headTop(c, tcx).x, c.m.t.top - fh * 0.15, 0.5, 'say say--ink');
+    const MAKEUP = BACK + 0.85;
+    tl.to(A.body, { rotation: 10, duration: 0.25 }, MAKEUP)
+      .to(C.body, { rotation: -10, duration: 0.25 }, MAKEUP)
+      .add(c.heartsUp(mid, c.m.a.top, fh * 0.8), MAKEUP + 0.15)
+      .to([A.body, C.body], { rotation: 0, duration: 0.25 }, MAKEUP + 0.7);
+
+    rideOff(c, MAKEUP + 0.9, tcx);
+    // the brawl's flying symbols turn to giggles once the tickling starts
+    return { own: true, bits: ['★', '!@#$', '✦', '%&!', '✶', '?!', '★', '#@!', '✦', '!!', 'ha!', 'hee', 'ha ha', 'hihi'] };
+  }
+
+  return { fight, cookoff, sharing, noodle, dance, race, sleeping, chef, host, guest, storybook, judge, chai, holi, photo, tickle };
 })();
