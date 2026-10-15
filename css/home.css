@@ -639,10 +639,16 @@ html { scroll-behavior: smooth; }
 }
 
 .outlet__hours {
-  margin: 0 0 6px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 3px 12px;
+  margin: 0 0 8px;
   font-size: 14px;
   font-variant-numeric: tabular-nums;
 }
+
+.outlet__hours dt { color: var(--ink-soft); }
+.outlet__hours dd { margin: 0; }
 
 .outlet__phone { margin: 0 0 16px; font-size: 14px; }
 .outlet__phone a { color: var(--ink); text-decoration: none; }

@@ -17,10 +17,10 @@
     'aiko-surat':         { booking: '', maps: '', phone: '' },
     'aiko-ahmedabad':     { booking: '', maps: '', phone: '' },
     'beshak-dumas':       { booking: '', maps: '', phone: '' },   // Dumas Road, Surat
-    'capiche-piplod':     { booking: '', maps: '', phone: '' },   // Surat
-    'capiche-vesu':       { booking: '', maps: '', phone: '' },   // Surat
-    'capiche-ambli':      { booking: '', maps: '', phone: '' },   // Ahmedabad
-    'capiche-university': { booking: '', maps: '', phone: '' },   // Ahmedabad
+    'capiche-piplod':     { booking: '', maps: '', phone: '' },   // Gymkhana Road, Piplod, Surat
+    'capiche-vesu':       { booking: '', maps: '', phone: '' },   // IWC, Vesu, Surat
+    'capiche-ambli':      { booking: '', maps: '', phone: '' },   // Ason Vista, Ambli, Ahmedabad
+    'capiche-uni':        { booking: '', maps: '', phone: '' },   // Adore Aspire, Ahmedabad
 
     // Bookends Hospitality itself
     group:   { phone: '', email: '', instagram: '' },
