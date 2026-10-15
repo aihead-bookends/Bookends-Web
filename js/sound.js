@@ -11,18 +11,31 @@
    and the sound button shows "Tap for sound" until then. Muting with the
    button is remembered for the next visit.
 
-   Recordings: the music, the purr, the clink, the slurp and the voice lines
-   (credits in assets/audio/CREDITS.txt and the footer). Every other effect is
-   generated here with Web Audio.
+   Recordings: the music, the purr, the clink, the slurp, the roar, the thunder
+   and the voice lines (credits in assets/audio/CREDITS.txt and the footer).
+   Every other effect is generated here with Web Audio.
    ========================================================================== */
 window.BOOKENDS_SOUND = (() => {
   'use strict';
 
   const MUSIC = 'assets/audio/sitar-tabla.m4a';
-  const SAMPLES = { purr: 'assets/audio/purr.m4a', clink: 'assets/audio/clink.m4a', slurp: 'assets/audio/slurp.m4a' };
-  // what the characters say, one file per line: Aiko in English, Capiche in Italian, the tiger in Hindi
-  const LINES = ['aiko-sushi', 'aiko-chai', 'aiko-aah', 'aiko-cheers', 'capiche-pizza', 'capiche-chai',
-    'capiche-aah', 'capiche-cheers', 'tiger-chai', 'tiger-tada'];
+  const SAMPLES = {
+    purr: 'assets/audio/purr.m4a', clink: 'assets/audio/clink.m4a', slurp: 'assets/audio/slurp.m4a',
+    roar: 'assets/audio/roar.m4a', thunder: 'assets/audio/thunder.m4a',
+  };
+  // what the characters say, one file per line (speaker-line): Aiko in English, Capiche in
+  // Italian, the tiger in Hindi. A line with no file falls back to gibberish (FX.say).
+  const LINES = [
+    'aiko-sushi', 'aiko-chai', 'aiko-aah', 'aiko-cheers', 'aiko-mine', 'aiko-shh', 'aiko-me-first',
+    'aiko-ready-cook', 'aiko-bookends', 'aiko-high-five', 'aiko-paneer', 'aiko-hee', 'aiko-hihi',
+    'aiko-ha-ha', 'aiko-hahaha',
+    'capiche-pizza', 'capiche-chai', 'capiche-aah', 'capiche-cheers', 'capiche-mine', 'capiche-no-me',
+    'capiche-ready-cook', 'capiche-bookends', 'capiche-high-five', 'capiche-paneer', 'capiche-ha-ha',
+    'capiche-hahaha',
+    'tiger-chai', 'tiger-tada', 'tiger-bring-it-on', 'tiger-shabaash', 'tiger-ahem', 'tiger-welcome',
+    'tiger-hop-on', 'tiger-table-for-one', 'tiger-table-for-one-q', 'tiger-mmm', 'tiger-judge-beshak',
+    'tiger-hmm', 'tiger-a-tie', 'tiger-happy-holi', 'tiger-smile', 'tiger-say-paneer', 'tiger-friends',
+  ];
   LINES.forEach((id) => { SAMPLES[id] = `assets/audio/voices/${id}.m4a`; });
   const MUSIC_LEVEL = 0.14;   // the track is mastered loud: this sits it under the effects
   const FX_LEVEL = 0.9;
@@ -310,6 +323,125 @@ window.BOOKENDS_SOUND = (() => {
       tone('triangle', 1046.5, 1046, 0.18, 0.01, 0.7, 0.26);
       tone('triangle', 783.99, 783, 0.1, 0.01, 0.7, 0.26);
     },
+    /* the fight: hits, the lightning bolt, the dust-up in the cloud, the roar */
+    punch() {
+      tone('sine', 170, 42, 0.95, 0.004, 0.24);
+      hiss('lowpass', 2400, 400, 0.8, 0.55, 0.002, 0.07);
+      tone('triangle', 420, 160, 0.18, 0.002, 0.06);
+    },
+    slap() {
+      hiss('highpass', 1600, 900, 0.7, 0.75, 0.002, 0.08);
+      tone('triangle', 260, 110, 0.4, 0.003, 0.12);
+    },
+    thunder() {
+      hiss('highpass', 3500, 1500, 0.5, 0.45, 0.002, 0.06);          // the zap
+      if (!sample('thunder', 0.75)) hiss('lowpass', 600, 80, 0.5, 0.8, 0.01, 1.4);
+    },
+    bonk() { tone('sine', 700 + Math.random() * 300, 280, 0.16, 0.003, 0.09); },
+    scuffle(seconds) {
+      // a little dust-up inside the cloud: light hits, slaps and bonks
+      let at = 0.05;
+      const kinds = ['punch', 'slap', 'bonk', 'whoosh', 'bonk', 'slap'];
+      while (at < seconds - 0.1) {
+        const k = kinds[Math.floor(Math.random() * kinds.length)];
+        setTimeout(() => {
+          if (!soundOn || away || !introRunning) return;
+          if (k === 'punch') { tone('sine', 150, 50, 0.4, 0.004, 0.16); hiss('lowpass', 1800, 400, 0.8, 0.25, 0.002, 0.05); }
+          else if (k === 'slap') { hiss('highpass', 1500, 900, 0.7, 0.3, 0.002, 0.06); }
+          else if (k === 'whoosh') { hiss('bandpass', 600, 2200, 1.2, 0.12, 0.12, 0.1); }
+          else FX.bonk();
+        }, at * 1000);
+        at += 0.11 + Math.random() * 0.14;
+      }
+    },
+    poof() {
+      hiss('lowpass', 2600, 250, 0.6, 0.6, 0.02, 0.6);
+      tone('sine', 70, 35, 0.6, 0.01, 0.45);
+    },
+    roar() {
+      if (!sample('roar', 1.0)) {
+        // fallback growl if the recording didn't load
+        tone('sawtooth', 110, 70, 0.35, 0.08, 1.1);
+        hiss('bandpass', 500, 260, 1.5, 0.45, 0.08, 1.1);
+      }
+    },
+
+    /* the other concepts' moments */
+    pop() { tone('sine', 400, 900, 0.2, 0.003, 0.08); },              // something pops up
+    rise() {                                                           // a table or door rises up
+      tone('sine', 200, 480, 0.14, 0.02, 0.3);
+      hiss('bandpass', 400, 1400, 1.2, 0.1, 0.15, 0.15);
+    },
+    boing() {
+      tone('sine', 260, 620, 0.22, 0.004, 0.1);
+      tone('sine', 620, 330, 0.18, 0.004, 0.22, 0.1);
+    },
+    snap() {                                                           // the noodle snaps
+      hiss('highpass', 4500, 2200, 0.7, 0.8, 0.001, 0.05);
+      tone('triangle', 1400, 260, 0.3, 0.002, 0.1);
+      FX.boing();
+    },
+    plop() {                                                           // into the pot
+      tone('sine', 950, 240, 0.32, 0.003, 0.12);
+      hiss('lowpass', 1400, 400, 0.8, 0.18, 0.003, 0.12);
+    },
+    bubble(seconds = 1) {                                              // the pot bubbling
+      let at = 0;
+      while (at < seconds) {
+        const f = 280 + Math.random() * 260;
+        tone('sine', f, f * 2.2, 0.12, 0.004, 0.06, at);
+        at += 0.07 + Math.random() * 0.11;
+      }
+    },
+    sniff() {
+      hiss('bandpass', 1800, 2800, 2, 0.14, 0.05, 0.1);
+      hiss('bandpass', 1900, 3000, 2, 0.16, 0.05, 0.12, 0.2);
+    },
+    snore() {                                                          // the purr, slowed right down
+      if (!sample('purr', 0.6, 0.55)) tone('sawtooth', 55, 45, 0.12, 0.3, 0.9);
+    },
+    munch() {                                                          // a bite of food
+      tone('triangle', 320, 170, 0.22, 0.002, 0.06);
+      hiss('bandpass', 2200, 1200, 1.5, 0.16, 0.002, 0.05);
+    },
+    burp() {
+      tone('sawtooth', 115, 70, 0.22, 0.02, 0.38);
+      hiss('lowpass', 500, 200, 0.8, 0.18, 0.02, 0.3);
+    },
+    clap() { hiss('bandpass', 2000, 1200, 0.8, 0.7, 0.002, 0.08); },   // the high five
+    creak() {                                                          // the door swings open
+      tone('sawtooth', 120, 70, 0.07, 0.05, 0.55);
+      hiss('bandpass', 900, 600, 8, 0.12, 0.05, 0.55);
+    },
+    slam() {                                                           // …and shuts
+      FX.thud();
+      hiss('highpass', 1200, 600, 0.7, 0.25, 0.002, 0.08);
+    },
+    crash() {                                                          // plates go flying
+      FX.thud();
+      [2400, 3100, 4150, 2800].forEach((f, i) => tone('sine', f, f * 0.98, 0.12, 0.002, 0.35, i * 0.04));
+      hiss('highpass', 3000, 1500, 0.6, 0.45, 0.002, 0.25);
+    },
+    page() { hiss('bandpass', 3200, 1200, 0.9, 0.2, 0.06, 0.18); },    // a page turns
+    note(i = 0) {                                                      // the dance: one note of a pentatonic tune
+      const f = [523.25, 587.33, 659.25, 783.99, 880][i % 5];
+      tone('triangle', f, f, 0.14, 0.005, 0.25);
+    },
+    ding() {                                                           // the judge's score card
+      tone('sine', 1318.5, 1317, 0.16, 0.002, 0.8);
+      tone('sine', 2637, 2635, 0.05, 0.002, 0.5);
+    },
+    puff() { hiss('lowpass', 1800, 350, 0.7, 0.35, 0.02, 0.4); },     // a puff of Holi colour
+    shutter() {                                                        // the camera
+      hiss('highpass', 5000, 3000, 0.7, 0.5, 0.001, 0.02);
+      hiss('highpass', 4000, 2500, 0.7, 0.4, 0.001, 0.03, 0.07);
+      tone('triangle', 1800, 1500, 0.1, 0.001, 0.03);
+    },
+    whirr() {                                                          // …and the photo printing
+      tone('square', 120, 140, 0.04, 0.02, 0.6);
+      hiss('bandpass', 800, 900, 3, 0.06, 0.02, 0.6);
+    },
+
     sparkle() {
       [1568, 2093, 2637, 3136].forEach((f, i) => tone('sine', f, f * 0.995, 0.11, 0.004, 0.45, i * 0.06));
     },

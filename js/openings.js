@@ -119,11 +119,12 @@ window.BOOKENDS_OPENINGS = (() => {
       .add(c.squash(C, 0.18, 0.4), 0.62)
       .add(c.hop(C, cTo, 0.42, fh * 0.25), 0.67)
       .add(c.squash(C, 0.14), 1.09);
+    [0.5, 0.62, 0.97, 1.09].forEach((t) => c.cue(t, 'hop'));      // the two land from their hops
     return 1.2;
   }
 
-  // both rush to the centre and the cloud forms around them
-  function charge(c, at, spin = 0) {
+  // both rush to the centre and the cloud forms around them (`gentle`: a poof, not a punch)
+  function charge(c, at, spin = 0, gentle = false) {
     const { tl, A, C } = c;
     const clash = at + 0.37;
     tl.to(A.body, { rotation: -10, duration: 0.15 }, at)
@@ -134,11 +135,40 @@ window.BOOKENDS_OPENINGS = (() => {
       .set([A.body, C.body], { rotation: 0 }, at + 0.38)
       .to(c.cloud, { autoAlpha: 1, scale: 1, duration: 0.32, ease: 'back.out(2)' }, clash - 0.04)
       .add(c.shake(10, 0.28), clash);
+    c.cue(at + 0.12, 'whoosh');
+    c.cue(clash, gentle ? 'poof' : 'punch');
     return clash;
   }
 
-  // a word or two popping up over the stage
-  function say(c, text, at, x, y, hold = 0.55, cls = 'say') {
+  // the recording for each spoken line: assets/audio/voices/<speaker>-<key>.m4a (js/sound.js)
+  const LINE_KEYS = {
+    'Sushi!': 'sushi', 'Sushi!!': 'sushi', 'Pizza!': 'pizza', 'PIZZA!!': 'pizza',
+    'Mine!': 'mine', 'Mine!!': 'mine', 'MINE!': 'mine', 'Shh!': 'shh', 'Me first!': 'me-first', 'No, me!': 'no-me',
+    'Ready… cook!': 'ready-cook', 'Bring it on!': 'bring-it-on', 'Shabaash!': 'shabaash', 'Ahem.': 'ahem',
+    'Welcome!': 'welcome', 'Hop on.': 'hop-on', 'Table for one!': 'table-for-one', 'Table for one?': 'table-for-one-q',
+    'Mmm!': 'mmm', 'Judge Beshak!': 'judge-beshak', 'Hmm…': 'hmm', 'A tie!': 'a-tie', 'High five!': 'high-five',
+    'Bookends!': 'bookends', 'Happy Holi!': 'happy-holi', 'Ha ha!': 'ha-ha', 'ha ha!': 'ha-ha', 'Smile!': 'smile',
+    'Say paneer!': 'say-paneer', 'PANEER!': 'paneer', 'hee!': 'hee', 'hihi!': 'hihi', 'hahaha!': 'hahaha',
+    'HA HA HA!': 'hahaha', 'Friends?': 'friends', 'Chai?': 'chai', 'Chai!!': 'chai', 'aah…': 'aah',
+    'Cheers!': 'cheers', 'Ta-da!': 'tada',
+  };
+  // a speaker ('aiko', 'capiche', 'tiger' or 'both') says `text`: their recording, or gibberish for
+  // lines that have none (!@#$%, ?!)
+  function voice(c, who, text, at) {
+    const key = LINE_KEYS[text];
+    const loud = /[A-Z]{3}/.test(text) || text.endsWith('!!');
+    if (!key) {
+      const words = /[a-z]/i.test(text);
+      const syllables = words ? (text.match(/[aeiouy]+/gi) || []).length : text.length;
+      c.cue(at, 'babble', who, Math.max(1, Math.min(5, syllables)), { loud, fast: !words });
+      return;
+    }
+    c.cue(at, 'say', who === 'both' ? [`aiko-${key}`, `capiche-${key}`] : `${who}-${key}`, { loud, gap: 0.08 });
+  }
+
+  // a word or two popping up over the stage; `who` says it out loud
+  function say(c, text, at, x, y, hold = 0.55, cls = 'say', who = null) {
+    if (who) voice(c, who, text, at);
     const el = c.prop(cls, text);
     c.tl.fromTo(el, { x, y, autoAlpha: 1, scale: 0, rotation: -12 },
       { scale: 1, rotation: 0, duration: 0.3, ease: 'back.out(3)', immediateRender: false }, at)
@@ -146,8 +176,9 @@ window.BOOKENDS_OPENINGS = (() => {
     return el;
   }
 
-  // something tossed from one point to another in an arc
+  // something tossed from one point to another in an arc (with a little whoosh)
   function arc(c, el, from, to, at, dur, height, spin = 0) {
+    c.cue(at, 'toss');
     c.tl.fromTo(el, { x: from.x }, { x: to.x, duration: dur, ease: 'none', immediateRender: false }, at)
       .fromTo(el, { y: from.y }, {
         keyframes: [
@@ -159,9 +190,11 @@ window.BOOKENDS_OPENINGS = (() => {
     if (spin) c.tl.fromTo(el, { rotation: 0 }, { rotation: spin, duration: dur, ease: 'none', immediateRender: false }, at);
   }
 
-  const pop = (c, el, at, x, y, rotation = 0) =>
-    c.tl.fromTo(el, { x, y, rotation, autoAlpha: 1, scale: 0 },
+  function pop(c, el, at, x, y, rotation = 0) {
+    c.cue(at, 'pop');
+    return c.tl.fromTo(el, { x, y, rotation, autoAlpha: 1, scale: 0 },
       { scale: 1, duration: 0.25, ease: 'back.out(2.5)', immediateRender: false }, at);
+  }
 
   const gone = (c, els, at) => c.tl.to(els, { autoAlpha: 0, scale: 0.4, duration: 0.2, ease: 'power2.in' }, at);
 
@@ -176,6 +209,7 @@ window.BOOKENDS_OPENINGS = (() => {
       .to(bolt.firstElementChild, { keyframes: { opacity: [0.25, 1, 0.4, 1] }, duration: 0.3, ease: 'none' }, at + 0.38)
       .add(c.shake(7, 0.22), at + 0.25)
       .to(bolt, { autoAlpha: 0, scale: 1.35, duration: 0.25, ease: 'power2.in' }, at + 0.85);
+    c.cue(at + 0.28, 'thunder');                                   // the bolt strikes
   }
 
   /* --- 0 · fight (the original) --------------------------------------------- */
@@ -193,6 +227,8 @@ window.BOOKENDS_OPENINGS = (() => {
 
     // Aiko strikes, Capiche spins away
     const IMPACT1 = HIT1 + 0.3;
+    c.cue(HIT1 + 0.16, 'whoosh');
+    c.cue(IMPACT1, 'punch');                                       // sushi!
     tl.add(c.strike(A, c.aFace, c.aHit, 1, c.windup), HIT1)
       .add(c.burst(c.sushiHit), IMPACT1)
       .add(c.shake(12, 0.3), IMPACT1)
@@ -206,6 +242,8 @@ window.BOOKENDS_OPENINGS = (() => {
 
     // Capiche slaps back, Aiko gets squashed
     const IMPACT2 = HIT2 + 0.3;
+    c.cue(HIT2 + 0.16, 'whoosh');
+    c.cue(IMPACT2, 'slap');                                        // pizza!
     tl.add(c.strike(C, c.cFace, c.cHit, -1, c.windup), HIT2)
       .add(c.burst(c.pizzaHit), IMPACT2)
       .add(c.shake(14, 0.32), IMPACT2)
@@ -227,7 +265,7 @@ window.BOOKENDS_OPENINGS = (() => {
     const aSt = c.ax(cx - W * 0.17);
     const cSt = c.cxo(cx + W * 0.17);
     enter(c, aSt, cSt);
-    say(c, 'Ready… cook!', 1.25, cx, c.m.a.top - fh * 0.05, 0.5);
+    say(c, 'Ready… cook!', 1.25, cx, c.m.a.top - fh * 0.05, 0.5, 'say', 'both');
     tl.add(c.shake(5, 0.2), 1.35);
 
     const size = fh * 0.34;
@@ -268,6 +306,11 @@ window.BOOKENDS_OPENINGS = (() => {
     // proud glare
     tl.to(A.body, { rotation: -8, duration: 0.18 }, 4.85)
       .to(C.body, { rotation: 8, duration: 0.18 }, 4.85);
+
+    // the sounds of the cooking: catches, the dough spinning, the spin, the pizza landing
+    [2.82, 3.81, 4.25, 4.3, 4.75].forEach((t) => c.cue(t, 'tok'));
+    c.cue(2.55, 'whoosh');
+    c.cue(3.55, 'whoosh');
     return { s1, s2, pie, aSt, cSt };
   }
 
@@ -296,6 +339,7 @@ window.BOOKENDS_OPENINGS = (() => {
         .add(c.hop(C, c.cOff + ((cSt - c.cOff) * i) / 3, 0.36, fh * 0.12), 0.15 + (i - 1) * 0.36);
     }
     tl.add(c.squash(A, 0.1, 0.35), 1.08).add(c.squash(C, 0.1, 0.35), 1.23);
+    [0.36, 0.51, 0.72, 0.87, 1.08, 1.23].forEach((t) => c.cue(t, 'step', 0.16));
 
     // shy: both glance away, then back
     tl.to(A.body, { rotation: -10, duration: 0.25, ease: 'sine.inOut' }, 1.5)
@@ -336,6 +380,9 @@ window.BOOKENDS_OPENINGS = (() => {
     arc(c, sushi, hc, { x: cx + tableW * 0.18, y: topY }, 4.95, 0.45, fh * 0.3, 0);
     arc(c, pizza, ha, { x: cx - tableW * 0.18, y: topY }, 5.0, 0.45, fh * 0.3, 0);
     tl.add(c.heartsUp(cx, topY - fh * 0.1, fh * 0.8), 5.45);
+    [3.25, 4.35, 5.4, 5.45].forEach((t) => c.cue(t, 'tok'));      // dishes caught, then set on the table
+    c.cue(4.6, 'rise');
+    c.cue(5.45, 'sparkle');
 
     // a hug: both hop in behind the table and the cloud swallows them
     tl.add(c.hop(A, c.aMid, 0.4, fh * 0.35), 6.0)
@@ -344,9 +391,13 @@ window.BOOKENDS_OPENINGS = (() => {
     tl.to(c.cloud, { autoAlpha: 1, scale: 1, duration: 0.32, ease: 'back.out(2)' }, clash - 0.04)
       .add(c.shake(6, 0.22), clash);
     gone(c, [table, sushi, pizza], clash - 0.04);
+    c.cue(6.0, 'whoosh');
+    c.cue(clash, 'poof');
+    // a happy cloud: giggles and sparkles instead of a scuffle
+    [0.5, 1.6, 2.7, 3.6].forEach((d, i) => c.cue(clash + d, i % 2 ? 'sparkle' : 'babble', 'both', 3, { fast: true }));
 
     const f = FOOD;
-    return { clash, bits: ['♥', '✦', f.sushi, '♥', '✶', f.pizza, '♥', '✦', '♥', f.sushi, '✶', '♥', f.pizza, '✦'] };
+    return { clash, scuffle: false, bits: ['♥', '✦', f.sushi, '♥', '✶', f.pizza, '♥', '✦', '♥', f.sushi, '✶', '♥', f.pizza, '✦'] };
   }
 
   /* --- 3 · noodle tug-of-war ------------------------------------------------- */
@@ -368,7 +419,8 @@ window.BOOKENDS_OPENINGS = (() => {
 
     // they both grab the same noodle
     tl.fromTo(strand, { autoAlpha: 1, scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: 'power2.out', immediateRender: false }, 1.3);
-    say(c, 'Mine!', 1.45, cx, c.m.a.top - fh * 0.1, 0.4);
+    say(c, 'Mine!', 1.45, cx, c.m.a.top - fh * 0.1, 0.4, 'say', 'both');
+    c.cue(1.3, 'boing');
 
     // tug, tug, tug: [Aiko offset, Capiche offset, Aiko lean, Capiche lean, time]
     const tugs = [
@@ -383,6 +435,7 @@ window.BOOKENDS_OPENINGS = (() => {
         .to(A.body, { rotation: ar, duration: 0.3, ease: 'power2.out' }, at)
         .to(C.body, { rotation: cr, duration: 0.3, ease: 'power2.out' }, at)
         .to(strand, { x: ha.x + ao, width: L0 + (co - ao), duration: 0.45, ease: 'power2.inOut' }, at);
+      c.cue(at, 'creak');                                           // the noodle stretches
     });
     tl.to(strand, { scaleY: 0.6, duration: 0.3 }, 3.7)
       .to([A.lift, C.lift], { y: -fh * 0.03, duration: 0.05, yoyo: true, repeat: 3 }, 3.85);
@@ -400,6 +453,8 @@ window.BOOKENDS_OPENINGS = (() => {
       .set([halfA, halfC], { autoAlpha: 0 }, SNAP + 0.3)
       .add(c.shake(9, 0.25), SNAP);
     say(c, 'SNAP!', SNAP, cx, y - fh * 0.35, 0.35);
+    c.cue(SNAP, 'snap');
+    c.cue(SNAP + 0.3, 'thud');                                     // both land on their bottoms
     tl.to(A.root, { x: aSt - d * 2.6, duration: 0.3, ease: 'power3.out' }, SNAP)
       .to(C.root, { x: cSt + d * 2.4, duration: 0.3, ease: 'power3.out' }, SNAP)
       .to(A.body, { rotation: -28, duration: 0.2 }, SNAP)
@@ -437,6 +492,7 @@ window.BOOKENDS_OPENINGS = (() => {
       tl.fromTo(n, { x: sx, y: c.m.a.top + fh * 0.5, autoAlpha: 1, scale: 0.4, rotation: 0 },
         { x: sx + (i % 2 ? 1 : -1) * fh * 0.4, y: c.m.a.top - fh * 0.5, scale: 1, rotation: (i % 2 ? 20 : -20), duration: 1, ease: 'sine.out', immediateRender: false }, at)
         .to(n, { autoAlpha: 0, duration: 0.25 }, at + 0.75);
+      c.cue(at, 'note', [0, 2, 4, 3, 1, 2, 4, 0][i]);                // a little tune
     }
 
     // Aiko's solo: jump spin and side steps
@@ -464,10 +520,13 @@ window.BOOKENDS_OPENINGS = (() => {
         .to([A.body, C.body], { rotation: i % 2 ? -8 : 8, duration: 0.2, ease: 'sine.inOut' }, at);
     }
     tl.to([A.body, C.body], { rotation: 0, duration: 0.1 }, 5.1);
+    [1.65, 3.4].forEach((t) => c.cue(t, 'whoosh'));                 // Aiko's spin, Capiche's backflip
+    [2.15, 3.95, 4.5, 4.7, 4.9, 5.1].forEach((t) => c.cue(t, 'hop'));
 
-    // and spin into each other
-    const clash = charge(c, 5.2, 720);
-    return { clash, bits: [ART.note, '✦', ART.notes, '★', ART.note, '✶', ART.notes, '✦', ART.note, '★', ART.notes, '✦', ART.note, '✶'] };
+    // and spin into each other; the cloud keeps the tune going
+    const clash = charge(c, 5.2, 720, true);
+    for (let i = 0; i < 10; i++) c.cue(clash + 0.2 + i * 0.4, 'note', [4, 3, 2, 0, 1, 2, 3, 4, 2, 0][i]);
+    return { clash, scuffle: false, bits: [ART.note, '✦', ART.notes, '★', ART.note, '✶', ART.notes, '✦', ART.note, '★', ART.notes, '✦', ART.note, '✶'] };
   }
 
   /* --- 5 · race to serve the table ----------------------------------------- */
@@ -478,7 +537,8 @@ window.BOOKENDS_OPENINGS = (() => {
     const table = c.prop('dish', ART.table, tableW);
     tl.fromTo(table, { x: cx, y: floorY + tableW * 0.3, autoAlpha: 1, scale: 0.6 },
       { y: floorY - tableW * 0.3, scale: 1, duration: 0.45, ease: 'back.out(1.8)', immediateRender: false }, 0.1);
-    say(c, 'Table for one?', 0.45, cx, floorY - tableW * 1.05, 0.6);
+    say(c, 'Table for one?', 0.45, cx, floorY - tableW * 1.05, 0.6, 'say', 'tiger');
+    c.cue(0.1, 'rise');
 
     // each carries a plate above its head
     const tray = (ch, food, w) => c.held(ch, 'tray', `<span class="tray__food">${food}</span>${ART.plate}`, {
@@ -496,11 +556,15 @@ window.BOOKENDS_OPENINGS = (() => {
       tl.add(c.hop(A, c.aOff + ((aNear - c.aOff) * i) / 7, 0.24, fh * 0.1), 0.9 + (i - 1) * 0.24)
         .add(c.hop(C, c.cOff + ((cNear - c.cOff) * i) / 7, 0.24, fh * 0.1), 0.95 + (i - 1) * 0.24);
     }
+    for (let i = 1; i <= 7; i++) {
+      c.cue(0.9 + i * 0.24, 'step', 0.14);
+      c.cue(0.95 + i * 0.24, 'step', 0.12);
+    }
     tl.to([tA, tC], { rotation: (i) => (i ? -7 : 7), duration: 0.12, yoyo: true, repeat: 13, ease: 'sine.inOut' }, 0.9)
       .add(c.squash(A, 0.12, 0.35), 2.6).add(c.squash(C, 0.12, 0.35), 2.65);
 
     // they arrive at the same moment
-    say(c, '!!', 2.75, cx, c.m.a.top - fh * 0.15, 0.35);
+    say(c, '!!', 2.75, cx, c.m.a.top - fh * 0.15, 0.35, 'say', 'both');
     tl.to(A.body, { rotation: -8, duration: 0.18 }, 3.0)
       .to(C.body, { rotation: 8, duration: 0.18 }, 3.0)
       .to([A.body, C.body], { rotation: 0, duration: 0.15 }, 3.3);
@@ -511,6 +575,7 @@ window.BOOKENDS_OPENINGS = (() => {
       .to([tA, tC], { autoAlpha: 0, duration: 0.15 }, clash + 0.3)
       .to(table, { rotation: 14, y: `+=${fh * 0.05}`, duration: 0.2 }, clash - 0.05);
     gone(c, [table], clash + 0.05);
+    c.cue(clash + 0.15, 'crash');                                   // the plates go flying
 
     const f = FOOD;
     return { clash, bits: [f.sushi, '!@#$', f.pizza, '✦', '%&!', f.sushi, '★', f.pizza, '!!', '✶', f.sushi, '#@!', f.pizza, '?!'] };
@@ -551,13 +616,15 @@ window.BOOKENDS_OPENINGS = (() => {
         .add(c.hop(C, c.cOff * (1 - i / 4), 0.3, fh * 0.06), 0.35 + (i - 1) * 0.32);
     }
     tl.to([A.body, C.body], { scaleY: 1, scaleX: 1, duration: 0.2 }, 1.65);
-    say(c, 'Shh!', 1.45, aX(c, 0), c.m.a.top - fh * 0.12, 0.45, 'say say--ink');
+    say(c, 'Shh!', 1.45, aX(c, 0), c.m.a.top - fh * 0.12, 0.45, 'say say--ink', 'aiko');
+    [0.1, 1.5, 2.9].forEach((t) => c.cue(t, 'snore'));             // the tiger snores
+    [0.4, 0.65, 0.72, 0.97, 1.04, 1.29, 1.36, 1.61].forEach((t) => c.cue(t, 'step', 0.06)); // tiptoes
 
     // …then they start bickering across the sleeping tiger
     const shout = (text, at, who) => {
       const ch = who === 'a' ? A : C;
       const x = who === 'a' ? aX(c, 0) : cX(c, 0);
-      say(c, text, at, x, (who === 'a' ? c.m.a.top : c.m.c.top) - fh * 0.12, 0.4);
+      say(c, text, at, x, (who === 'a' ? c.m.a.top : c.m.c.top) - fh * 0.12, 0.4, 'say', who === 'a' ? 'aiko' : 'capiche');
       tl.add(c.hopInPlace(ch, fh * 0.14, 0.26), at);
     };
     shout('Mine!', 2.05, 'a');
@@ -573,9 +640,11 @@ window.BOOKENDS_OPENINGS = (() => {
       .to([A.body, C.body], { scaleY: 1, scaleX: 1, duration: 0.2 }, 3.9)
       .to(head, { rotation: 7, duration: 0.3 }, 3.85);
     c.eyes(3.9, 'shut', 'right');
+    c.cue(3.45, 'gulp');                                           // uh-oh
 
     // …and they start again, louder
-    say(c, '!@#$%', 4.1, cx, c.m.t.top - fh * 0.3, 0.45);
+    say(c, '!@#$%', 4.1, cx, c.m.t.top - fh * 0.3, 0.45, 'say', 'both');
+    c.cue(4.2, 'whoosh');
     tl.add(c.hopInPlace(A, fh * 0.2, 0.3), 4.1)
       .add(c.hopInPlace(C, fh * 0.2, 0.3), 4.15)
       .to(C.body, { rotation: 360, duration: 0.4 }, 4.2)
@@ -590,6 +659,7 @@ window.BOOKENDS_OPENINGS = (() => {
       .to([jaw, tongue], { y: 0, duration: 0.12, ease: 'power2.in' }, 5.4)
       .to([A.body, C.body], { scaleY: 1.12, scaleX: 0.9, duration: 0.1 }, 4.8)
       .to(T.body, { scaleY: 1.04, duration: 0.45, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 4.85);
+    c.cue(4.85, 'babble', 'tiger', 1, { sigh: true });            // a huge yawn
     const ROAR = 5.6;
     const afterRoar = c.roarAt(ROAR, cx);
     tl.to(A.root, { x: -c.knock, duration: 0.3, ease: 'power2.out', yoyo: true, repeat: 1 }, ROAR + 0.05)
@@ -601,7 +671,7 @@ window.BOOKENDS_OPENINGS = (() => {
     // a smile, a tail wag: "hop on"
     tl.to(head, { keyframes: { rotation: [-4, 2, 0] }, duration: 0.6, ease: 'sine.inOut' }, afterRoar)
       .to(tail, { keyframes: { rotation: [-14, 14, -10, 0] }, duration: 0.7, ease: 'sine.inOut' }, afterRoar);
-    say(c, 'Hop on.', afterRoar + 0.05, ht.x, ht.y - fh * 0.15, 0.5, 'say say--ink');
+    say(c, 'Hop on.', afterRoar + 0.05, ht.x, ht.y - fh * 0.15, 0.5, 'say say--ink', 'tiger');
     const ride = c.mount(afterRoar + 0.75, cx);
     c.exitRight(ride, cx);
     return { own: true };
@@ -633,9 +703,10 @@ window.BOOKENDS_OPENINGS = (() => {
       tl.fromTo(w, { x: sx, y: potTop, autoAlpha: 1, scale: 0.6 },
         { y: potTop - th * 0.45, scale: 1.2, autoAlpha: 0, duration: 1.3, ease: 'sine.out', immediateRender: false }, at);
     }
+    [0.4, 2.0, 3.4, 5.0, 6.4].forEach((t) => c.cue(t, 'steam'));
 
     enter(c, 0, 0);
-    say(c, 'Bring it on!', 1.25, headTop(c, tcx).x, c.m.t.top - fh * 0.15, 0.5);
+    say(c, 'Bring it on!', 1.25, headTop(c, tcx).x, c.m.t.top - fh * 0.15, 0.5, 'say', 'tiger');
     tl.to(head, { keyframes: { rotation: [5, -2, 5, 0] }, duration: 0.6, ease: 'sine.inOut' }, 1.25);
 
     // ingredients go in: sushi from Aiko, pizza over the tiger from Capiche
@@ -645,6 +716,7 @@ window.BOOKENDS_OPENINGS = (() => {
       tl.to(dish, { autoAlpha: 0, duration: 0.08 }, at + dur)
         .to(pot, { scaleY: 0.9, scaleX: 1.06, duration: 0.08, yoyo: true, repeat: 1 }, at + dur);
       say(c, 'plop!', at + dur, potX, potTop - th * 0.2, 0.25, 'say say--ink say--small');
+      c.cue(at + dur, 'plop');
     };
     const ha = aHand(c, 0);
     const hc = cHand(c, 0);
@@ -658,14 +730,20 @@ window.BOOKENDS_OPENINGS = (() => {
       .to(pot, { keyframes: { rotation: [-4, 4, -4, 4, 0] }, duration: 1.3, ease: 'sine.inOut' }, 4.55)
       .to(head, { rotation: -3, duration: 0.3 }, 4.6);
     say(c, 'stir, stir…', 4.7, potX, potTop - th * 0.55, 0.6, 'say say--ink say--small');
+    c.cue(4.55, 'bubble', 1.4);
 
     // sniff… taste… perfect!
     tl.to(head, { rotation: -8, duration: 0.3, ease: 'power2.out' }, 6.0);
     say(c, 'sniff sniff', 6.0, headTop(c, tcx).x, c.m.t.top - fh * 0.15, 0.35, 'say say--ink say--small');
+    c.cue(6.0, 'sniff');
     c.chomp(6.55, 2);
+    [6.55, 6.77].forEach((t) => c.cue(t, 'munch'));
     const ROAR = 7.15;
     const afterRoar = c.roarAt(ROAR, tcx);
-    say(c, 'Shabaash!', ROAR + 0.05, cx, c.m.t.top - fh * 0.42, 0.6);
+    // "Shabaash!" (well done!), said once the roar has died down a little
+    say(c, 'Shabaash!', ROAR + 0.05, cx, c.m.t.top - fh * 0.42, 1.1);
+    voice(c, 'tiger', 'Shabaash!', ROAR + 0.9);
+    [ROAR + 0.5, ROAR + 0.55].forEach((t) => c.cue(t, 'hop'));
     tl.add(c.hopInPlace(A, fh * 0.35, 0.4), ROAR + 0.1)
       .add(c.hopInPlace(C, fh * 0.35, 0.4), ROAR + 0.15);
 
@@ -686,6 +764,7 @@ window.BOOKENDS_OPENINGS = (() => {
     gsap.set([frame, leaf], { x: cx, y: floorY - doorH / 2, transformOrigin: '50% 100%' });
     gsap.set(leaf, { transformOrigin: '12% 50%' });
     tl.fromTo([frame, leaf], { autoAlpha: 1, scaleY: 0 }, { scaleY: 1, duration: 0.45, ease: 'back.out(1.6)', immediateRender: false }, 0.05);
+    c.cue(0.05, 'rise');
 
     // the tiger guards the door, in a bow tie
     c.tigerOn(cx);
@@ -699,16 +778,17 @@ window.BOOKENDS_OPENINGS = (() => {
         .add(c.squash(T, 0.05, 0.35), at + 0.3)
         .add(c.hop(ch, 0, 0.35, fh * 0.2), at + 0.32);
     };
-    say(c, 'Me first!', 1.3, aX(c, 0), c.m.a.top - fh * 0.12, 0.4);
+    say(c, 'Me first!', 1.3, aX(c, 0), c.m.a.top - fh * 0.12, 0.4, 'say', 'aiko');
     bump(A, 1.45, c.ax(cx - tw / 2 + c.m.a.w * 0.2));
-    say(c, 'No, me!', 1.85, cX(c, 0), c.m.c.top - fh * 0.12, 0.4);
+    say(c, 'No, me!', 1.85, cX(c, 0), c.m.c.top - fh * 0.12, 0.4, 'say', 'capiche');
     bump(C, 2.0, c.cxo(cx + tw / 2 - c.m.c.w * 0.2));
+    [1.75, 2.3].forEach((t) => c.cue(t, 'bonk'));                 // bounced off the tiger
     tl.to(head, { keyframes: { rotation: [-4, 4, -3, 0] }, duration: 0.6, ease: 'sine.inOut' }, 2.2);
-    say(c, '!@#$', 2.75, cx, floorY - doorH - fh * 0.22, 0.35);
+    say(c, '!@#$', 2.75, cx, floorY - doorH - fh * 0.22, 0.35, 'say', 'both');
     tl.add(c.hopInPlace(A, fh * 0.16, 0.25), 2.75).add(c.hopInPlace(C, fh * 0.16, 0.25), 2.8);
 
     // "Ahem." They freeze. The tiger bows, waves its tail at the door, and steps aside
-    say(c, 'Ahem.', 3.25, headTop(c, cx).x, c.m.t.top - fh * 0.15, 0.4, 'say say--ink');
+    say(c, 'Ahem.', 3.25, headTop(c, cx).x, c.m.t.top - fh * 0.15, 0.4, 'say say--ink', 'tiger');
     c.chomp(3.25);
     tl.to([A.body, C.body], { scaleY: 1.1, scaleX: 0.92, duration: 0.1 }, 3.3)
       .to([A.body, C.body], { scaleY: 1, scaleX: 1, duration: 0.2 }, 3.9)
@@ -721,10 +801,14 @@ window.BOOKENDS_OPENINGS = (() => {
       .add(c.gait(3, STEP), 4.45)
       .add(c.hop(A, c.ax(cx - c.m.a.w * 0.5), 0.45, fh * 0.2), 4.7)
       .add(c.hop(C, c.cxo(cx + c.m.c.w * 0.5), 0.45, fh * 0.2), 4.85);
+    c.steps(4.45, 3, STEP, 0.22);
+    [5.15, 5.3].forEach((t) => c.cue(t, 'hop'));
 
     // the door swings open; in they go, side by side
     tl.to(leaf, { scaleX: 0.1, duration: 0.5, ease: 'power2.inOut' }, 5.75);
-    say(c, 'Welcome!', 5.8, headTop(c, aside).x, c.m.t.top - fh * 0.15, 0.5);
+    c.cue(5.75, 'creak');
+    say(c, 'Welcome!', 5.8, headTop(c, aside).x, c.m.t.top - fh * 0.15, 0.5, 'say', 'tiger');
+    c.cue(6.75, 'sparkle');
     tl.to([A.body, C.body], { rotation: (i) => (i ? -8 : 8), duration: 0.2 }, 6.2)
       .to(A.root, { x: c.ax(cx - doorW * 0.14), duration: 0.5, ease: 'power1.inOut' }, 6.45)
       .to(C.root, { x: c.cxo(cx + doorW * 0.14), duration: 0.5, ease: 'power1.inOut' }, 6.45)
@@ -737,6 +821,7 @@ window.BOOKENDS_OPENINGS = (() => {
     tl.to(leaf, { scaleX: 1, duration: 0.25, ease: 'power3.in' }, afterRoar)
       .add(c.shake(7, 0.25), afterRoar + 0.25)
       .to([frame, leaf], { autoAlpha: 0, scale: 0.92, duration: 0.4 }, afterRoar + 0.65);
+    c.cue(afterRoar + 0.22, 'slam');                               // the door shuts
     c.exitRight(afterRoar + 0.4, aside);
     return { own: true };
   }
@@ -754,6 +839,7 @@ window.BOOKENDS_OPENINGS = (() => {
     const table = c.prop('dish', ART.table, tableW);
     tl.fromTo(table, { x: tableX, y: floorY + tableW * 0.3, autoAlpha: 1, scale: 0.6 },
       { y: floorY - tableW * 0.3, scale: 1, duration: 0.45, ease: 'back.out(1.8)', immediateRender: false }, 0.1);
+    c.cue(0.1, 'rise');
 
     // the tiger strolls in and takes its seat
     gsap.set(T.lift, { y: 0, autoAlpha: 1 });
@@ -762,7 +848,8 @@ window.BOOKENDS_OPENINGS = (() => {
       .add(c.gait(6, 0.3), 0.25)
       .add(c.squash(T, 0.07, 0.4), 2.1)
       .to(tail, { keyframes: { rotation: [-12, 12, -8, 0] }, duration: 0.7 }, 2.2);
-    say(c, 'Table for one!', 2.15, headTop(c, tcx).x, c.m.t.top - fh * 0.15, 0.55);
+    c.steps(0.25, 6, 0.3, 0.2);
+    say(c, 'Table for one!', 2.15, headTop(c, tcx).x, c.m.t.top - fh * 0.15, 0.55, 'say', 'tiger');
 
     // the two wait on the right and serve by tossing dishes onto the table
     const tableR = tableX + tableW / 2;
@@ -772,6 +859,7 @@ window.BOOKENDS_OPENINGS = (() => {
     gsap.set(C.root, { x: c.cxo(W + c.m.c.w) });
     tl.add(c.hop(A, c.ax(waitA), 0.5, fh * 0.3), 2.3)
       .add(c.hop(C, c.cxo(waitC), 0.5, fh * 0.3), 2.4);
+    [2.8, 2.9].forEach((t) => c.cue(t, 'hop'));
 
     // where the mouth is once the tiger has grown (it grows from its feet)
     const mouth0 = c.mouthAt(tcx);
@@ -793,8 +881,11 @@ window.BOOKENDS_OPENINGS = (() => {
         c.chomp(eat + 0.2);
         size += GROW;
         tl.to(T.body, { scale: size, duration: 0.2, ease: 'back.out(3)' }, eat + 0.3);
+        c.cue(at + 0.55 + k * 0.12, 'tok');                          // the dish lands on the table
+        c.cue(eat + 0.2, 'munch');
+        c.cue(eat + 0.3, 'boing');                                   // and the tiger grows a little
       }
-      say(c, 'Mmm!', at + 0.95 + (n - 1) * 0.28, headTop(c, tcx).x, c.m.t.top - fh * 0.2, 0.3, 'say say--ink say--small');
+      say(c, 'Mmm!', at + 0.95 + (n - 1) * 0.28, headTop(c, tcx).x, c.m.t.top - fh * 0.2, 0.3, 'say say--ink say--small', 'tiger');
     };
     round(A, FOOD.sushi, 2.95);
     round(C, FOOD.pizza, 4.1);
@@ -804,12 +895,14 @@ window.BOOKENDS_OPENINGS = (() => {
     // full: a happy roar (well… a burp)
     const ROAR = 8.6;
     say(c, '*burp*', ROAR - 0.05, headTop(c, tcx).x, c.m.t.top - fh * 0.3, 0.5);
+    c.cue(ROAR - 0.35, 'burp');
     const afterRoar = c.roarAt(ROAR, tcx, { base: size });
     // the two high-five
     const mid = (waitA + waitC) / 2;
     tl.add(c.hop(A, c.ax(mid - c.m.a.w * 0.45), 0.3, fh * 0.3), afterRoar)
       .add(c.hop(C, c.cxo(mid + c.m.c.w * 0.45), 0.3, fh * 0.3), afterRoar);
-    say(c, 'High five!', afterRoar + 0.25, mid, c.m.a.top - fh * 0.25, 0.4);
+    say(c, 'High five!', afterRoar + 0.25, mid, c.m.a.top - fh * 0.25, 0.4, 'say', 'both');
+    c.cue(afterRoar + 0.3, 'clap');
     const ride = c.mount(afterRoar + 0.8, tcx);
     tl.to(table, { autoAlpha: 0, scale: 0.7, duration: 0.3 }, ride - 0.2);
     c.exitRight(ride, tcx);
@@ -854,6 +947,8 @@ window.BOOKENDS_OPENINGS = (() => {
       .to(cover, { scaleX: 0, duration: 0.25, ease: 'power2.in' }, 1.2)
       .to(book, { x: cx, duration: 0.5, ease: 'power2.inOut' }, 1.2)
       .to([pl0, backL], { scaleX: 1, duration: 0.25, ease: 'power2.out' }, 1.45);
+    c.cue(0.1, 'pop');
+    [1.2, 3.0, 4.6].forEach((t) => c.cue(t, 'page'));             // the cover opens, then two pages turn
 
     // turn a page: the right page folds into the spine, the next left page unfolds from it
     const flip = (from, to, at) => {
@@ -894,6 +989,10 @@ window.BOOKENDS_OPENINGS = (() => {
     gsap.set(T.shadow, { scale: 1, opacity: 1 });
     emerge(T, (x) => x - cx, cx, 5.2, true);
     tl.add(c.squash(T, 0.2), 5.85).add(c.shake(14, 0.35), 5.85);
+    // out of the book: Aiko, Capiche, then the tiger
+    [2.0, 3.6].forEach((t) => { c.cue(t, 'boing'); c.cue(t + 0.65, 'hop'); });
+    c.cue(5.2, 'whoosh', true);
+    c.cue(5.85, 'thud');
     const afterRoar = c.roarAt(6.3, cx);
 
     // the two hold the tiger between them, like bookends
@@ -904,7 +1003,8 @@ window.BOOKENDS_OPENINGS = (() => {
       .to(A.body, { rotation: 13, duration: 0.25, ease: 'back.out(2)' }, afterRoar + 0.4)
       .to(C.body, { rotation: -13, duration: 0.25, ease: 'back.out(2)' }, afterRoar + 0.4)
       .to(T.body, { scaleX: 0.93, duration: 0.15, yoyo: true, repeat: 1 }, afterRoar + 0.5);
-    say(c, 'Bookends!', afterRoar + 0.55, cx, c.m.t.top - fh * 0.32, 0.75);
+    say(c, 'Bookends!', afterRoar + 0.55, cx, c.m.t.top - fh * 0.32, 0.75, 'say', 'both');
+    c.cue(afterRoar + 0.4, 'hop');
 
     // …and back into the book they go; it closes, and the title takes its place
     const IN = afterRoar + 1.75;
@@ -921,6 +1021,8 @@ window.BOOKENDS_OPENINGS = (() => {
       .to(book, { x: cx - bookW / 4, duration: 0.4, ease: 'power2.inOut' }, SHUT)
       .add(c.shake(9, 0.25), SHUT + 0.4)
       .to(book, { autoAlpha: 0, scale: 0.85, y: bookY - fh * 0.2, duration: 0.45, ease: 'power2.in' }, SHUT + 1.0);
+    c.cue(IN, 'whoosh');                                           // back into the book…
+    c.cue(SHUT + 0.38, 'slam');                                    // …and it shuts
     c.titleIn(SHUT + 1.2);
     return { own: true, ownCountries: true };
   }
@@ -949,7 +1051,9 @@ window.BOOKENDS_OPENINGS = (() => {
     arc(c, pie, { x: cX(c, cSt), y: c.m.c.top - fh * 0.12 }, cHold, J + 0.15, 0.45, fh * 0.25, 0);
     const ARRIVE = J + 1.85;
     tl.add(c.squash(T, 0.07, 0.4), ARRIVE);
-    say(c, 'Judge Beshak!', ARRIVE, headTop(c, cx).x, c.m.t.top - fh * 0.15, 0.6);
+    c.steps(J, 6, 0.3, 0.2);
+    [J + 0.55, J + 0.6].forEach((t) => c.cue(t, 'hop'));
+    say(c, 'Judge Beshak!', ARRIVE, headTop(c, cx).x, c.m.t.top - fh * 0.15, 0.6, 'say', 'tiger');
 
     // taste one, think… taste the other, think…
     const mouth = c.mouthAt(cx);
@@ -957,9 +1061,10 @@ window.BOOKENDS_OPENINGS = (() => {
       arc(c, dish, from, { x: mouth.x, y: mouth.y + th * 0.04 }, at, 0.55, th * 0.5, 0);
       tl.to(dish, { autoAlpha: 0, scale: 0.4, duration: 0.06 }, at + 0.55);
       c.chomp(at + 0.5, 2);
+      [at + 0.5, at + 0.72].forEach((t) => c.cue(t, 'munch'));
       tl.to(head, { keyframes: { rotation: [tilt, tilt, 0] }, duration: 0.9, ease: 'sine.inOut' }, at + 1.0)
         .to(ear, { rotation: 8, duration: 0.07, yoyo: true, repeat: 3 }, at + 1.1);
-      say(c, 'Hmm…', at + 1.0, headTop(c, cx).x, c.m.t.top - fh * 0.15, 0.5, 'say say--ink');
+      say(c, 'Hmm…', at + 1.0, headTop(c, cx).x, c.m.t.top - fh * 0.15, 0.5, 'say say--ink', 'tiger');
     };
     taste(s1, aHold, ARRIVE + 0.8, 5);
     taste(pie, cHold, ARRIVE + 2.45, -5);
@@ -972,8 +1077,11 @@ window.BOOKENDS_OPENINGS = (() => {
       pop(c, card, V + i * 0.35, mouth.x, mouth.y);
       arc(c, card, mouth, above[i], V + i * 0.35, 0.5, th * 0.4, 0);
       tl.to(card, { keyframes: { rotation: [-8, 8, 0] }, duration: 0.4 }, V + i * 0.35 + 0.5);
+      c.cue(V + i * 0.35 + 0.5, 'ding');                             // a 10!
     });
-    say(c, 'A tie!', V + 0.95, cx, c.m.t.top - fh * 0.35, 0.6);
+    say(c, 'A tie!', V + 0.95, cx, c.m.t.top - fh * 0.35, 0.6, 'say', 'tiger');
+    c.cue(V + 1.0, 'whoosh');
+    c.cue(V + 1.05, 'sparkle');
     tl.add(c.hopInPlace(A, fh * 0.4, 0.45), V + 1.0)
       .add(c.hopInPlace(C, fh * 0.4, 0.45), V + 1.05)
       .to(A.body, { rotation: 360, duration: 0.45 }, V + 1.0)
@@ -991,12 +1099,14 @@ window.BOOKENDS_OPENINGS = (() => {
   /* --- no-roar concepts: the tiger makes peace without a roar ---------------- */
 
   // the tiger walks in from off the left edge to `tcx`; returns when it stops
-  function strollIn(c, at, tcx, steps, stepDur) {
+  // (`level`: how loud its footsteps are; tiptoeing is quieter)
+  function strollIn(c, at, tcx, steps, stepDur, level = 0.14) {
     const { tl, gsap, T, th } = c;
     gsap.set(T.lift, { y: 0, autoAlpha: 1 });
     gsap.set(T.shadow, { scale: 1, opacity: 1 });
     tl.add(c.walk(T, c.tx(tcx), steps, stepDur, th * 0.035), at)
       .add(c.gait(steps, stepDur), at);
+    c.steps(at, steps, stepDur, level);
     return at + steps * stepDur;
   }
 
@@ -1009,6 +1119,7 @@ window.BOOKENDS_OPENINGS = (() => {
     c.eyes(at + 1, 'open');
     const ht = headTop(c, tcx);
     say(c, 'purrr…', at + 0.1, ht.x, ht.y - fh * 0.12, 0.55, 'say say--ink say--small');
+    c.cue(at, 'purr');
   }
 
   // a wink with the near eye
@@ -1041,7 +1152,7 @@ window.BOOKENDS_OPENINGS = (() => {
     const shout = (text, at, isA, big = false) => {
       const ch = isA ? A : C;
       const x = isA ? aX(c, aSt) - fh * 0.12 : cX(c, cSt) + fh * 0.12;
-      say(c, text, at, x, (isA ? c.m.a.top : c.m.c.top) - fh * 0.14, 0.3, big ? 'say' : 'say say--small');
+      say(c, text, at, x, (isA ? c.m.a.top : c.m.c.top) - fh * 0.14, 0.3, big ? 'say' : 'say say--small', isA ? 'aiko' : 'capiche');
       tl.add(c.hopInPlace(ch, fh * (big ? 0.16 : 0.09), 0.26), at)
         .to(ch.body, { rotation: isA ? 9 : -9, duration: 0.13, yoyo: true, repeat: 1 }, at);
     };
@@ -1056,7 +1167,7 @@ window.BOOKENDS_OPENINGS = (() => {
       .to(C.body, { rotation: -12, duration: 0.2 }, 2.95)
       .to([A.lift, C.lift], { y: -fh * 0.03, duration: 0.05, yoyo: true, repeat: 9 }, 3.1)
       .add(c.shake(6, 0.3), 3.1);
-    say(c, '!@#$%', 3.35, pc, c.m.a.top - fh * 0.4, 0.45);
+    say(c, '!@#$%', 3.35, pc, c.m.a.top - fh * 0.4, 0.45, 'say', 'both');
 
     // meanwhile the tiger strolls in, with chai on its back
     const trW = tw * 0.34;
@@ -1072,7 +1183,7 @@ window.BOOKENDS_OPENINGS = (() => {
 
     // "Chai?" They stop mid-shout and turn round
     const ht = headTop(c, tcx);
-    say(c, 'Chai?', ARRIVE + 0.25, ht.x, ht.y - fh * 0.15, 0.6, 'say say--ink');
+    say(c, 'Chai?', ARRIVE + 0.25, ht.x, ht.y - fh * 0.15, 0.6, 'say say--ink', 'tiger');
     c.chomp(ARRIVE + 0.25);
     tl.to(ear, { rotation: 8, duration: 0.07, yoyo: true, repeat: 3 }, ARRIVE + 0.3)
       .to([A.body, C.body], { rotation: 0, scaleY: 1.1, scaleX: 0.92, duration: 0.1 }, ARRIVE + 0.35)
@@ -1081,7 +1192,7 @@ window.BOOKENDS_OPENINGS = (() => {
       .to(C.root, { x: cSt, duration: 0.25 }, ARRIVE + 0.75);
 
     const YES = ARRIVE + 1.0;
-    say(c, 'Chai!!', YES, pc, c.m.a.top - fh * 0.2, 0.45);
+    say(c, 'Chai!!', YES, pc, c.m.a.top - fh * 0.2, 0.45, 'say', 'both');
     tl.add(c.hopInPlace(A, fh * 0.3, 0.4), YES)
       .add(c.hopInPlace(C, fh * 0.3, 0.4), YES + 0.06)
       .to([A.body, C.body], { rotation: 0, duration: 0.2 }, YES);
@@ -1117,7 +1228,10 @@ window.BOOKENDS_OPENINGS = (() => {
       .to(cups[1], { rotation: 30, x: `+=${handCupW * 0.3}`, duration: 0.25, yoyo: true, repeat: 1, repeatDelay: 0.4 }, SIP + 0.1)
       .to(A.body, { rotation: -6, duration: 0.25, yoyo: true, repeat: 1, repeatDelay: 0.4 }, SIP)
       .to(C.body, { rotation: 6, duration: 0.25, yoyo: true, repeat: 1, repeatDelay: 0.4 }, SIP + 0.1);
-    say(c, 'aah…', SIP + 0.75, pc, c.m.a.top - fh * 0.18, 0.45, 'say say--ink');
+    say(c, 'aah…', SIP + 0.75, pc, c.m.a.top - fh * 0.18, 0.45, 'say say--ink', 'both');
+    [0, 0.2].forEach((d) => c.cue(SERVE + d + 0.5, 'tok'));        // the cups land in their hands
+    c.cue(SIP - 0.2, 'steam');
+    c.cue(SIP + 0.05, 'slurp');
 
     // they look at each other, and make up; the tiger purrs
     const MAKEUP = SIP + 1.1;
@@ -1142,7 +1256,11 @@ window.BOOKENDS_OPENINGS = (() => {
       .add(c.shake(4, 0.15), CLINK)
       .to(cups[0], { rotation: -40, duration: 0.2 }, CLINK + 0.35)     // and a last gulp
       .to(cups[1], { rotation: 40, duration: 0.2 }, CLINK + 0.35);
-    say(c, 'Cheers!', CLINK, pc, c.m.a.top - fh * 0.3, 0.45);
+    say(c, 'Cheers!', CLINK, pc, c.m.a.top - fh * 0.3, 0.45, 'say', 'both');
+    c.cue(MAKEUP + 0.15, 'sparkle');
+    c.cue(CHEERS + 0.35, 'hop');
+    c.cue(CLINK, 'clink');
+    c.cue(CLINK + 0.4, 'gulp');
     gone(c, cups, CLINK + 0.6);
 
     // the tiger bucks its tray into the air: it turns into a giant kulhad and comes down over them
@@ -1192,10 +1310,17 @@ window.BOOKENDS_OPENINGS = (() => {
         { y: floorY - bigH - bigW * 0.4, scale: 1.2, autoAlpha: 0, duration: 0.9, ease: 'sine.out', immediateRender: false }, LAND + 0.25 + k * 0.22);
     }
     wink(c, LAND + 0.45);
+    c.cue(FLIP, 'whoosh', true);                                   // the tray flies up…
+    c.cue(SWAP, 'sparkle');                                        // …and turns into a giant kulhad
+    c.cue(LAND, 'thunk');
+    c.cue(LAND + 0.25, 'steam');
+    [LAND + 0.4, LAND + 0.75].forEach((t) => c.cue(t, 'knock'));
 
     // "Ta-da!" The cup flies off, and there's Caiko
     const LIFT = LAND + 1.05;
-    say(c, 'Ta-da!', LIFT - 0.15, ht.x, ht.y - fh * 0.15, 0.5, 'say say--ink');
+    say(c, 'Ta-da!', LIFT - 0.15, ht.x, ht.y - fh * 0.15, 0.5, 'say say--ink', 'tiger');
+    c.cue(LIFT, 'tada');
+    c.cue(LIFT + 0.2, 'whoosh');
     tl.to(big, { y: restY - fh * 0.25, rotation: 12, duration: 0.2, ease: 'power2.out' }, LIFT)
       .to(big, { y: -bigH, rotation: 200, autoAlpha: 0, duration: 0.55, ease: 'power2.in' }, LIFT + 0.2)
       .fromTo(c.rider, { scaleY: 0.8, scaleX: 1.12 }, { scaleY: 1, scaleX: 1, duration: 0.5, ease: 'elastic.out(1, 0.4)', immediateRender: false }, LIFT + 0.05)
@@ -1220,6 +1345,9 @@ window.BOOKENDS_OPENINGS = (() => {
       .add(c.shake(5, 0.2), SEAT)
       .to(ear, { rotation: 8, duration: 0.07, yoyo: true, repeat: 3 }, SEAT + 0.1);
     c.bloomAt(SEAT, saddle);
+    c.cue(HOP, 'whoosh');                                          // Caiko flips up…
+    c.cue(SEAT, 'hop');                                            // …and lands on the tiger
+    c.cue(SEAT + 0.05, 'sparkle');
     c.exitRight(SEAT + 0.45, tcx);
     return { own: true };
   }
@@ -1231,6 +1359,7 @@ window.BOOKENDS_OPENINGS = (() => {
 
   // a puff of coloured powder that blooms and drifts off
   function powder(c, colour, at, x, y, size, linger = 0.5) {
+    c.cue(at, 'puff');
     const p = c.prop('powder', '', size);
     p.style.setProperty('--c', colour);
     c.tl.fromTo(p, { x, y, autoAlpha: 0.95, scale: 0.2 }, { scale: 1, duration: 0.35, ease: 'power2.out', immediateRender: false }, at)
@@ -1320,11 +1449,13 @@ window.BOOKENDS_OPENINGS = (() => {
       .add(c.squash(A, 0.15), POP + 0.45)
       .add(c.squash(C, 0.15), POP + 0.45);
     const mid = (aX(c, aTo) + cX(c, cTo)) / 2;
-    say(c, '?!', POP + 0.55, mid, c.m.a.top - fh * 0.15, 0.3, 'say say--ink');
+    say(c, '?!', POP + 0.55, mid, c.m.a.top - fh * 0.15, 0.3, 'say say--ink', 'both');
+    c.cue(POP, 'poof');
+    [POP + 0.45, POP + 0.45].forEach((t) => c.cue(t, 'hop'));
 
     // "Happy Holi!" — and they throw colour at each other, laughing
     const HH = POP + 0.9;
-    say(c, 'Happy Holi!', HH, headTop(c, tcx).x, c.m.t.top - fh * 0.2, 0.6);
+    say(c, 'Happy Holi!', HH, headTop(c, tcx).x, c.m.t.top - fh * 0.2, 0.6, 'say', 'tiger');
     tl.to(tail, { keyframes: { rotation: [-14, 14, 0] }, duration: 0.5 }, HH);
     const THROW = HH + 0.6;
     const atA = { x: aX(c, aTo), y: c.m.a.top + c.m.a.h * 0.35 };
@@ -1333,7 +1464,8 @@ window.BOOKENDS_OPENINGS = (() => {
       .add(c.hopInPlace(C, fh * 0.15, 0.25), THROW + 0.2);
     fling(c, HOLI[0], aHand(c, aTo), atC, THROW, fh * 0.35, fh * 0.7);
     fling(c, HOLI[2], cHand(c, cTo), atA, THROW + 0.3, fh * 0.35, fh * 0.7);
-    say(c, 'Ha ha!', THROW + 0.8, mid, c.m.a.top - fh * 0.2, 0.4);
+    say(c, 'Ha ha!', THROW + 0.8, mid, c.m.a.top - fh * 0.2, 0.4, 'say', 'both');
+    c.cue(THROW + 0.9, 'sparkle');
     tl.add(c.heartsUp(mid, c.m.a.top, fh * 0.8), THROW + 0.9);
 
     const RIDE = THROW + 1.4;
@@ -1365,7 +1497,7 @@ window.BOOKENDS_OPENINGS = (() => {
     // "Smile!" They freeze… and scramble into a pose, side by side
     const ht = headTop(c, tcx);
     const SMILE = WIND + 0.3;
-    say(c, 'Smile!', SMILE, ht.x, ht.y - fh * 0.15, 0.5, 'say say--ink');
+    say(c, 'Smile!', SMILE, ht.x, ht.y - fh * 0.15, 0.5, 'say say--ink', 'tiger');
     c.chomp(SMILE);
     tl.to([A.body, C.body], { scaleY: 1.1, scaleX: 0.92, duration: 0.1 }, SMILE + 0.05)
       .to([A.body, C.body], { scaleY: 1, scaleX: 1, rotation: 0, duration: 0.2 }, SMILE + 0.4);
@@ -1388,9 +1520,11 @@ window.BOOKENDS_OPENINGS = (() => {
     gsap.set(camera, { transformOrigin: '50% 100%' });
     tl.fromTo(camera, { x: cam.x, y: cam.y, autoAlpha: 1, scaleY: 0 },
       { scaleY: 1, duration: 0.35, ease: 'back.out(2)', immediateRender: false }, POSE + 0.15);
-    say(c, 'Say paneer!', POSE + 0.55, ht.x, ht.y - fh * 0.15, 0.55, 'say say--ink');
+    say(c, 'Say paneer!', POSE + 0.55, ht.x, ht.y - fh * 0.15, 0.55, 'say say--ink', 'tiger');
+    c.cue(POSE + 0.15, 'rise');                                    // up comes the camera
+    [POSE + 0.4, POSE + 0.45].forEach((t) => c.cue(t, 'hop'));
     tl.to(ear, { rotation: 8, duration: 0.07, yoyo: true, repeat: 3 }, POSE + 0.6);
-    say(c, 'PANEER!', POSE + 1.1, poseMid, c.m.a.top - fh * 0.2, 0.3);
+    say(c, 'PANEER!', POSE + 1.1, poseMid, c.m.a.top - fh * 0.2, 0.3, 'say', 'both');
     tl.add(c.hopInPlace(A, fh * 0.1, 0.22), POSE + 1.1)
       .add(c.hopInPlace(C, fh * 0.1, 0.22), POSE + 1.1);
 
@@ -1415,6 +1549,8 @@ window.BOOKENDS_OPENINGS = (() => {
     const slot = { x: cam.x - camW * 0.2, y: cam.y - camH * 0.38 };
     const hang = { x: poseMid, y: c.m.a.top - fh * 0.55 };
     const OUT = FLASH + 0.4;
+    c.cue(FLASH, 'shutter');
+    c.cue(OUT, 'whirr');                                           // out comes the photo
     tl.fromTo(pic, { autoAlpha: 1, scale: 0.3, rotation: -10 }, { scale: 1, rotation: 6, duration: 0.6, ease: 'power2.out', immediateRender: false }, OUT)
       .to(pic, { keyframes: { rotation: [-4, 3, -1, 0] }, duration: 0.9, ease: 'sine.inOut' }, OUT + 0.6)
       .to(pic.querySelector('.polaroid__pic'), { backgroundColor: '#FBF6EC', duration: 1 }, OUT + 0.6)
@@ -1429,7 +1565,9 @@ window.BOOKENDS_OPENINGS = (() => {
       .add(c.heartsUp(poseMid, c.m.a.top + fh * 0.2, fh * 0.6), AWW + 0.2);
 
     // the photo and the camera tidy away; on they hop
+    c.cue(AWW + 0.2, 'sparkle');
     const RIDE = AWW + 0.9;
+    c.cue(RIDE - 0.2, 'whoosh');
     tl.to(pic, { y: `-=${fh * 0.3}`, autoAlpha: 0, duration: 0.4, ease: 'power2.in' }, RIDE - 0.2)
       .to(camera, { scaleY: 0, autoAlpha: 0, duration: 0.3, ease: 'power2.in' }, RIDE - 0.2);
     rideOff(c, RIDE, tcx);
@@ -1446,7 +1584,7 @@ window.BOOKENDS_OPENINGS = (() => {
     // the tiger tiptoes up to the brawl…
     const tcx = Math.max(tw / 2 + 12, cx - cw / 2 - tw * 0.42);
     const TIP = 1.8;
-    const ARRIVE = strollIn(c, TIP, tcx, 6, 0.36);
+    const ARRIVE = strollIn(c, TIP, tcx, 6, 0.36, 0.06);           // on tiptoe: barely a sound
     tl.to(T.body, { scaleY: 1.06, scaleX: 0.97, duration: 0.25 }, TIP)
       .to(T.body, { scaleY: 1, scaleX: 1, duration: 0.2 }, ARRIVE - 0.25);
     say(c, 'tip… tip… tip…', TIP + 0.9, tcx, c.m.t.top - fh * 0.12, 0.8, 'say say--ink say--small');
@@ -1462,9 +1600,14 @@ window.BOOKENDS_OPENINGS = (() => {
     tl.to(tail, { keyframes: { rotation: [24, -4, 26, -2, 24, -6, 22, 0] }, duration: 1.3, ease: 'sine.inOut' }, TICKLE);
     say(c, 'tickle tickle', TICKLE + 0.1, tailTip.x, tailTip.y + th * 0.45, 0.6, 'say say--ink say--small');
     [['hee!', 0.35, -0.32, -0.45], ['ha ha!', 0.65, 0.22, -0.55], ['hihi!', 0.95, -0.12, -0.68], ['hahaha!', 1.2, 0.3, -0.4]]
-      .forEach(([text, dt, dx, dy]) => say(c, text, TICKLE + dt, cx + cw * dx, cloudY + ch * dy, 0.3, 'say say--small'));
+      .forEach(([text, dt, dx, dy], i) => say(c, text, TICKLE + dt, cx + cw * dx, cloudY + ch * dy, 0.3, 'say say--small', i % 2 ? 'capiche' : 'aiko'));
+    [TURN, TICKLE, TICKLE + 0.45, TICKLE + 0.9].forEach((t) => c.cue(t, 'whoosh'));   // the turn, the tail swishing
     const POP = TICKLE + 1.4;
-    c.brawl(clash, POP, [TICKLE + 0.2, TICKLE + 0.5, TICKLE + 0.8]);
+    // a scuffle until the tickling starts; after that it's all giggles
+    c.brawl(clash, POP, [TICKLE + 0.2, TICKLE + 0.5, TICKLE + 0.8], false);
+    c.cue(clash + 0.05, 'scuffle', TICKLE - clash - 0.1);
+    c.cue(POP, 'poof');
+    c.cue(POP + 0.5, 'hop');
 
     // the cloud bursts; out they tumble, still giggling
     tl.to(cloud, { scale: 1.4, autoAlpha: 0, duration: 0.4, ease: 'power2.out' }, POP)
@@ -1482,17 +1625,19 @@ window.BOOKENDS_OPENINGS = (() => {
       tl.add(c.hopInPlace(A, fh * 0.08, 0.2), LOL + i * 0.25)
         .add(c.hopInPlace(C, fh * 0.08, 0.2), LOL + 0.1 + i * 0.25);
     }
-    say(c, 'HA HA HA!', LOL + 0.1, mid, c.m.a.top - fh * 0.2, 0.6);
+    say(c, 'HA HA HA!', LOL + 0.1, mid, c.m.a.top - fh * 0.2, 0.6, 'say', 'both');
 
     // the tiger turns back round: "Friends?" They look at each other…
     const BACK = LOL + 0.5;
     tl.to(T.body, { scaleX: 1, duration: 0.3, ease: 'power2.inOut' }, BACK);
-    say(c, 'Friends?', BACK + 0.35, headTop(c, tcx).x, c.m.t.top - fh * 0.15, 0.5, 'say say--ink');
+    say(c, 'Friends?', BACK + 0.35, headTop(c, tcx).x, c.m.t.top - fh * 0.15, 0.5, 'say say--ink', 'tiger');
+    c.cue(BACK, 'whoosh');
     const MAKEUP = BACK + 0.85;
     tl.to(A.body, { rotation: 10, duration: 0.25 }, MAKEUP)
       .to(C.body, { rotation: -10, duration: 0.25 }, MAKEUP)
       .add(c.heartsUp(mid, c.m.a.top, fh * 0.8), MAKEUP + 0.15)
       .to([A.body, C.body], { rotation: 0, duration: 0.25 }, MAKEUP + 0.7);
+    c.cue(MAKEUP + 0.15, 'sparkle');
 
     rideOff(c, MAKEUP + 0.9, tcx);
     // the brawl's flying symbols turn to giggles once the tickling starts

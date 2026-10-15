@@ -26,6 +26,9 @@
   const portrait = window.matchMedia('(max-aspect-ratio: 4/5)');
   const ESSENCE = window.BOOKENDS_ESSENCE;
   const OPENINGS = window.BOOKENDS_OPENINGS;
+  const SOUND = window.BOOKENDS_SOUND;     // js/sound.js: music, voices and effects for the intro
+  let quietCues = false;                    // true while skipping, so jumped-over cues stay silent
+  const sfx = (...args) => { if (!quietCues && SOUND) SOUND.fx(...args); };
   const VARIANTS = Object.keys(OPENINGS);
   let variant = (() => {
     const v = new URLSearchParams(location.search).get('v');
@@ -541,6 +544,13 @@
 
     tl = gsap.timeline({ paused: true, onComplete: () => document.dispatchEvent(new Event('intro:done')) });
 
+    // sound cues (js/sound.js): each plays as the playhead passes it
+    const cue = (at, name, ...args) => tl.call(sfx, [name, ...args], at);
+    // footsteps for a walk of `n` steps starting at `at`; `fade` makes them die away (walking off)
+    function steps(at, n, stepDur, level = 0.2, fade = false) {
+      for (let i = 0; i < n; i++) cue(at + (i + 1) * stepDur, 'step', level * (fade ? 1 - (i / n) * 0.7 : 1));
+    }
+
     /* --- the tiger act, as building blocks the openings can use -------------- */
 
     const STEP = 0.4;
@@ -574,12 +584,14 @@
     }
 
     // the cloud churns with the two inside: things fly out, heads pop up
-    function brawl(from, to, peeks = []) {
+    // (`scuffle: false` for a friendly cloud: no fight sounds; the opening adds its own)
+    function brawl(from, to, peeks = [], scuffle = true) {
       tl.add(cloudWobble(to - from - 0.1, cw), from + 0.1)
         .add(cloudBits(to - from - 0.4, cx, cloudY - ch * 0.1, cw * 0.62), from + 0.1)
         .add(peek(A, -1, peekA), from + 0.3)
         .add(peek(C, 1, peekC), from + 0.8);
       peeks.forEach((at, i) => tl.add(i % 2 ? peek(C, 1, peekC) : peek(A, -1, peekA), at));
+      if (scuffle) cue(from + 0.05, 'scuffle', to - from - 0.1);    // the dust-up in the cloud
     }
 
     // trots into the top-left corner, crouches, and springs down in an arc to `landX`; returns landing time
@@ -616,6 +628,10 @@
         .add(squash(T, 0.2), LAND)
         .add(shake(16, 0.4), LAND)
         .add(dustPuff(landX, floorY, tw * 0.6), LAND);
+      cue(at, 'step', 0.12);
+      cue(at + 0.17, 'step', 0.12);
+      cue(JUMP, 'whoosh', true);                                     // the tiger leaps
+      cue(LAND, 'thud');                                             // and lands
       return LAND;
     }
 
@@ -682,6 +698,7 @@
         .add(jolt(korean, -1, 2.2), at)
         .add(jolt(italian, 1, 2.2), at);
       if (bloom) bloomAt(at, mo);
+      cue(at - 0.08, 'roar');
       return at + 1.15;
     }
 
@@ -695,6 +712,8 @@
         .to(head, { keyframes: [{ rotation: -5, duration: 0.3, ease: 'power2.out' }, { rotation: 0, duration: 0.3, ease: 'power2.inOut', delay: 0.1 }] }, at + 0.1)
         .to(ear, { rotation: 8, duration: 0.07, yoyo: true, repeat: 3 }, at + 0.5)
         .to(T.rider, { y: -rh * 0.15, duration: 0.16, ease: 'power2.out', yoyo: true, repeat: 1 }, at + 0.6);
+      cue(at, 'poof');
+      cue(at + 0.1, 'sparkle');                                      // Caiko appears
       return at + 1.0;
     }
 
@@ -709,6 +728,8 @@
         .add(shake(12, 0.35), at + 0.4)
         .set([A.root, C.root], { autoAlpha: 0 }, at + 0.5)
         .set(T.rider, { autoAlpha: 1 }, at + 0.5);
+      cue(at + 0.05, 'whoosh');
+      cue(at + 0.25, 'poof');
       return reveal(at + 1.0, tcx);
     }
 
@@ -717,30 +738,33 @@
         .to(title, { autoAlpha: 1, y: 0, duration: 0.9, ease: 'power3.out' }, at)
         .to(sub, { autoAlpha: 1, y: 0, duration: 0.8, ease: 'power3.out' }, at + 0.25)
         .to(replayBtn, { autoAlpha: 1, y: 0, duration: 0.6, ease: 'power2.out' }, at + 0.6);
+      cue(at - 0.4, 'music-out');
+      cue(at + 0.1, 'chime');
       return at + 1.2;
     }
 
     // walks off to the right (rider bobbing along); the title rises as it leaves
     function exitRight(at, fromCx) {
-      const steps = gsap.utils.clamp(5, 9, Math.ceil((exitCx - fromCx) / (tw * 0.3)));
-      const end = at + steps * EXIT_STEP;
-      tl.add(walk(T, tx(exitCx), steps, EXIT_STEP, th * 0.035), at)
-        .add(gait(steps, EXIT_STEP), at)
-        .to(T.rider, { y: -rh * 0.05, duration: EXIT_STEP / 2, ease: 'sine.inOut', yoyo: true, repeat: steps * 2 - 1 }, at + 0.15)
+      const n = gsap.utils.clamp(5, 9, Math.ceil((exitCx - fromCx) / (tw * 0.3)));
+      const end = at + n * EXIT_STEP;
+      tl.add(walk(T, tx(exitCx), n, EXIT_STEP, th * 0.035), at)
+        .add(gait(n, EXIT_STEP), at)
+        .to(T.rider, { y: -rh * 0.05, duration: EXIT_STEP / 2, ease: 'sine.inOut', yoyo: true, repeat: n * 2 - 1 }, at + 0.15)
         .set(T.root, { autoAlpha: 0 }, end);
+      steps(at, n, EXIT_STEP, 0.18, true);
       titleIn(at + (end - at) * 0.55);
       return end;
     }
 
     // the original tiger act: leap in, shake, walk into the cloud, Caiko rides out, roar, exit
-    function standardAct(clash) {
+    function standardAct(clash, scuffle = true) {
       const RUNIN = clash + 0.23;
       const LAND = leap(RUNIN, landCx);
       const WALK = LAND + 0.95;
       const INSIDE = WALK + 3 * STEP;   // the tiger is fully inside the cloud
       const VANISH = INSIDE + 0.55;     // the cloud clears: Caiko is riding
       tl.set(cloud, { zIndex: 5 }, RUNIN + 0.6);
-      brawl(clash, VANISH, [LAND + 0.15, WALK + 0.3]);
+      brawl(clash, VANISH, [LAND + 0.15, WALK + 0.3], scuffle);
       headShake(LAND + 0.32);
       tl.add(walk(T, tx(walkCx), 3, STEP, th * 0.035), WALK)
         .add(gait(3, STEP), WALK)
@@ -748,6 +772,8 @@
         .add(shake(14, 0.4), INSIDE)
         .set([A.root, C.root], { autoAlpha: 0 }, INSIDE + 0.25)
         .set(T.rider, { autoAlpha: 1 }, INSIDE + 0.25);
+      steps(WALK - STEP * 0.02, 2, STEP, 0.28);
+      cue(INSIDE, 'poof');                                           // the cloud swallows it
       const ROAR = reveal(VANISH, walkCx);
       const EXIT = roarAt(ROAR, walkCx);
       exitRight(EXIT, walkCx);
@@ -764,6 +790,7 @@
       hop, hopInPlace, squash, shake, burst, strike, jolt, heartsUp, dustPuff, walk, gait, peek, peekA, peekC,
       tigerOn, eyes, chomp, brawl, leap, headShake, roarAt, bloomAt, reveal, mount, titleIn, exitRight, mouthAt, saddleAt,
       cloudFill: puffPairs.map((pp) => pp[1]),
+      cue, steps,
     });
     (opening.bits || BITS).forEach((b, i) => {
       if (!bits[i]) return;
@@ -779,7 +806,7 @@
     }
 
     // openings that end in the cloud get the original tiger act; the others stage their own
-    if (!opening.own) standardAct(opening.clash);
+    if (!opening.own) standardAct(opening.clash, opening.scuffle !== false);
 
     return tl;
   }
@@ -803,7 +830,10 @@
 
   function skip() {
     if (!tl || tl.progress() === 1) return;
+    document.dispatchEvent(new Event('intro:skip'));
+    quietCues = true;
     tl.progress(1);
+    quietCues = false;
     replayBtn.focus({ preventScroll: true });
   }
 
@@ -863,8 +893,11 @@
         const time = tl.time();
         const paused = tl.paused();
         build();
-        if (done) tl.progress(1);
-        else if (paused) tl.pause(time);
+        if (done) {
+          quietCues = true;
+          tl.progress(1);
+          quietCues = false;
+        } else if (paused) tl.pause(time);
         else tl.play(time);
       }, 120);
     });
