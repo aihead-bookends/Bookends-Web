@@ -1434,6 +1434,72 @@ window.BOOKENDS_OPENINGS = (() => {
       <path d="M0 6Q100 74 200 6Q300 74 400 6Q500 74 600 6" fill="none" stroke-width="2.4"/>${leaves}${flowers}</svg>`;
   }
 
+  // the mandap the garba is danced in: two pillars and a lintel, with a crest of domes on top when
+  // there's room. Drawn at its size on screen (px), `w` wide, with the lintel's underside at `beamY`
+  // and the floor at `floorY` (stage y). Returns the art and the stage y of its centre.
+  function mandapArt(w, beamY, floorY, fh) {
+    const f = (n) => n.toFixed(1);
+    const MAROON = '#C2185B';
+    const GOLD = '#F6C453';
+    const MARIGOLD = '#F08A1C';
+    const pw = Math.max(12, fh * 0.13);                            // a pillar's width
+    const bh = Math.min(26, Math.max(8, fh * 0.1));                // the lintel's height
+    const room = Math.min(fh * 0.6, beamY - bh - 6);
+    const top = room >= 14 ? room : 0;                             // no room (a landscape phone): no domes
+    const L = top + bh;                                            // the lintel's underside
+    const F = L + floorY - beamY;                                  // the floor
+    const h = F + pw * 0.15;
+    const rect = (x, y, rw, rh, fill) => `<rect x="${f(x)}" y="${f(y)}" width="${f(rw)}" height="${f(rh)}" fill="${fill}"/>`;
+    const dot = (x, y, r, fill) => `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}" fill="${fill}"/>`;
+    const parts = [];
+    // the pillars: an arched bracket under the lintel, a capital, a banded shaft and a base
+    [pw * 0.65, w - pw * 0.65].forEach((p, side) => {
+      const dir = side ? -1 : 1;                                   // towards the middle
+      const inner = p + dir * pw * 0.5;
+      const bw = pw * 2.2;
+      const bk = pw * 1.8;
+      parts.push(`<path d="M${f(inner)} ${f(L)}H${f(inner + dir * bw)}A${f(bw)} ${f(bk)} 0 0 ${side} ${f(inner)} ${f(L + bk)}Z" fill="${MARIGOLD}"/>`);
+      const s0 = L + pw * 0.75;
+      const s1 = F - pw * 0.85;
+      parts.push(rect(p - pw / 2, s0, pw, s1 - s0, MAROON));
+      for (let y = s0 + pw * 1.2; y < s1 - pw * 0.8; y += pw * 1.8) parts.push(rect(p - pw / 2, y, pw, pw * 0.22, GOLD));
+      parts.push(rect(p - pw * 0.65, L, pw * 1.3, pw * 0.35, GOLD), rect(p - pw * 0.55, L + pw * 0.35, pw * 1.1, pw * 0.4, MARIGOLD),
+        rect(p - pw * 0.55, s1, pw * 1.1, pw * 0.3, MARIGOLD), rect(p - pw * 0.65, F - pw * 0.55, pw * 1.3, pw * 0.7, GOLD));
+      // a string of marigolds hangs from the end of the bracket, a mango leaf at its foot
+      const mr = Math.min(7, Math.max(3, fh * 0.028));
+      const sx = inner + dir * (bw + mr * 0.6);
+      let y = L + mr;
+      for (let k = 0; y < L + (F - L) * 0.5; y += mr * 1.9, k++) parts.push(dot(sx, y, mr, k % 2 ? GOLD : MARIGOLD));
+      parts.push(`<path d="M${f(sx)} ${f(y - mr)}c${f(-mr * 0.75)} ${f(mr * 1.1)} ${f(-mr * 0.75)} ${f(mr * 2.5)} 0 ${f(mr * 3.7)}c${f(mr * 0.75)} ${f(-mr * 1.2)} ${f(mr * 0.75)} ${f(-mr * 2.6)} 0 ${f(-mr * 3.7)}z" fill="#3E9E5A"/>`);
+    });
+    // the lintel, gold-edged, with a row of studs
+    parts.push(rect(0, top, w, bh, MAROON), rect(0, top, w, bh * 0.24, GOLD), rect(0, L - bh * 0.24, w, bh * 0.24, GOLD));
+    const n = Math.max(3, Math.round(w / (bh * 1.2)));
+    for (let k = 0; k < n; k++) parts.push(`<circle cx="${f(((k + 0.5) * w) / n)}" cy="${f(top + bh / 2)}" r="${f(bh * 0.14)}" fill="${GOLD}" stroke="none"/>`);
+    if (top) {
+      // a scalloped parapet, and domes: a big one in the middle and one over each pillar, each
+      // topped with a kalash
+      const r = Math.min(bh * 0.45, top * 0.22);
+      const m = Math.max(2, Math.floor(w / (r * 2.4)));
+      for (let k = 0; k < m; k++) {
+        const x = ((k + 0.5) * w) / m;
+        parts.push(`<path d="M${f(x - r)} ${f(top)}A${f(r)} ${f(r)} 0 0 1 ${f(x + r)} ${f(top)}Z" fill="${MARIGOLD}"/>`);
+      }
+      const side = top * 0.5;
+      [[w / 2, top * 0.95, top * 0.75, '#E3242B'], [Math.max(pw * 0.65, side), side, side, GOLD], [Math.min(w - pw * 0.65, w - side), side, side, GOLD]]
+        .forEach(([x, a, d, fill], k) => {
+          parts.push(`<path d="M${f(x - a)} ${f(top)}C${f(x - a)} ${f(top - d * 0.55)} ${f(x - a * 0.15)} ${f(top - d * 0.6)} ${f(x)} ${f(top - d)}`
+            + `C${f(x + a * 0.15)} ${f(top - d * 0.6)} ${f(x + a)} ${f(top - d * 0.55)} ${f(x + a)} ${f(top)}Z" fill="${fill}"/>`);
+          const kr = Math.max(2, top * (k ? 0.06 : 0.08));
+          parts.push(dot(x, top - d - kr * 0.8, kr, k ? MARIGOLD : GOLD));
+        });
+    }
+    return {
+      svg: `<svg viewBox="0 0 ${f(w)} ${f(h)}" stroke="#111" stroke-width="${f(Math.min(2.6, Math.max(1.5, fh * 0.011)))}" stroke-linejoin="round">${parts.join('')}</svg>`,
+      cy: beamY - L + h / 2,
+    };
+  }
+
   // one dandiya stick, striped in two colours with a bead at its tip; `dir` 1 leans up-right,
   // -1 up-left. Its handle (the bottom end) is at (0.21, 0.83) or (0.79, 0.83) of the box.
   function stickArt(dir, c1, c2) {
@@ -1480,12 +1546,28 @@ window.BOOKENDS_OPENINGS = (() => {
     const ht = headTop(c, tcx);
     const beat = (at) => tl.to([...korean, ...italian], { y: -7, duration: 0.08, yoyo: true, repeat: 1 }, at);
 
-    // the setting: a toran drops in across the top; the garbo appears and its lamp lights up
-    // (narrower on a short screen, a landscape phone, so it hangs clear of what they say)
+    // the setting: a mandap goes up round them and a toran drops onto its lintel; the garbo
+    // appears and its lamp lights up
+    // (the toran's narrower on a short screen, a landscape phone, so it hangs clear of what they say)
     const toranW = Math.min(W * 0.86, 900, H * 1.2);
-    const toranY = Math.max(Math.min(64, toranW * (80 / 620) / 2 + 8), Math.min(c.m.a.top, c.m.t.top) - fh * 0.8);
+    const toranH = toranW * (80 / 620);
+    let toranY = Math.max(Math.min(64, toranH / 2 + 8), Math.min(c.m.a.top, c.m.t.top) - fh * 0.8);
+    // the toran hangs from the mandap's lintel, which needs room above it for the domes: where
+    // there's space between the toran and what they say (a big screen), the toran comes down a bit
+    const lintel = (y) => y - toranH * 0.33;
+    const probe = c.prop('say', 'Shubh');
+    const sayTop = Math.min(c.m.a.top - fh * 0.4, ht.y - fh * 0.15) - probe.offsetHeight / 2;
+    probe.remove();
+    const short = fh * 0.55 + Math.min(26, Math.max(8, fh * 0.1)) + 6 - lintel(toranY);
+    if (short > 0) toranY += Math.max(0, Math.min(short, sayTop - 10 - (toranY + toranH / 2)));
+    // wide enough for everyone (the tiger's still to come), and centred like the toran
+    const mandapW = Math.min(W - 2 * margin, 2 * (Math.max(cx - (tcx - tw / 2), rowRight(pc) - cx, toranW / 2) + fh * 0.3));
+    const md = mandapArt(mandapW, lintel(toranY), floorY, fh);
+    const mandap = c.prop('dish', md.svg, mandapW, bg);
+    tl.fromTo(mandap, { x: cx, y: md.cy + fh * 0.08, autoAlpha: 0 }, { y: md.cy, autoAlpha: 1, duration: 0.45, ease: 'power2.out', immediateRender: false }, 0);
     const toran = c.prop('dish', toranArt(), toranW, bg);
-    tl.fromTo(toran, { x: cx, y: toranY - fh * 0.6, autoAlpha: 1 }, { y: toranY, duration: 0.7, ease: 'bounce.out', immediateRender: false }, 0.1);
+    tl.fromTo(toran, { x: cx, y: toranY - fh * 0.3, autoAlpha: 0 }, { y: toranY, duration: 0.7, ease: 'bounce.out', immediateRender: false }, 0.3)
+      .to(toran, { autoAlpha: 1, duration: 0.12 }, 0.3);
     // (the lamp and its glow stand behind the dancers, so their sticks cross in front of it)
     const glow = c.prop('powder', '', potW * 1.9, bg);
     glow.style.setProperty('--c', 'rgba(255, 205, 80, .6)');
@@ -1499,7 +1581,7 @@ window.BOOKENDS_OPENINGS = (() => {
       .to(glow, { scale: 1.15, autoAlpha: 0.65, duration: 0.45, yoyo: true, repeat: 17, ease: 'sine.inOut' }, 1.1)
       .fromTo(lamp, { scale: 0 }, { scale: 1, duration: 0.3, ease: 'back.out(3)', immediateRender: false }, 0.6)
       .to(lamp, { scaleY: 1.25, scaleX: 0.85, duration: 0.17, yoyo: true, repeat: 49, ease: 'sine.inOut' }, 0.9);
-    c.cue(0.1, 'whoosh');
+    c.cue(0.3, 'whoosh');
     c.cue(0.6, 'sparkle');                                         // the lamp lights
 
     // they hop in, each with a pair of dandiya sticks
@@ -1615,7 +1697,7 @@ window.BOOKENDS_OPENINGS = (() => {
     // above the tiger and Aiko both (on a phone the tiger is shorter than Aiko); on a short
     // screen, where that would run into the toran, under them instead
     let blessY = Math.min(ht.y - fh * 0.15, c.m.a.top - fh * 0.2);
-    if (blessY - fh * 0.15 < toranY + toranW * (80 / 620) / 2) blessY = floorY + fh * 0.3;
+    if (blessY - fh * 0.15 < toranY + toranH / 2) blessY = floorY + fh * 0.3;
     say(c, 'Shubh Navratri!', BLESS, ht.x, blessY, 0.7, 'say', 'tiger');
     c.chomp(BLESS, 2);
     tl.to(ear, { rotation: 8, duration: 0.07, yoyo: true, repeat: 3 }, BLESS + 0.1)
@@ -1682,7 +1764,8 @@ window.BOOKENDS_OPENINGS = (() => {
       .to(c.rider, { keyframes: [{ scaleY: 0.85, scaleX: 1.1, duration: 0.07 }, { scaleY: 1, scaleX: 1, duration: 0.4, ease: 'elastic.out(1, 0.4)' }] }, SEAT)
       .add(c.squash(T, 0.1, 0.45), SEAT)
       .to([pot, glow], { autoAlpha: 0, scale: 0.7, duration: 0.4 }, SEAT + 0.3)
-      .to(toran, { autoAlpha: 0, y: toranY - fh * 0.3, duration: 0.5 }, SEAT + 0.8);
+      .to(toran, { autoAlpha: 0, y: toranY - fh * 0.3, duration: 0.5 }, SEAT + 0.8)
+      .to(mandap, { autoAlpha: 0, duration: 0.6 }, SEAT + 0.8);
     c.bloomAt(SEAT, flame);
     c.cue(HOP, 'whoosh');
     c.cue(SEAT, 'hop');
