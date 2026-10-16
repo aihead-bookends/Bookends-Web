@@ -37,6 +37,14 @@ html { scroll-behavior: smooth; }
   color: var(--paper-light);
 }
 
+/* line icons (drawn with mask-image in currentColor) for the booking buttons and the footer */
+:root {
+  --icon-phone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 3h4l2 5-2.5 1.5a12 12 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A17 17 0 0 1 3 5a2 2 0 0 1 2-2z'/%3E%3C/svg%3E");
+  --icon-mail: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='14' rx='2'/%3E%3Cpath d='m3 7 9 6 9-6'/%3E%3C/svg%3E");
+  --icon-book: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='16' rx='2'/%3E%3Cpath d='M3 10h18M8 3v4M16 3v4M9 15l2 2 4-4'/%3E%3C/svg%3E");
+  --icon-instagram: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='5'/%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cpath d='M17.5 6.5h.01'/%3E%3C/svg%3E");
+}
+
 /* links still waiting for their real URL (set in js/home.js) */
 .is-todo { cursor: help; }
 
@@ -745,7 +753,8 @@ html { scroll-behavior: smooth; }
 
 .reserve {
   display: grid;
-  grid-template-columns: 1fr 1fr 1.5fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;               /* each card as tall as its outlets */
   gap: 16px;
   margin-top: clamp(36px, 5vw, 56px);
 }
@@ -784,42 +793,102 @@ html { scroll-behavior: smooth; }
   color: var(--accent);
 }
 
+/* each outlet a row: its name, then Book online (TableCheck) and Call */
+.reserve__brand { container-type: inline-size; }
+
 .reserve__outlets {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reserve__outlet {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
-  margin-top: auto;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
 }
 
-.reserve__pill {
-  display: inline-flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 3px;
-  min-height: 44px;
-  padding: 8px 16px;
-  font: 600 13px/1.1 var(--font-ui);
-  color: var(--paper);
-  text-decoration: none;
-  background: var(--ink);
-  border-radius: 14px;
-  transition: background-color .2s, transform .2s;
+.reserve__where {
+  flex: 1 1 auto;
+  min-width: 0;
+  font: 600 15px/1.15 var(--font-ui);
 }
 
-.reserve__pill small {
+.reserve__where small {
+  display: block;
+  margin-top: 3px;
   font: 500 11px/1 var(--font-ui);
   letter-spacing: .06em;
-  color: rgba(243, 236, 223, .7);
+  color: var(--ink-soft);
 }
 
-.reserve__pill:hover {
+.reserve__btn,
+.reserve__ig {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 0 14px;
+  font: 600 13px/1 var(--font-ui);
+  white-space: nowrap;
+  text-decoration: none;
+  border: 1px solid rgba(17, 17, 17, .3);
+  border-radius: 999px;
+  transition: background-color .2s, border-color .2s, color .2s;
+}
+
+.reserve__btn::before,
+.reserve__ig::before {
+  content: '';
+  flex: none;
+  width: 15px;
+  height: 15px;
+  background: currentColor;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+.reserve__btn--book {
+  --icon: var(--icon-book);
+  color: var(--paper);
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.reserve__btn--call,
+.reserve__ig { color: var(--ink); }
+
+.reserve__btn--call { --icon: var(--icon-phone); }
+
+.reserve__btn:hover,
+.reserve__ig:hover {
+  color: var(--paper);
   background: var(--accent);
-  transform: translateY(-2px);
+  border-color: var(--accent);
 }
 
-.reserve__pill:focus-visible {
+.reserve__btn:focus-visible,
+.reserve__ig:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
+}
+
+/* and Instagram for the brand as a whole, under its outlets */
+.reserve__ig {
+  --icon: var(--icon-instagram);
+  min-height: 44px;
+}
+
+/* a narrow card (a phone, a small laptop): the outlet's name on its own line, the two buttons
+   sharing the one under it */
+@container (max-width: 330px) {
+  .reserve__where { flex-basis: 100%; }
+  .reserve__btn { flex: 1; }
 }
 
 .reserve__note {
@@ -917,8 +986,8 @@ html { scroll-behavior: smooth; }
   mask: var(--icon) center / contain no-repeat;
 }
 
-.footer__phone { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 3h4l2 5-2.5 1.5a12 12 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A17 17 0 0 1 3 5a2 2 0 0 1 2-2z'/%3E%3C/svg%3E"); }
-.footer__email { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='14' rx='2'/%3E%3Cpath d='m3 7 9 6 9-6'/%3E%3C/svg%3E"); }
+.footer__phone { --icon: var(--icon-phone); }
+.footer__email { --icon: var(--icon-mail); }
 
 .footer__col .footer__reserve {
   display: inline-flex;

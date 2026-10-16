@@ -13,7 +13,7 @@
     beshak:  { menu: '', instagram: '' },
     capiche: { menu: '', instagram: '' },
 
-    // each outlet: its booking page, Google Maps link and phone number
+    // each outlet: its TableCheck booking page, Google Maps link and phone number
     'aiko-surat':         { booking: '', maps: '', phone: '' },
     'aiko-ahmedabad':     { booking: '', maps: '', phone: '' },
     'beshak-dumas':       { booking: '', maps: '', phone: '' },   // Dumas Road, Surat
