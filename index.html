@@ -24,7 +24,7 @@
   <!-- appears once you scroll past the intro -->
   <header class="site-header" id="site-header">
     <a class="site-header__brand" href="#top"><img src="assets/logo-black.png" width="1518" height="417" alt="Bookends Hospitality"></a>
-    <nav class="site-header__nav" aria-label="Main">
+    <nav class="site-header__nav" id="site-nav" aria-label="Main">
       <a href="#about">About</a>
       <a href="#brands">Our brands</a>
       <a href="#visit">Visit</a>
@@ -32,6 +32,9 @@
       <a href="stories.html">Stories</a>
     </nav>
     <a class="btn btn--solid site-header__cta" href="#reserve">Reserve</a>
+    <button class="site-header__menu" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path class="site-header__menu-top" d="M4 8.5h16"/><path class="site-header__menu-bottom" d="M4 15.5h16"/></svg>
+    </button>
   </header>
 
   <main id="top">

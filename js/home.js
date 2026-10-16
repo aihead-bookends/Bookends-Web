@@ -67,10 +67,33 @@
     document.querySelectorAll('[data-mandala]').forEach((el) => { el.innerHTML = ESSENCE.mandala(); });
   }
 
-  // the header slides in once the intro is mostly scrolled past
+  // the menu on phones: the button drops the links down in a panel under the header; a link,
+  // a tap anywhere else or Esc closes it
+  const menuBtn = header && header.querySelector('.site-header__menu');
+  const setMenu = (open) => {
+    if (!menuBtn) return;
+    header.classList.toggle('is-open', open);
+    menuBtn.setAttribute('aria-expanded', String(open));
+    menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  };
+  if (menuBtn) {
+    menuBtn.addEventListener('click', () => setMenu(!header.classList.contains('is-open')));
+    header.querySelectorAll('.site-header__nav a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+    document.addEventListener('click', (e) => { if (!header.contains(e.target)) setMenu(false); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape' || !header.classList.contains('is-open')) return;
+      setMenu(false);
+      menuBtn.focus();
+    });
+    window.matchMedia('(min-width: 721px)').addEventListener('change', () => setMenu(false));
+  }
+
+  // the header slides in once the intro is mostly scrolled past (and takes its menu with it when it goes)
   if (stage && header && 'IntersectionObserver' in window) {
     new IntersectionObserver(([entry]) => {
-      header.classList.toggle('is-shown', entry.intersectionRatio < 0.2);
+      const shown = entry.intersectionRatio < 0.2;
+      header.classList.toggle('is-shown', shown);
+      if (!shown) setMenu(false);
     }, { threshold: [0, 0.2, 0.5, 1] }).observe(stage);
   } else if (header) {
     header.classList.add('is-shown');
@@ -178,14 +201,19 @@
     stopGlide();
   });
 
-  // sections fade up as they come into view
+  // sections fade up as they come into view. The hero builds in as a whole, piece after piece:
+  // it fills the screen, so its last piece (the brands row) sits at the very bottom, in the
+  // strip the -10% margin ignores, and on its own it would never come in
   const reveals = document.querySelectorAll('.reveal');
   if ('IntersectionObserver' in window) {
     const io = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
-        entry.target.classList.add('is-in');
-        io.unobserve(entry.target);
+        const hero = entry.target.closest('.hero');
+        (hero ? hero.querySelectorAll('.reveal') : [entry.target]).forEach((el) => {
+          el.classList.add('is-in');
+          io.unobserve(el);
+        });
       });
     }, { rootMargin: '0px 0px -10% 0px' });
     reveals.forEach((el) => io.observe(el));
