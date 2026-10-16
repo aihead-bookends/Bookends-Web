@@ -228,7 +228,7 @@
           <p class="card__where">4 outlets · Surat &amp; Ahmedabad</p>
           <div class="card__actions">
             <a class="btn btn--solid" href="#reserve">Reserve a table</a>
-            <a class="btn" data-link="capiche.menu" href="#">View menu</a>
+            <button class="btn" type="button" data-menu="capiche" aria-haspopup="dialog">View menu</button>
           </div>
         </article>
       </div>
@@ -413,15 +413,16 @@
     <div class="mv__head">
       <h2 class="mv__title" id="mv-title"><img class="mv__logo" src="" alt=""><span class="mv__brand"></span></h2>
       <div class="mv__tabs" role="tablist" aria-label="Menus"></div>
-      <button class="mv__close" type="button" aria-label="Close menus">
-        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      </button>
+      <div class="mv__actions">
+        <a class="mv__icon mv__download" href="#" download aria-label="Download the menu (PDF)" title="Download the menu (PDF)">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10.5l5 5 5-5M5 19.5h14"/></svg>
+        </a>
+        <button class="mv__icon mv__close" type="button" aria-label="Close menus" title="Close">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
     </div>
     <div class="mv__pages" id="mv-pages" role="tabpanel" tabindex="0"></div>
-    <div class="mv__foot">
-      <span class="mv__hint">Tap a page to zoom in.</span>
-      <a class="mv__download" href="#" download>Download the menu (PDF)</a>
-    </div>
   </dialog>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>

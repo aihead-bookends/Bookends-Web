@@ -8,6 +8,7 @@
    To add a brand's menus: put the PDFs in assets/menue/<Brand>/, render each
    page to assets/menue/<Brand>/pages/ (WebP, ~2000px on the long side), add an
    entry below, and give that brand's card button data-menu="<brand>".
+   ratio is a page's width / height; give a list when the pages differ.
    ========================================================================== */
 (() => {
   'use strict';
@@ -49,10 +50,93 @@
       menus: [
         {
           title: 'Food & drinks',
+          file: 'Food and drinks',
           pdf: 'assets/menue/Beshak/Beshak%20New.pdf',
           size: '7.2 MB',
           pages: ['assets/menue/Beshak/pages/menu-1.webp', 'assets/menue/Beshak/pages/menu-2.webp'],
           ratio: 1414 / 2000,
+        },
+      ],
+    },
+    capiche: {
+      name: 'Capiche',
+      logo: 'assets/capiche.png',
+      menus: [
+        {
+          title: 'Food',
+          pdf: 'assets/menue/Capiche/Capiche_Menu.pdf',
+          size: '4.5 MB',
+          pages: [
+              'assets/menue/Capiche/pages/food-1.webp',
+              'assets/menue/Capiche/pages/food-2.webp',
+            ],
+          ratio: 1999 / 1414,
+        },
+        {
+          title: 'Drinks · Surat',
+          file: 'Drinks Surat',
+          pdf: 'assets/menue/Capiche/Capiche%20Surat.pdf',
+          size: '1.5 MB',
+          pages: [
+              'assets/menue/Capiche/pages/drinks-surat-1.webp',
+              'assets/menue/Capiche/pages/drinks-surat-2.webp',
+            ],
+          ratio: 848 / 1800,
+          spread: true,
+        },
+        {
+          title: 'Drinks · Ahmedabad',
+          file: 'Drinks Ahmedabad',
+          pdf: 'assets/menue/Capiche/Capiche%20AHM%20Final.pdf',
+          size: '3.9 MB',
+          pages: [
+              'assets/menue/Capiche/pages/drinks-ahmedabad-1.webp',
+              'assets/menue/Capiche/pages/drinks-ahmedabad-2.webp',
+              'assets/menue/Capiche/pages/drinks-ahmedabad-3.webp',
+              'assets/menue/Capiche/pages/drinks-ahmedabad-4.webp',
+            ],
+          ratio: 848 / 1800,
+          spread: true,
+        },
+        {
+          title: 'Breakfast · Uni',
+          file: 'Breakfast Uni',
+          pdf: 'assets/menue/Capiche/Capiche_Menu_Breakfat_uni.pdf',
+          size: '1.1 MB',
+          pages: [
+              'assets/menue/Capiche/pages/breakfast-uni-1.webp',
+              'assets/menue/Capiche/pages/breakfast-uni-2.webp',
+            ],
+          ratio: 1273 / 1800,
+          spread: true,
+        },
+        {
+          title: 'Cakes',
+          pdf: 'assets/menue/Capiche/Cake%20Menu.pdf',
+          size: '34 MB',
+          pages: [
+              'assets/menue/Capiche/pages/cakes-1.webp',
+              'assets/menue/Capiche/pages/cakes-2.webp',
+              'assets/menue/Capiche/pages/cakes-3.webp',
+              'assets/menue/Capiche/pages/cakes-4.webp',
+              'assets/menue/Capiche/pages/cakes-5.webp',
+              'assets/menue/Capiche/pages/cakes-6.webp',
+              'assets/menue/Capiche/pages/cakes-7.webp',
+              'assets/menue/Capiche/pages/cakes-8.webp',
+              'assets/menue/Capiche/pages/cakes-9.webp',
+            ],
+          // one ratio per page: page 5 (the glossary title) is a short strip
+          ratio: [
+              1272 / 1800,
+              1272 / 1800,
+              1272 / 1800,
+              1272 / 1800,
+              1800 / 729,
+              1272 / 1800,
+              1272 / 1800,
+              1272 / 1800,
+              1272 / 1800,
+            ],
         },
       ],
     },
@@ -76,9 +160,10 @@
       t.setAttribute('aria-selected', String(k === i));
       t.tabIndex = k === i ? 0 : -1;
     });
+    const ratio = (k) => (Array.isArray(menu.ratio) ? menu.ratio[k] : menu.ratio);
     pagesEl.innerHTML = menu.pages.map((src, k) => `
-      <figure class="mv__page" style="--ratio: ${menu.ratio}">
-        <button class="mv__zoom" type="button" aria-label="Zoom page ${k + 1} of ${menu.pages.length}" aria-pressed="false">
+      <figure class="mv__page" style="--ratio: ${ratio(k)}">
+        <button class="mv__zoom" type="button" title="Tap to zoom" aria-label="Zoom page ${k + 1} of ${menu.pages.length}" aria-pressed="false">
           <img src="${src}" alt="${current.name} ${menu.title} menu, page ${k + 1} of ${menu.pages.length}" ${k ? 'loading="lazy"' : ''} decoding="async">
         </button>
         <figcaption>Page ${k + 1} of ${menu.pages.length}</figcaption>
@@ -86,8 +171,11 @@
     pagesEl.classList.toggle('mv__pages--spread', !!menu.spread);
     pagesEl.scrollTop = 0;
     pagesEl.setAttribute('aria-labelledby', tabs.children[i].id);
+    const label = `Download the ${current.name} ${menu.title} menu (PDF, ${menu.size})`;
     download.href = menu.pdf;
-    download.textContent = `Download the ${menu.title.toLowerCase()} menu (PDF, ${menu.size})`;
+    download.setAttribute('download', `${current.name} ${menu.file || menu.title} menu.pdf`);
+    download.setAttribute('aria-label', label);
+    download.title = label;
   }
 
   function open(brand, from) {
