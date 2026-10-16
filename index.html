@@ -198,7 +198,7 @@
           </ul>
           <p class="card__where">2 outlets · Surat &amp; Ahmedabad</p>
           <div class="card__actions">
-            <a class="btn btn--solid" href="#reserve">Reserve a table</a>
+            <a class="btn btn--solid" href="#reserve" data-reserve="aiko">Reserve a table</a>
             <button class="btn" type="button" data-menu="aiko" aria-haspopup="dialog">View menus</button>
           </div>
         </article>
@@ -214,7 +214,7 @@
           </ul>
           <p class="card__where">1 outlet · Dumas Road, Surat</p>
           <div class="card__actions">
-            <a class="btn btn--solid" href="#reserve">Reserve a table</a>
+            <a class="btn btn--solid" href="#reserve" data-reserve="beshak">Reserve a table</a>
             <button class="btn" type="button" data-menu="beshak" aria-haspopup="dialog">View menu</button>
           </div>
         </article>
@@ -230,7 +230,7 @@
           </ul>
           <p class="card__where">4 outlets · Surat &amp; Ahmedabad</p>
           <div class="card__actions">
-            <a class="btn btn--solid" href="#reserve">Reserve a table</a>
+            <a class="btn btn--solid" href="#reserve" data-reserve="capiche">Reserve a table</a>
             <button class="btn" type="button" data-menu="capiche" aria-haspopup="dialog">View menu</button>
           </div>
         </article>
@@ -244,15 +244,15 @@
       <h2 class="h2 reveal" id="reserve-title">Book your table.</h2>
       <p class="lede reveal">Seven outlets across Surat and Ahmedabad. Book online on TableCheck, give us a call, or message us on Instagram.</p>
 
-      <div class="outlet-group" aria-labelledby="group-aiko">
-        <div class="outlet-group__head reveal">
-          <img class="outlet-group__logo" src="assets/aiko.png" alt="" loading="lazy">
-          <div class="outlet-group__title"><h3 class="outlet-group__name" id="group-aiko">Aiko</h3><p class="outlet-group__meta">Pan-Asian · 2 outlets</p></div>
-          <a class="reserve__btn reserve__btn--ig outlet-group__ig" data-link="aiko.instagram" href="#" aria-label="Message Aiko on Instagram, @aikomfort">@aikomfort</a>
-        </div>
+      <div class="brand-tabs reveal" role="tablist" aria-label="Choose a restaurant">
+        <button class="brand-tab" type="button" role="tab" id="tab-aiko" aria-controls="panel-aiko" aria-selected="true"><img src="assets/aiko.png" alt="" loading="lazy"><span><b>Aiko</b><em>Pan-Asian</em><small>2 outlets</small></span></button>
+        <button class="brand-tab" type="button" role="tab" id="tab-beshak" aria-controls="panel-beshak" aria-selected="false"><img class="is-wide" src="assets/tiger.png" alt="" loading="lazy"><span><b>Beshak</b><em>Indian</em><small>1 outlet</small></span></button>
+        <button class="brand-tab" type="button" role="tab" id="tab-capiche" aria-controls="panel-capiche" aria-selected="false"><img src="assets/capiche.png" alt="" loading="lazy"><span><b>Capiche</b><em>Italian</em><small>4 outlets</small></span></button>
+      </div>
+      <div class="outlet-group" id="panel-aiko" role="tabpanel" aria-labelledby="tab-aiko">
         <div class="outlets">
           <article class="outlet reveal" style="--d: 0">
-            <h4 class="outlet__name">Surat</h4>
+            <h3 class="outlet__name">Surat</h3>
             <address class="outlet__address">[Street address, area]<br>Surat – [PIN]</address>
             <p class="outlet__map"><a class="link-arrow" data-link="aiko-surat.maps" href="#">Directions →</a></p>
             <dl class="outlet__hours"><dt>Lunch</dt><dd>[hh:mm – hh:mm]</dd><dt>Dinner</dt><dd>[hh:mm – hh:mm]</dd></dl>
@@ -263,7 +263,7 @@
             </div>
           </article>
           <article class="outlet reveal" style="--d: 1">
-            <h4 class="outlet__name">Ahmedabad</h4>
+            <h3 class="outlet__name">Ahmedabad</h3>
             <address class="outlet__address">[Street address, area]<br>Ahmedabad – [PIN]</address>
             <p class="outlet__map"><a class="link-arrow" data-link="aiko-ahmedabad.maps" href="#">Directions →</a></p>
             <dl class="outlet__hours"><dt>Lunch</dt><dd>[hh:mm – hh:mm]</dd><dt>Dinner</dt><dd>[hh:mm – hh:mm]</dd></dl>
@@ -274,17 +274,13 @@
             </div>
           </article>
         </div>
+        <p class="outlet-group__dm">Or message Aiko on Instagram <a class="reserve__btn reserve__btn--ig outlet-group__ig" data-link="aiko.instagram" href="#" aria-label="Aiko on Instagram, @aikomfort">@aikomfort</a></p>
       </div>
 
-      <div class="outlet-group" aria-labelledby="group-beshak">
-        <div class="outlet-group__head reveal">
-          <img class="outlet-group__logo is-wide" src="assets/tiger.png" alt="" loading="lazy">
-          <div class="outlet-group__title"><h3 class="outlet-group__name" id="group-beshak">Beshak</h3><p class="outlet-group__meta">Indian · 1 outlet</p></div>
-          <a class="reserve__btn reserve__btn--ig outlet-group__ig" data-link="beshak.instagram" href="#" aria-label="Message Beshak on Instagram, @beshak.indian">@beshak.indian</a>
-        </div>
+      <div class="outlet-group" id="panel-beshak" role="tabpanel" aria-labelledby="tab-beshak">
         <div class="outlets">
           <article class="outlet reveal" style="--d: 0">
-            <h4 class="outlet__name">Dumas Road</h4>
+            <h3 class="outlet__name">Dumas Road</h3>
             <address class="outlet__address">[Building, street], Dumas Road<br>Surat – [PIN]</address>
             <p class="outlet__map"><a class="link-arrow" data-link="beshak-dumas.maps" href="#">Directions →</a></p>
             <dl class="outlet__hours"><dt>Lunch</dt><dd>[hh:mm – hh:mm]</dd><dt>Dinner</dt><dd>[hh:mm – hh:mm]</dd></dl>
@@ -295,17 +291,13 @@
             </div>
           </article>
         </div>
+        <p class="outlet-group__dm">Or message Beshak on Instagram <a class="reserve__btn reserve__btn--ig outlet-group__ig" data-link="beshak.instagram" href="#" aria-label="Beshak on Instagram, @beshak.indian">@beshak.indian</a></p>
       </div>
 
-      <div class="outlet-group" aria-labelledby="group-capiche">
-        <div class="outlet-group__head reveal">
-          <img class="outlet-group__logo" src="assets/capiche.png" alt="" loading="lazy">
-          <div class="outlet-group__title"><h3 class="outlet-group__name" id="group-capiche">Capiche</h3><p class="outlet-group__meta">Italian · 4 outlets</p></div>
-          <a class="reserve__btn reserve__btn--ig outlet-group__ig" data-link="capiche.instagram" href="#" aria-label="Message Capiche on Instagram, @pizza.capiche">@pizza.capiche</a>
-        </div>
+      <div class="outlet-group" id="panel-capiche" role="tabpanel" aria-labelledby="tab-capiche">
         <div class="outlets">
           <article class="outlet reveal" style="--d: 0">
-            <h4 class="outlet__name">Piplod</h4>
+            <h3 class="outlet__name">Piplod</h3>
             <address class="outlet__address">Gymkhana Road, Piplod<br>Surat</address>
             <p class="outlet__map"><a class="link-arrow" data-link="capiche-piplod.maps" href="#">Directions →</a></p>
             <dl class="outlet__hours"><dt>Lunch</dt><dd>13:00 – 15:30</dd><dt>Dinner</dt><dd>18:00 – 22:30</dd></dl>
@@ -316,7 +308,7 @@
             </div>
           </article>
           <article class="outlet reveal" style="--d: 1">
-            <h4 class="outlet__name">Vesu</h4>
+            <h3 class="outlet__name">Vesu</h3>
             <address class="outlet__address">IWC, Vesu<br>Surat</address>
             <p class="outlet__map"><a class="link-arrow" data-link="capiche-vesu.maps" href="#">Directions →</a></p>
             <dl class="outlet__hours"><dt>Lunch</dt><dd>13:00 – 15:30</dd><dt>Dinner</dt><dd>18:00 – 23:30</dd></dl>
@@ -327,7 +319,7 @@
             </div>
           </article>
           <article class="outlet reveal" style="--d: 2">
-            <h4 class="outlet__name">Ambli</h4>
+            <h3 class="outlet__name">Ambli</h3>
             <address class="outlet__address">Ason Vista, Ambli<br>Ahmedabad</address>
             <p class="outlet__map"><a class="link-arrow" data-link="capiche-ambli.maps" href="#">Directions →</a></p>
             <dl class="outlet__hours"><dt>Lunch</dt><dd>12:30 – 15:30</dd><dt>Dinner</dt><dd>18:00 – 23:30</dd></dl>
@@ -338,7 +330,7 @@
             </div>
           </article>
           <article class="outlet reveal" style="--d: 3">
-            <h4 class="outlet__name">Uni</h4>
+            <h3 class="outlet__name">Uni</h3>
             <address class="outlet__address">Adore Aspire<br>Ahmedabad</address>
             <p class="outlet__map"><a class="link-arrow" data-link="capiche-uni.maps" href="#">Directions →</a></p>
             <dl class="outlet__hours"><dt>Lunch</dt><dd>12:30 – 15:30</dd><dt>Dinner</dt><dd>18:00 – 23:30</dd></dl>
@@ -349,6 +341,7 @@
             </div>
           </article>
         </div>
+        <p class="outlet-group__dm">Or message Capiche on Instagram <a class="reserve__btn reserve__btn--ig outlet-group__ig" data-link="capiche.instagram" href="#" aria-label="Capiche on Instagram, @pizza.capiche">@pizza.capiche</a></p>
       </div>
 
       <p class="reserve__note reveal">Large group or private event? Call <a data-link="group.phone" href="#">[Phone number]</a> or message us on <a data-link="group.instagram" href="#">Instagram</a>.</p>

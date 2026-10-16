@@ -56,6 +56,37 @@
     }
   });
 
+  // Book your table: the three brands in a row, and the one picked shows its outlets. Arrow keys
+  // move along the row; a brand card's Reserve button opens that brand.
+  const tabs = [...document.querySelectorAll('.brand-tab')];
+  const pick = (tab, focus = false) => {
+    tabs.forEach((t) => {
+      const on = t === tab;
+      t.setAttribute('aria-selected', String(on));
+      t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+    });
+    if (focus) tab.focus();
+  };
+  if (tabs.length) {
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => pick(t));
+      t.addEventListener('keydown', (e) => {
+        const to = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
+        if (to === undefined) return;
+        e.preventDefault();
+        pick(tabs[(to + tabs.length) % tabs.length], true);
+      });
+    });
+    pick(tabs.find((t) => t.getAttribute('aria-selected') === 'true') || tabs[0]);
+    document.querySelectorAll('[data-reserve]').forEach((a) => {
+      a.addEventListener('click', () => {
+        const tab = document.getElementById(`tab-${a.dataset.reserve}`);
+        if (tab) pick(tab);
+      });
+    });
+  }
+
   // each country's landmark in its card, and the mandala behind the About art
   const svg = (body) =>
     `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`;
