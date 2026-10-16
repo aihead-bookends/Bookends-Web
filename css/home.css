@@ -1010,8 +1010,6 @@ html { scroll-behavior: smooth; }
   gap: 8px 24px;
 }
 
-.footer__credit a { color: inherit; text-underline-offset: 3px; }
-
 /* --- small screens ----------------------------------------------------------- */
 
 @media (max-width: 900px) {
