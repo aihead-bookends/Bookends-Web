@@ -16,7 +16,7 @@
     // each outlet: its TableCheck booking page, Google Maps link and phone number
     'aiko-surat':         { booking: '', maps: 'https://maps.app.goo.gl/sbrYwXcPgCim5H828', phone: '' },   // Pal, Surat
     'aiko-ahmedabad':     { booking: '', maps: 'https://maps.app.goo.gl/Dr24fvCxHMh6JU3a8', phone: '' },   // Ambli, Ahmedabad
-    'beshak-dumas':       { booking: '', maps: 'https://maps.app.goo.gl/s4u4tZeTbHzmLmo1A', phone: '' },   // Dumas Road, near Surat Airport
+    'beshak-dumas':       { booking: '', maps: 'https://maps.app.goo.gl/s4u4tZeTbHzmLmo1A', phone: '' },   // Plot 444/1-3, Dumas Road, Surat
     'capiche-piplod':     { booking: '', maps: 'https://maps.app.goo.gl/4f9KeHX7ecbRLps87', phone: '' },   // Samanvay, Gymkhana Road, Piplod, Surat
     'capiche-vesu':       { booking: '', maps: 'https://maps.app.goo.gl/wNMMwpsE9Bm7QkMX7', phone: '' },   // International Wealth Center, Vesu, Surat
     'capiche-ambli':      { booking: '', maps: 'https://maps.app.goo.gl/StY1dgToBH54QjZj9', phone: '' },   // Ason Vista, near Karnavati Club, Ahmedabad
