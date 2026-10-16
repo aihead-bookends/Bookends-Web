@@ -59,6 +59,10 @@
   object-fit: contain;
 }
 
+.mv__logo.is-wide { width: 50px; }
+
+.mv__tabs[hidden] { display: none; }
+
 .mv__tabs {
   display: flex;
   flex-wrap: wrap;
@@ -85,6 +89,9 @@
 }
 
 .mv__close {
+  grid-column: -2 / -1;     /* always the far right, with or without tabs */
+  grid-row: 1;
+  justify-self: end;
   display: grid;
   place-items: center;
   width: 42px;

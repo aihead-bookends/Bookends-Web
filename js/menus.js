@@ -42,6 +42,20 @@
         },
       ],
     },
+    beshak: {
+      name: 'Beshak',
+      logo: 'assets/tiger.png',
+      wideLogo: true,
+      menus: [
+        {
+          title: 'Food & drinks',
+          pdf: 'assets/menue/Beshak/Beshak%20New.pdf',
+          size: '7.2 MB',
+          pages: ['assets/menue/Beshak/pages/menu-1.webp', 'assets/menue/Beshak/pages/menu-2.webp'],
+          ratio: 1414 / 2000,
+        },
+      ],
+    },
   };
 
   const box = document.getElementById('menu-viewer');
@@ -80,14 +94,17 @@
     current = MENUS[brand];
     if (!current) return;
     opener = from;
+    const several = current.menus.length > 1;
     logo.src = current.logo;
-    brandName.textContent = `${current.name} menus`;
+    logo.classList.toggle('is-wide', !!current.wideLogo);
+    brandName.textContent = several ? `${current.name} menus` : `${current.name} menu`;
+    tabs.hidden = !several;          // one menu: no tabs to choose between
     tabs.innerHTML = current.menus.map((m, i) =>
       `<button type="button" role="tab" id="mv-tab-${i}" aria-controls="mv-pages">${m.title}</button>`).join('');
     showMenu(0);
     box.showModal();
     document.documentElement.classList.add('is-locked');
-    tabs.children[0].focus();
+    (several ? tabs.children[0] : box.querySelector('.mv__close')).focus();
   }
 
   openers.forEach((b) => b.addEventListener('click', (e) => {
