@@ -878,19 +878,10 @@ html { scroll-behavior: smooth; }
   outline-offset: 3px;
 }
 
-/* and Instagram for the brand as a whole, under its outlets */
+/* and the brand's Instagram, under its outlets */
 .reserve__ig {
   --icon: var(--icon-instagram);
   min-height: 44px;
-}
-
-/* what the button does: shown under it, and 'Copied!' once tapped (js/home.js) */
-.reserve__hint {
-  margin: -10px 0 0;
-  font-size: 12px;
-  line-height: 1.4;
-  text-align: center;
-  color: var(--ink-soft);
 }
 
 /* a narrow card (a phone, a small laptop): the outlet's name on its own line, the two buttons
