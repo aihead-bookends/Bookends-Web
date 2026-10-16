@@ -669,6 +669,7 @@ html { scroll-behavior: smooth; }
   display: flex;
   flex-direction: column;
   padding: 20px;
+  color: var(--ink);                 /* a light card on the dark band */
   background: var(--paper-light);
   border: 1px solid var(--line);
   border-radius: 18px;
@@ -726,12 +727,17 @@ html { scroll-behavior: smooth; }
 .outlet__phone { margin: 0 0 16px; font-size: 14px; }
 .outlet__phone a { color: var(--ink); text-decoration: none; }
 
-.outlet__links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 18px;
-  margin: auto 0 0;
+.outlet__map { margin: -2px 0 12px; }
+
+/* the three ways to book: online (TableCheck) across the top, Call and Instagram under it */
+.outlet__book {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: auto;
 }
+
+.outlet__book .reserve__btn--book { grid-column: 1 / -1; }
 
 .link-arrow {
   font: 600 14px/1 var(--font-ui);
@@ -741,7 +747,7 @@ html { scroll-behavior: smooth; }
 
 .link-arrow:hover { color: var(--accent); }
 
-/* --- reservations (dark band) ------------------------------------------------ */
+/* --- dark band (locations & reservations) ------------------------------------ */
 
 .section--dark {
   background: var(--ink);
@@ -751,83 +757,11 @@ html { scroll-behavior: smooth; }
 .section--dark .eyebrow { color: var(--accent-on-dark); }
 .section--dark .lede { color: rgba(243, 236, 223, .72); }
 
-.reserve {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  align-items: start;               /* each card as tall as its outlets */
-  gap: 16px;
-  margin-top: clamp(36px, 5vw, 56px);
-}
+.section--dark .city__name { border-color: rgba(243, 236, 223, .85); }
+.section--dark .city__name span { color: rgba(243, 236, 223, .6); }
 
-.reserve__brand {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  padding: 20px;
-  color: var(--ink);
-  background: var(--paper-light);
-  border-radius: 18px;
-}
-
-.reserve__head {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.reserve__logo {
-  width: 64px;
-  height: 48px;
-  object-fit: contain;
-}
-
-.reserve__name {
-  display: block;
-  font: 600 22px/1.1 var(--font-display);
-}
-
-.reserve__cuisine {
-  display: block;
-  margin-top: 4px;
-  font: italic 500 14px/1 var(--font-display);
-  color: var(--accent);
-}
-
-/* each outlet a row: its name, then Book online (TableCheck) and Call */
-.reserve__brand { container-type: inline-size; }
-
-.reserve__outlets {
-  display: grid;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.reserve__outlet {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 0;
-  border-top: 1px solid var(--line);
-}
-
-.reserve__where {
-  flex: 1 1 auto;
-  min-width: 0;
-  font: 600 15px/1.15 var(--font-ui);
-}
-
-.reserve__where small {
-  display: block;
-  margin-top: 3px;
-  font: 500 11px/1 var(--font-ui);
-  letter-spacing: .06em;
-  color: var(--ink-soft);
-}
-
-.reserve__btn,
-.reserve__ig {
+/* the booking buttons in each outlet card: Book online, Call, Instagram */
+.reserve__btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -842,8 +776,7 @@ html { scroll-behavior: smooth; }
   transition: background-color .2s, border-color .2s, color .2s;
 }
 
-.reserve__btn::before,
-.reserve__ig::before {
+.reserve__btn::before {
   content: '';
   flex: none;
   width: 15px;
@@ -861,34 +794,20 @@ html { scroll-behavior: smooth; }
 }
 
 .reserve__btn--call,
-.reserve__ig { color: var(--ink); }
+.reserve__btn--ig { color: var(--ink); }
 
 .reserve__btn--call { --icon: var(--icon-phone); }
+.reserve__btn--ig { --icon: var(--icon-instagram); }
 
-.reserve__btn:hover,
-.reserve__ig:hover {
+.reserve__btn:hover {
   color: var(--paper);
   background: var(--accent);
   border-color: var(--accent);
 }
 
-.reserve__btn:focus-visible,
-.reserve__ig:focus-visible {
+.reserve__btn:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
-}
-
-/* and the brand's Instagram, under its outlets */
-.reserve__ig {
-  --icon: var(--icon-instagram);
-  min-height: 44px;
-}
-
-/* a narrow card (a phone, a small laptop): the outlet's name on its own line, the two buttons
-   sharing the one under it */
-@container (max-width: 330px) {
-  .reserve__where { flex-basis: 100%; }
-  .reserve__btn { flex: 1; }
 }
 
 .reserve__note {
@@ -1013,8 +932,7 @@ html { scroll-behavior: smooth; }
 /* --- small screens ----------------------------------------------------------- */
 
 @media (max-width: 900px) {
-  .cards,
-  .reserve { grid-template-columns: 1fr; }
+  .cards { grid-template-columns: 1fr; }
 
   .outlets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
