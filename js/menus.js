@@ -1,0 +1,134 @@
+/* ==========================================================================
+   Bookends Hospitality: the menu viewer
+   A button with data-menu="aiko" opens that brand's menus in a full-screen
+   reader: one tab per menu, its pages as images (tap a page to zoom), and
+   the original PDF to download. A menu with spread: true shows its pages
+   side by side (fitted to the screen); otherwise they're stacked.
+
+   To add a brand's menus: put the PDFs in assets/menue/<Brand>/, render each
+   page to assets/menue/<Brand>/pages/ (WebP, ~2000px on the long side), add an
+   entry below, and give that brand's card button data-menu="<brand>".
+   ========================================================================== */
+(() => {
+  'use strict';
+
+  const MENUS = {
+    aiko: {
+      name: 'Aiko',
+      logo: 'assets/aiko.png',
+      menus: [
+        {
+          title: 'Food',
+          pdf: 'assets/menue/Aiko/Aiko_Menu_Food.pdf',
+          size: '1.8 MB',
+          pages: ['assets/menue/Aiko/pages/food-1.webp', 'assets/menue/Aiko/pages/food-2.webp'],
+          ratio: 1414 / 1999,
+        },
+        {
+          title: 'Drinks',
+          pdf: 'assets/menue/Aiko/Aiko_Drinks_Menu.pdf',
+          size: '1 MB',
+          pages: ['assets/menue/Aiko/pages/drinks-1.webp', 'assets/menue/Aiko/pages/drinks-2.webp'],
+          ratio: 848 / 1800,
+          spread: true,     // both pages side by side, like an open card
+        },
+        {
+          title: 'Chumma Chinese',
+          pdf: 'assets/menue/Aiko/Chumma%20Chinese.pdf',
+          size: '10.8 MB',
+          pages: ['assets/menue/Aiko/pages/chumma-chinese-1.webp', 'assets/menue/Aiko/pages/chumma-chinese-2.webp'],
+          ratio: 1021 / 1800,
+          spread: true,
+        },
+      ],
+    },
+  };
+
+  const box = document.getElementById('menu-viewer');
+  const openers = [...document.querySelectorAll('[data-menu]')];
+  if (!box || !openers.length) return;
+
+  const logo = box.querySelector('.mv__logo');
+  const brandName = box.querySelector('.mv__brand');
+  const tabs = box.querySelector('.mv__tabs');
+  const pagesEl = box.querySelector('.mv__pages');
+  const download = box.querySelector('.mv__download');
+  let current = null;
+  let opener = null;
+
+  function showMenu(i) {
+    const menu = current.menus[i];
+    [...tabs.children].forEach((t, k) => {
+      t.setAttribute('aria-selected', String(k === i));
+      t.tabIndex = k === i ? 0 : -1;
+    });
+    pagesEl.innerHTML = menu.pages.map((src, k) => `
+      <figure class="mv__page" style="--ratio: ${menu.ratio}">
+        <button class="mv__zoom" type="button" aria-label="Zoom page ${k + 1} of ${menu.pages.length}" aria-pressed="false">
+          <img src="${src}" alt="${current.name} ${menu.title} menu, page ${k + 1} of ${menu.pages.length}" ${k ? 'loading="lazy"' : ''} decoding="async">
+        </button>
+        <figcaption>Page ${k + 1} of ${menu.pages.length}</figcaption>
+      </figure>`).join('');
+    pagesEl.classList.toggle('mv__pages--spread', !!menu.spread);
+    pagesEl.scrollTop = 0;
+    pagesEl.setAttribute('aria-labelledby', tabs.children[i].id);
+    download.href = menu.pdf;
+    download.textContent = `Download the ${menu.title.toLowerCase()} menu (PDF, ${menu.size})`;
+  }
+
+  function open(brand, from) {
+    current = MENUS[brand];
+    if (!current) return;
+    opener = from;
+    logo.src = current.logo;
+    brandName.textContent = `${current.name} menus`;
+    tabs.innerHTML = current.menus.map((m, i) =>
+      `<button type="button" role="tab" id="mv-tab-${i}" aria-controls="mv-pages">${m.title}</button>`).join('');
+    showMenu(0);
+    box.showModal();
+    document.documentElement.classList.add('is-locked');
+    tabs.children[0].focus();
+  }
+
+  openers.forEach((b) => b.addEventListener('click', (e) => {
+    e.preventDefault();
+    open(b.dataset.menu, b);
+  }));
+
+  // tabs: click, or arrow keys between them
+  tabs.addEventListener('click', (e) => {
+    const t = e.target.closest('[role="tab"]');
+    if (t) showMenu([...tabs.children].indexOf(t));
+  });
+  tabs.addEventListener('keydown', (e) => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    const all = [...tabs.children];
+    const i = all.indexOf(document.activeElement);
+    const next = (i + (e.key === 'ArrowRight' ? 1 : -1) + all.length) % all.length;
+    showMenu(next);
+    all[next].focus();
+  });
+
+  // tap a page to zoom in (read the small print); tap again to fit
+  pagesEl.addEventListener('click', (e) => {
+    const z = e.target.closest('.mv__zoom');
+    if (!z) return;
+    const on = z.getAttribute('aria-pressed') !== 'true';
+    z.setAttribute('aria-pressed', String(on));
+    z.closest('.mv__page').classList.toggle('is-zoomed', on);
+    if (on && !pagesEl.classList.contains('mv__pages--spread')) {
+      // keep the spot that was tapped under the finger
+      const r = z.getBoundingClientRect();
+      const fx = (e.clientX - r.left) / r.width;
+      requestAnimationFrame(() => { z.scrollLeft = fx * z.scrollWidth - z.clientWidth / 2; });
+    }
+  });
+
+  box.querySelector('.mv__close').addEventListener('click', () => box.close());
+  box.addEventListener('click', (e) => { if (e.target === box) box.close(); });   // the backdrop
+  box.addEventListener('close', () => {
+    document.documentElement.classList.remove('is-locked');
+    pagesEl.innerHTML = '';
+    if (opener) opener.focus();
+  });
+})();

@@ -1,0 +1,235 @@
+/* ==========================================================================
+   Bookends Hospitality: the menu viewer (js/menus.js)
+   ========================================================================== */
+
+.is-locked,
+.is-locked body { overflow: hidden; }
+
+.menu-viewer {
+  width: min(980px, 100%);
+  max-width: none;
+  height: min(94vh, 1200px);
+  height: min(94svh, 1200px);
+  max-height: none;
+  margin: auto;
+  padding: 0;
+  color: var(--ink);
+  background: var(--paper);
+  border: 0;
+  border-radius: 20px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .35);
+}
+
+.menu-viewer[open] {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  animation: mv-in .25s ease;
+}
+
+.menu-viewer::backdrop {
+  background: rgba(12, 12, 12, .7);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+@keyframes mv-in { from { opacity: 0; transform: translateY(12px); } }
+
+/* header: brand, tabs, close */
+.mv__head {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px 18px;
+  padding: 16px 18px 14px 22px;
+  border-bottom: 1px solid var(--line);
+}
+
+.mv__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font: 600 20px/1 var(--font-display);
+  white-space: nowrap;
+}
+
+.mv__logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.mv__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mv__tabs button {
+  min-height: 38px;
+  padding: 8px 16px;
+  font: 500 14px/1 var(--font-ui);
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid rgba(17, 17, 17, .25);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.mv__tabs button:hover { border-color: var(--ink); }
+
+.mv__tabs button[aria-selected="true"] {
+  color: var(--paper);
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.mv__close {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  color: var(--ink);
+  background: var(--paper-light);
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.mv__close:hover { border-color: var(--ink); }
+
+.menu-viewer :focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* the pages, stacked; scroll to read */
+.mv__pages {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 22px clamp(12px, 3vw, 28px);
+  display: grid;
+  gap: 18px;
+  justify-items: center;
+  background: #E9E1D2;
+}
+
+.mv__page {
+  /* A4 pages up to 860px wide; narrower pages (drinks, Chumma) in proportion */
+  width: min(100%, calc(1216px * var(--ratio)));
+  margin: 0;
+}
+
+.mv__zoom {
+  display: block;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+  background: #fff;
+  border: 0;
+  border-radius: 6px;
+  box-shadow: 0 6px 24px rgba(17, 17, 17, .18);
+  cursor: zoom-in;
+}
+
+.mv__zoom img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: var(--ratio);
+}
+
+/* zoomed: the page doubles in width and scrolls sideways inside its frame */
+.mv__page.is-zoomed .mv__zoom {
+  overflow-x: auto;
+  cursor: zoom-out;
+}
+
+.mv__page.is-zoomed .mv__zoom img { width: 200%; max-width: none; }
+
+/* side by side (Drinks, Chumma Chinese): both pages fitted to the space, like an
+   open card; tapping a page opens it across the full width to read */
+.mv__pages { container-type: size; }
+
+.mv__pages--spread {
+  grid-template-columns: repeat(2, auto);
+  justify-content: center;
+  align-content: start;
+  column-gap: 14px;
+}
+
+.mv__pages--spread .mv__page {
+  width: min(calc(50cqw - 7px), calc((100cqh - 26px) * var(--ratio)));
+}
+
+.mv__pages--spread .mv__page.is-zoomed {
+  grid-column: 1 / -1;
+  width: min(100cqw, calc(1600px * var(--ratio)));
+}
+
+.mv__pages--spread .is-zoomed .mv__zoom { overflow: hidden; }
+.mv__pages--spread .is-zoomed .mv__zoom img { width: 100%; }
+
+.mv__page figcaption {
+  margin-top: 8px;
+  font: 500 11px/1 var(--font-ui);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--ink-soft);
+}
+
+/* footer: the PDF */
+.mv__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 18px;
+  padding: 12px 22px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  border-top: 1px solid var(--line);
+}
+
+.mv__download {
+  font: 600 13px/1.3 var(--font-ui);
+  color: var(--ink);
+  text-underline-offset: 4px;
+}
+
+/* phones: full screen, tabs under the title */
+@media (max-width: 600px) {
+  .menu-viewer {
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    border-radius: 0;
+  }
+
+  .mv__head {
+    grid-template-columns: 1fr auto;
+    padding: 12px 12px 10px 16px;
+  }
+
+  .mv__tabs {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .mv__tabs button { flex: none; }
+
+  .mv__pages { padding: 14px 10px; gap: 14px; }
+  .mv__page { width: 100%; }
+
+  .mv__foot { padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); }
+  .mv__hint { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-viewer[open] { animation: none; }
+}
