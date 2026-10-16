@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Bookends Hospitality: chai intro
+   Bookends Hospitality: the intro (16 opening concepts, see js/openings.js)
    This stylesheet lays out the FINAL "bookends" pose. intro.js animates into it.
    ========================================================================== */
 
@@ -9,6 +9,7 @@
   --ink: #111111;
   --ink-soft: rgba(17, 17, 17, .62);
   --accent: #C8553D;
+  --stroke: 3px;
 
   /* stage geometry */
   --floor: 62%;                         /* where everyone stands, from the top */
@@ -18,6 +19,7 @@
   --tw-max: 36vw;                       /* tiger max width (it's wide: width usually wins) */
   --aiko-x: 20%;
   --capiche-x: 80%;
+  --bs: clamp(84px, 16vmin, 170px);     /* sushi / pizza hit burst size */
   --doodle: clamp(34px, 6.5vmin, 80px); /* background icon size */
 
   --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
@@ -259,6 +261,33 @@ body {
   bottom: calc(var(--s) * -.03);
 }
 
+/* --- brawl cloud ---------------------------------------------------------- */
+
+.cloud {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 3;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.cloud__wobble,
+.cloud__layer {
+  position: absolute;
+  inset: 0;
+}
+
+.puff {
+  position: absolute;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--paper-light);
+}
+
+/* outlines sit under the fills, so overlapping puffs read as one cloud */
+.cloud__layer--outline .puff { box-shadow: 0 0 0 var(--stroke) var(--ink); }
+
 /* --- effects -------------------------------------------------------------- */
 
 .fx {
@@ -275,9 +304,81 @@ body {
   visibility: hidden;
 }
 
+.bolt {
+  width: clamp(84px, 18vmin, 200px);
+  aspect-ratio: 1;
+}
+
+.bolt svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.bolt path {
+  fill: #FFFFFF;
+  stroke: var(--ink);
+  stroke-width: 3.4;
+}
+
+.bolt .bolt__sparks {
+  fill: none;
+  stroke-width: 2.6;
+}
+
+.burst {
+  width: var(--bs);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+}
+
+.burst > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.burst polygon {
+  fill: var(--paper-light);
+  stroke: var(--ink);
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+
+.burst__food {
+  position: relative;
+  display: block;
+  width: 64%;
+  aspect-ratio: 1;
+  transform: rotate(-10deg);
+}
+
+.burst__food svg {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+
+.bit {
+  font: 900 clamp(16px, 3.6vmin, 36px)/1 var(--font-display);
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.bit--accent { color: var(--accent); }
+
 .heart {
   font: 900 clamp(18px, 3.4vmin, 34px)/1 var(--font-display);
   color: var(--accent);
+}
+
+.ring {
+  border-radius: 50%;
+  border: 3px solid var(--ink);
 }
 
 .dust {
@@ -288,21 +389,39 @@ body {
   box-shadow: 0 0 0 2px var(--ink);
 }
 
-/* props: the chai tray, cups and steam (on the effects layer or carried by a character) */
+/* --- props used by the opening variations ---------------------------------- */
+
+/* props can also sit on the background layer (behind everyone), e.g. the host's door */
+.bg > .prop {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
 .prop svg,
-.held svg {
+.held svg,
+.bit--icon svg {
   display: block;
   width: 100%;
   height: auto;
   overflow: visible;
 }
 
+.bit--icon { width: clamp(28px, 5.5vmin, 56px); }
+
+.noodle svg { height: 100%; }
+
 .held {
   position: absolute;
   pointer-events: none;
 }
 
-/* what they say: Sushi! Chai? Cheers! */
+.tray__food {
+  display: block;
+  width: 66%;
+  margin: 0 auto -10%;
+}
+
 .say {
   font: italic 900 clamp(24px, 5vmin, 60px)/1 var(--font-display);
   color: var(--accent);
@@ -317,6 +436,132 @@ body {
 }
 
 .say--small { font-size: clamp(16px, 3vmin, 34px); }
+
+.zzz {
+  font: italic 800 clamp(18px, 3.6vmin, 40px)/1 var(--font-display);
+  color: var(--ink);
+}
+
+/* the storybook: an open book with three spreads, pages fold at the spine */
+.book { aspect-ratio: 2.4; }
+
+.book > span { position: absolute; }
+
+.book__back {
+  top: -3%;
+  bottom: -3%;
+  width: 51.5%;
+  background: var(--accent);
+  border: 3px solid var(--ink);
+}
+
+.book__back--l { left: -1.5%; border-radius: 10px 0 0 10px; }
+.book__back--r { right: -1.5%; border-radius: 0 10px 10px 0; }
+
+.book__page {
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6%;
+  color: var(--ink);
+  background: var(--paper-light);
+  border: 3px solid var(--ink);
+}
+
+.book__page--l { left: 0; border-radius: 6px 0 0 6px; }
+.book__page--r { right: 0; border-radius: 0 6px 6px 0; }
+
+.book__art {
+  display: flex;
+  justify-content: center;
+  gap: 10%;
+  width: 78%;
+}
+
+.book__art svg { width: 40%; height: auto; }
+
+.book__label {
+  font: italic 600 clamp(14px, 2.6vmin, 30px)/1 var(--font-display);
+  color: var(--accent);
+}
+
+.book__spine {
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  z-index: 30;
+  width: 3px;
+  margin-left: -1.5px;
+  background: var(--ink);
+}
+
+.book__cover {
+  top: -3%;
+  bottom: -3%;
+  right: -1.5%;
+  z-index: 40;
+  width: 51.5%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6%;
+  background: var(--accent);
+  border: 3px solid var(--ink);
+  border-radius: 0 10px 10px 0;
+}
+
+.book__cover img {
+  width: 66%;
+  padding: 4%;
+  background: var(--paper-light);
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+}
+
+.book__cover b {
+  font: 600 clamp(14px, 2.8vmin, 32px)/1 var(--font-display);
+  color: var(--paper-light);
+}
+
+/* Holi: soft clouds of coloured powder; --c is the colour */
+.powder {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--c) 35%, transparent);
+}
+
+.powder--pinch { background: radial-gradient(closest-side, var(--c) 62%, transparent); }
+
+/* "Say paneer!": the instant photo from the tiger's camera, and its flash */
+.polaroid__frame {
+  display: block;
+  padding: 7% 7% 24%;
+  background: #FFFFFF;
+  border: 3px solid var(--ink);
+  border-radius: 3px;
+  box-shadow: 4px 6px 0 rgba(17, 17, 17, .14);
+}
+
+.polaroid__pic {
+  display: block;
+  background: #2B2522;          /* develops to paper in the timeline */
+}
+
+.polaroid__pic img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  padding: 8%;
+  opacity: 0;
+}
+
+.flash { background: #FFFFFF; }
 
 /* --- title ---------------------------------------------------------------- */
 
@@ -503,3 +748,58 @@ body {
   .sound.is-playing .sound__waves,
   .sound.is-waiting::after { animation: none; }
 }
+
+/* --- variation switcher (variation branch only) ---------------------------- */
+
+.variants {
+  position: absolute;
+  top: 12px;
+  left: 0;
+  right: 0;
+  z-index: 12;
+  display: flex;
+  gap: 4px;
+  width: max-content;
+  max-width: calc(100% - 24px);
+  margin-inline: auto;
+  padding: 4px;
+  overflow-x: auto;
+  background: rgba(17, 17, 17, .86);
+  border-radius: 999px;
+  scrollbar-width: none;
+}
+
+.variants button {
+  flex: none;
+  padding: 8px 12px;
+  font: 600 12px/1 var(--font-ui);
+  color: var(--paper);
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.variants__label {
+  flex: none;
+  align-self: center;
+  padding: 0 4px 0 10px;
+  font: 600 10px/1 var(--font-ui);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(243, 236, 223, .55);
+  border-left: 1px solid rgba(243, 236, 223, .25);
+}
+
+.variants button:hover { background: rgba(243, 236, 223, .14); }
+
+.variants button[aria-pressed="true"] {
+  color: var(--ink);
+  background: var(--paper);
+}
+
+.variants button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
