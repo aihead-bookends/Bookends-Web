@@ -153,6 +153,55 @@
   const download = box.querySelector('.mv__download');
   let current = null;
   let opener = null;
+  let showing = 0;              // which showMenu call is current (a tab change makes older ones stale)
+
+  /* --- fast loading ----------------------------------------------------------
+     Every page exists in three sizes: name.400.webp, name.640.webp and name.webp
+     (full, ~1400–2000px). The viewer shows the smallest that looks sharp on the
+     screen, and loads the full one only when a page is zoomed. Menus are also
+     fetched ahead: the first menu of each brand once the brand cards are in
+     view or a View menu button is touched, and the other tabs as soon as a
+     menu has opened. Nothing is fetched ahead when the visitor saves data. */
+  const phone = () => window.innerWidth <= 600;
+  const sized = (src, w) => (w ? src.replace(/\.webp$/, `.${w}.webp`) : src);
+  const sizeFor = (menu) => (menu.spread ? (phone() ? 400 : 640) : (phone() ? 640 : 0));   // 0 = full
+  const onFirstScreen = (menu) => (menu.spread ? 4 : 2);
+  const firstScreen = (menu) => menu.pages.slice(0, onFirstScreen(menu)).map((p) => sized(p, sizeFor(menu)));
+  const conn = navigator.connection || {};
+  const thrifty = conn.saveData || /(^|-)2g$/.test(conn.effectiveType || '');
+  const fetched = new Map();     // url → { img, done }
+  function prefetch(urls) {
+    return Promise.all(urls.map((u) => {
+      if (!fetched.has(u)) {
+        const img = new Image();
+        img.decoding = 'async';
+        img.src = u;
+        fetched.set(u, { img, done: (img.decode ? img.decode() : Promise.resolve()).catch(() => {}) });
+      }
+      return fetched.get(u).done;
+    }));
+  }
+  // stop fetching ahead whatever isn't needed now (keeps the line clear for the menu being opened)
+  function cancelPrefetch(keep) {
+    fetched.forEach(({ img }, u) => {
+      if (!img.complete && !keep.includes(u)) {
+        img.src = '';
+        fetched.delete(u);
+      }
+    });
+  }
+  const prefetchMenu = (brand, i = 0) => {
+    const m = MENUS[brand] && MENUS[brand].menus[i];
+    return m && !thrifty ? prefetch(firstScreen(m)) : Promise.resolve();
+  };
+  // once a menu is open: the other tabs' first pages, one after another
+  async function prefetchOtherTabs() {
+    const brand = current;
+    for (let i = 1; i < brand.menus.length; i++) {
+      if (current !== brand || thrifty) return;
+      await prefetch(firstScreen(brand.menus[i]));
+    }
+  }
 
   function showMenu(i) {
     const menu = current.menus[i];
@@ -161,15 +210,26 @@
       t.tabIndex = k === i ? 0 : -1;
     });
     const ratio = (k) => (Array.isArray(menu.ratio) ? menu.ratio[k] : menu.ratio);
+    const size = sizeFor(menu);
+    const first = onFirstScreen(menu);
     pagesEl.innerHTML = menu.pages.map((src, k) => `
       <figure class="mv__page" style="--ratio: ${ratio(k)}">
         <button class="mv__zoom" type="button" title="Tap to zoom" aria-label="Zoom page ${k + 1} of ${menu.pages.length}" aria-pressed="false">
-          <img src="${src}" alt="${current.name} ${menu.title} menu, page ${k + 1} of ${menu.pages.length}" ${k ? 'loading="lazy"' : ''} decoding="async">
+          <img ${k < first ? 'src' : 'data-src'}="${sized(src, size)}" data-full="${src}" alt="${current.name} ${menu.title} menu, page ${k + 1} of ${menu.pages.length}" ${k >= first ? 'loading="lazy"' : 'fetchpriority="high"'} decoding="async">
         </button>
         <figcaption>Page ${k + 1} of ${menu.pages.length}</figcaption>
       </figure>`).join('');
     pagesEl.classList.toggle('mv__pages--spread', !!menu.spread);
     pagesEl.scrollTop = 0;
+    // the rest of the pages start only once the first screen is sharp, so they don't
+    // compete with it for the connection (the browser's own lazy loading reaches far ahead)
+    const shown = ++showing;
+    const imgs = [...pagesEl.querySelectorAll('img')];
+    Promise.all(imgs.slice(0, first).map((im) => (im.decode ? im.decode() : Promise.resolve()).catch(() => {})))
+      .then(() => {
+        if (shown !== showing) return;
+        imgs.slice(first).forEach((im) => { im.src = im.dataset.src; });
+      });
     pagesEl.setAttribute('aria-labelledby', tabs.children[i].id);
     const label = `Download the ${current.name} ${menu.title} menu (PDF, ${menu.size})`;
     download.href = menu.pdf;
@@ -189,21 +249,47 @@
     tabs.hidden = !several;          // one menu: no tabs to choose between
     tabs.innerHTML = current.menus.map((m, i) =>
       `<button type="button" role="tab" id="mv-tab-${i}" aria-controls="mv-pages">${m.title}</button>`).join('');
+    cancelPrefetch(firstScreen(current.menus[0]));
     showMenu(0);
     box.showModal();
+    prefetch(firstScreen(current.menus[0])).then(prefetchOtherTabs);
     document.documentElement.classList.add('is-locked');
     (several ? tabs.children[0] : box.querySelector('.mv__close')).focus();
   }
 
-  openers.forEach((b) => b.addEventListener('click', (e) => {
-    e.preventDefault();
-    open(b.dataset.menu, b);
-  }));
+  openers.forEach((b) => {
+    b.addEventListener('click', (e) => {
+      e.preventDefault();
+      open(b.dataset.menu, b);
+    });
+    ['pointerenter', 'touchstart', 'focus'].forEach((type) =>
+      b.addEventListener(type, () => prefetchMenu(b.dataset.menu), { passive: true, once: true }));
+  });
+  tabs.addEventListener('pointerover', (e) => {
+    const t = e.target.closest('[role="tab"]');
+    if (t && current) prefetch(firstScreen(current.menus[[...tabs.children].indexOf(t)]));
+  });
+
+  // the brand cards come into view: fetch each brand's first menu ahead, when the browser is idle
+  const cards = document.getElementById('brands');
+  if (cards && 'IntersectionObserver' in window && !thrifty) {
+    const io = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      io.disconnect();
+      const idle = window.requestIdleCallback || ((cb) => setTimeout(cb, 200));
+      idle(() => openers.reduce((p, b) => p.then(() => prefetchMenu(b.dataset.menu)), Promise.resolve()));
+    }, { rootMargin: '400px 0px' });
+    io.observe(cards);
+  }
 
   // tabs: click, or arrow keys between them
   tabs.addEventListener('click', (e) => {
     const t = e.target.closest('[role="tab"]');
-    if (t) showMenu([...tabs.children].indexOf(t));
+    if (!t) return;
+    const i = [...tabs.children].indexOf(t);
+    cancelPrefetch(firstScreen(current.menus[i]));
+    showMenu(i);
+    prefetchOtherTabs();
   });
   tabs.addEventListener('keydown', (e) => {
     if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
@@ -221,6 +307,11 @@
     const on = z.getAttribute('aria-pressed') !== 'true';
     z.setAttribute('aria-pressed', String(on));
     z.closest('.mv__page').classList.toggle('is-zoomed', on);
+    const img = z.querySelector('img');
+    if (on && img.dataset.full && img.currentSrc.indexOf(img.dataset.full) === -1) {
+      const full = img.dataset.full;
+      prefetch([full]).then(() => { img.src = full; });
+    }
     if (on && !pagesEl.classList.contains('mv__pages--spread')) {
       // keep the spot that was tapped under the finger
       const r = z.getBoundingClientRect();
