@@ -366,12 +366,14 @@ html { scroll-behavior: smooth; }
 
 /* --- hero: the first view after the intro ------------------------------------ */
 
+/* the whole hero, down to the three brands under the buttons, fits one screen under the header:
+   its type and gaps follow the screen's height as well as its width (a laptop is wide but short) */
 .hero {
   display: flex;
   align-items: center;
   min-height: calc(100vh - var(--header-h));
   min-height: calc(100svh - var(--header-h));
-  padding-block: clamp(64px, 8vw, 110px);
+  padding-block: clamp(36px, min(8vw, 7svh), 110px);
   overflow: hidden;
   scroll-margin-top: var(--header-h);
   background: var(--paper-light);
@@ -390,7 +392,7 @@ html { scroll-behavior: smooth; }
   font-family: var(--font-display);
   font-weight: 600;
   font-variation-settings: 'opsz' 144;
-  font-size: clamp(42px, 5.8vw, 88px);
+  font-size: clamp(42px, min(5.8vw, 9.4svh), 88px);
   line-height: 1;
   letter-spacing: -.025em;
   text-wrap: balance;
@@ -402,7 +404,7 @@ html { scroll-behavior: smooth; }
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: clamp(28px, 3.4vw, 40px);
+  margin-top: clamp(22px, min(3.4vw, 3.6svh), 40px);
 }
 
 .btn--lg {
@@ -415,8 +417,8 @@ html { scroll-behavior: smooth; }
   display: flex;
   flex-wrap: wrap;
   gap: clamp(16px, 2.6vw, 32px);
-  margin: clamp(36px, 4.5vw, 56px) 0 0;
-  padding: clamp(20px, 2.4vw, 28px) 0 0;
+  margin: clamp(24px, min(4.5vw, 4.4svh), 56px) 0 0;
+  padding: clamp(16px, min(2.4vw, 2.6svh), 28px) 0 0;
   list-style: none;
   border-top: 1px solid var(--line);
 }
