@@ -14,8 +14,8 @@
     capiche: { menu: '', instagram: 'https://www.instagram.com/pizza.capiche/' },
 
     // each outlet: its TableCheck booking page, Google Maps link and phone number
-    'aiko-surat':         { booking: '', maps: '', phone: '' },
-    'aiko-ahmedabad':     { booking: '', maps: '', phone: '' },
+    'aiko-surat':         { booking: '', maps: 'https://maps.app.goo.gl/sbrYwXcPgCim5H828', phone: '' },   // Pal, Surat
+    'aiko-ahmedabad':     { booking: '', maps: 'https://maps.app.goo.gl/Dr24fvCxHMh6JU3a8', phone: '' },   // Ambli, Ahmedabad
     'beshak-dumas':       { booking: '', maps: '', phone: '' },   // Dumas Road, Surat
     'capiche-piplod':     { booking: '', maps: '', phone: '' },   // Gymkhana Road, Piplod, Surat
     'capiche-vesu':       { booking: '', maps: '', phone: '' },   // IWC, Vesu, Surat
