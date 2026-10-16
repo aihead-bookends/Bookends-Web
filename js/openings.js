@@ -97,6 +97,19 @@ window.BOOKENDS_OPENINGS = (() => {
       <ellipse cx="50" cy="104" rx="44" ry="5" fill="#8E3A28"/></svg>`,
     flashStar: `<svg viewBox="0 0 100 100"><polygon points="50,2 60,36 98,30 68,54 88,96 50,70 12,96 32,54 2,30 40,36"
       fill="#FFF7C2" stroke="#111" stroke-width="3" stroke-linejoin="round"/></svg>`,
+    // Navratri: the garbo (a clay lamp pot with holes, a diya burning on top)
+    garbo: `<svg viewBox="0 0 80 112" stroke="#111" stroke-width="2.4" stroke-linejoin="round">
+      <path class="garbo__flame" d="M40 4c7 9 8 16 0 22c-8-6-7-13 0-22z" fill="#F6C453"/>
+      <path d="M26 28q14 9 28 0l-3-3H29z" fill="#C8553D"/>
+      <rect x="32" y="31" width="16" height="8" fill="#A8432F"/>
+      <ellipse cx="40" cy="72" rx="33" ry="34" fill="#C8553D"/>
+      <path d="M10 60q30 10 60 0M8 80q32 10 64 0" fill="none" stroke="#F6C453" stroke-width="3"/>
+      <g fill="#FFE58A" stroke="none">
+        <circle cx="40" cy="49" r="2.6"/><circle cx="28" cy="51" r="2.2"/><circle cx="52" cy="51" r="2.2"/>
+        <circle cx="26" cy="70" r="3"/><circle cx="40" cy="71" r="3.4"/><circle cx="54" cy="70" r="3"/>
+        <circle cx="19" cy="91" r="2.6"/><circle cx="33" cy="94" r="3"/><circle cx="47" cy="94" r="3"/><circle cx="61" cy="91" r="2.6"/>
+      </g>
+      <ellipse cx="40" cy="106" rx="16" ry="4" fill="#8E3A28"/></svg>`,
   };
 
   /* --- shared building blocks ---------------------------------------------- */
@@ -150,7 +163,8 @@ window.BOOKENDS_OPENINGS = (() => {
     'Bookends!': 'bookends', 'Happy Holi!': 'happy-holi', 'Ha ha!': 'ha-ha', 'ha ha!': 'ha-ha', 'Smile!': 'smile',
     'Say paneer!': 'say-paneer', 'PANEER!': 'paneer', 'hee!': 'hee', 'hihi!': 'hihi', 'hahaha!': 'hahaha',
     'HA HA HA!': 'hahaha', 'Friends?': 'friends', 'Chai?': 'chai', 'Chai!!': 'chai', 'aah…': 'aah',
-    'Cheers!': 'cheers', 'Ta-da!': 'tada',
+    'Cheers!': 'cheers', 'Ta-da!': 'tada', 'Dandiya!': 'dandiya', 'Faster!': 'faster', 'Faster!!': 'faster',
+    'Shubh Navratri!': 'shubh-navratri',
   };
   // a speaker ('aiko', 'capiche', 'tiger' or 'both') says `text`: their recording, or gibberish for
   // lines that have none (!@#$%, ?!)
@@ -1644,5 +1658,275 @@ window.BOOKENDS_OPENINGS = (() => {
     return { own: true, bits: ['★', '!@#$', '✦', '%&!', '✶', '?!', '★', '#@!', '✦', '!!', 'ha!', 'hee', 'ha ha', 'hihi'] };
   }
 
-  return { fight, cookoff, sharing, noodle, dance, race, sleeping, chef, host, guest, storybook, judge, chai, holi, photo, tickle };
+  /* --- 16 · navratri: dandiya to a dhol beat, and a garba twirl ---------------- */
+
+  // Navratri's colours, for the garba twirl
+  const NAVRATRI = ['#E3242B', '#F08A1C', '#F6C453', '#2FA36B', '#0F7C8C', '#1F4FBF', '#6B3FA0', '#E83E8C', '#C2185B'];
+
+  // a toran of marigolds and mango leaves, hung in three swags
+  function toranArt() {
+    const pts = [];
+    for (let s = 0; s < 3; s++) {
+      const x0 = s * 200;
+      for (let k = 0; k < 8 || (s === 2 && k === 8); k++) {
+        const t = k / 8;
+        pts.push([(1 - t) * (1 - t) * x0 + 2 * (1 - t) * t * (x0 + 100) + t * t * (x0 + 200),
+          (1 - t) * (1 - t) * 6 + 2 * (1 - t) * t * 74 + t * t * 6]);
+      }
+    }
+    const f = (n) => n.toFixed(1);
+    const leaves = pts.filter((_, i) => i % 2).map(([x, y]) => `<path d="M${f(x)} ${f(y + 4)}c-6 9-6 20 0 30c6-10 6-21 0-30z" fill="#3E9E5A"/>`).join('');
+    const flowers = pts.map(([x, y], i) => `<circle cx="${f(x)}" cy="${f(y)}" r="8" fill="${i % 2 ? '#F6C453' : '#F08A1C'}"/>`
+      + `<circle cx="${f(x)}" cy="${f(y)}" r="3" fill="#C8553D" stroke="none"/>`).join('');
+    return `<svg viewBox="-10 -6 620 80" stroke="#111" stroke-width="2">
+      <path d="M0 6Q100 74 200 6Q300 74 400 6Q500 74 600 6" fill="none" stroke-width="2.4"/>${leaves}${flowers}</svg>`;
+  }
+
+  // one dandiya stick, striped in two colours with a bead at its tip; `dir` 1 leans up-right,
+  // -1 up-left. Its handle (the bottom end) is at (0.21, 0.83) or (0.79, 0.83) of the box.
+  function stickArt(dir, c1, c2) {
+    const d = dir > 0 ? 'M10 40L40 10' : 'M38 40L8 10';
+    const tip = dir > 0 ? '40' : '8';
+    return `<svg viewBox="0 0 48 48" fill="none" stroke-linecap="round">
+      <path d="${d}" stroke="#111" stroke-width="7"/><path d="${d}" stroke="${c1}" stroke-width="4"/>
+      <path d="${d}" stroke="${c2}" stroke-width="4" stroke-dasharray="4 5"/>
+      <circle cx="${tip}" cy="10" r="3.6" fill="${c2}" stroke="#111" stroke-width="2"/></svg>`;
+  }
+
+  // a ring of Navratri's colours, like a twirling ghagra seen from above
+  function whirlArt() {
+    const p = (a, r) => `${(Math.cos(a) * r).toFixed(1)} ${(Math.sin(a) * r).toFixed(1)}`;
+    const rad = (deg) => (deg * Math.PI) / 180;
+    const parts = NAVRATRI.map((col, i) => {
+      const a0 = rad(i * 40 + 4);
+      const a1 = rad(i * 40 + 36);
+      return `<path d="M${p(a0, 46)}A46 46 0 0 1 ${p(a1, 46)}" stroke="${col}"/>`
+        + `<circle cx="${p((a0 + a1) / 2, 31).split(' ')[0]}" cy="${p((a0 + a1) / 2, 31).split(' ')[1]}" r="4.5" fill="${NAVRATRI[(i + 4) % 9]}" stroke="none"/>`;
+    }).join('');
+    return `<svg viewBox="-60 -60 120 120" fill="none" stroke-width="11" stroke-linecap="round">${parts}</svg>`;
+  }
+
+  function navratri(c) {
+    const { tl, gsap, A, C, T, fh, cx, W, tw, th, head, ear, tail, floorY, bg, korean, italian } = c;
+    // the garba circle is a little right of centre, leaving room for the tiger on the left
+    const pc = cx + W * 0.1;
+    const potW = fh * 0.48;
+    const potH = potW * (112 / 80);
+    const potTop = floorY - potH;
+    const flame = { x: pc, y: potTop + potH * 0.1 };
+    const aSt = c.ax(pc - potW * 0.5 - c.m.a.w * 0.55 - W * 0.02);
+    const cSt = c.cxo(pc + potW * 0.5 + c.m.c.w * 0.55 + W * 0.02);
+    const tcx = Math.max(tw / 2 + 12, aX(c, aSt) - c.m.a.w / 2 - tw / 2 - W * 0.02);
+    const ht = headTop(c, tcx);
+    const beat = (at) => tl.to([...korean, ...italian], { y: -7, duration: 0.08, yoyo: true, repeat: 1 }, at);
+
+    // the setting: a toran drops in across the top; the garbo appears and its lamp lights up
+    const toranW = Math.min(W * 0.86, 900);
+    const toranY = Math.max(64, Math.min(c.m.a.top, c.m.t.top) - fh * 0.8);
+    const toran = c.prop('dish', toranArt(), toranW, bg);
+    tl.fromTo(toran, { x: cx, y: toranY - fh * 0.6, autoAlpha: 1 }, { y: toranY, duration: 0.7, ease: 'bounce.out', immediateRender: false }, 0.1);
+    // (the lamp and its glow stand behind the dancers, so their sticks cross in front of it)
+    const glow = c.prop('powder', '', potW * 1.9, bg);
+    glow.style.setProperty('--c', 'rgba(255, 205, 80, .6)');
+    const pot = c.prop('dish', ART.garbo, potW, bg);
+    const lamp = pot.querySelector('.garbo__flame');
+    gsap.set(pot, { transformOrigin: '50% 100%' });
+    gsap.set(lamp, { transformOrigin: '50% 100%' });
+    pop(c, pot, 0.25, pc, floorY - potH / 2);
+    tl.fromTo(glow, { x: pc, y: flame.y + potH * 0.35, autoAlpha: 0, scale: 0.4 },
+      { autoAlpha: 0.9, scale: 1, duration: 0.5, immediateRender: false }, 0.6)
+      .to(glow, { scale: 1.15, autoAlpha: 0.65, duration: 0.45, yoyo: true, repeat: 17, ease: 'sine.inOut' }, 1.1)
+      .fromTo(lamp, { scale: 0 }, { scale: 1, duration: 0.3, ease: 'back.out(3)', immediateRender: false }, 0.6)
+      .to(lamp, { scaleY: 1.25, scaleX: 0.85, duration: 0.17, yoyo: true, repeat: 49, ease: 'sine.inOut' }, 0.9);
+    c.cue(0.1, 'whoosh');
+    c.cue(0.6, 'sparkle');                                         // the lamp lights
+
+    // they hop in, each with a pair of dandiya sticks
+    enter(c, aSt, cSt);
+    // a stick in each hand, all four different: Aiko's hands are the ends of its arms; Capiche
+    // grips one at its fingers (left) and one in the curl of its C (right)
+    const stickW = fh * 0.5;
+    const { w: aw, h: ah } = c.m.a;
+    const { w: cw2, h: ch2 } = c.m.c;
+    const stick = (ch, x, y, dir, c1, c2) => {
+      const el = c.held(ch, 'dandiya', stickArt(dir, c1, c2), {
+        width: stickW, left: x - stickW * (dir > 0 ? 0.21 : 0.79), top: y - stickW * 0.83,
+      });
+      gsap.set(el, { transformOrigin: dir > 0 ? '21% 83%' : '79% 83%' });   // it swings from the hand
+      return el;
+    };
+    const sticksA = [stick(A, aw * 0.03, ah * 0.64, -1, '#2FA36B', '#E83E8C'), stick(A, aw * 0.97, ah * 0.64, 1, '#C8553D', '#F6C453')];
+    const sticksC = [stick(C, cw2 * 0.06, ch2 * 0.55, -1, '#1F4FBF', '#F6C453'), stick(C, cw2 * 0.95, ch2 * 0.72, 1, '#6B3FA0', '#F08A1C')];
+    const sticks = [...sticksA, ...sticksC];
+    say(c, 'Dandiya!', 1.25, pc, c.m.a.top - fh * 0.35, 0.4, 'say', 'both');
+
+    // cross dandiya: they lean in over the garbo and strike sticks in an X on the beat. 'R' is Aiko's
+    // right stick on Capiche's left; for 'L' both turn round, so it's Aiko's left on Capiche's right.
+    // Faster and harder as it goes.
+    // they stop a stick's length apart, hands either side of the garbo, so the sticks cross above it
+    const meetA = c.ax(pc - stickW * 0.57 - aw * 0.47);
+    const meetC = c.cxo(pc + stickW * 0.57 + cw2 * 0.44);
+    const clackY = c.m.a.top + ah * 0.64 - stickW * 0.33;           // where the inner sticks cross
+    let turned = false;
+    const clack = (at, hard, side = 'R') => {
+      const back = hard ? 0.08 : 0.14;
+      if ((side === 'L') !== turned) {                             // turn round to strike with the other stick
+        turned = !turned;
+        tl.to([A.body, C.body], { scaleX: turned ? -1 : 1, duration: hard ? 0.07 : 0.14, ease: 'power1.inOut' }, at - (hard ? 0.17 : 0.3));
+        c.cue(at - (hard ? 0.17 : 0.3), 'whoosh');
+      }
+      // the inner stick of each swings from the hand towards the other, and they cross
+      const inner = turned ? [[sticksA[0], -1], [sticksC[1], 1]] : [[sticksA[1], 1], [sticksC[0], -1]];
+      inner.forEach(([el, dir]) => {
+        tl.to(el, { rotation: dir * 7, duration: 0.1, ease: 'power2.in' }, at - 0.1)
+          .to(el, { rotation: 0, duration: back + 0.04, ease: 'power2.out' }, at + 0.02);
+      });
+      tl.to(A.root, { x: meetA, duration: 0.1, ease: 'power2.in' }, at - 0.1)
+        .to(C.root, { x: meetC, duration: 0.1, ease: 'power2.in' }, at - 0.1)
+        .to(A.body, { rotation: 4, duration: 0.1 }, at - 0.1)
+        .to(C.body, { rotation: -4, duration: 0.1 }, at - 0.1)
+        .to(A.root, { x: aSt, duration: back, ease: 'power2.out' }, at + 0.02)
+        .to(C.root, { x: cSt, duration: back, ease: 'power2.out' }, at + 0.02)
+        .to([A.body, C.body], { rotation: 0, duration: back }, at + 0.02);
+      const spark = c.prop('dish', ART.flashStar, fh * (hard ? 0.3 : 0.18));
+      tl.fromTo(spark, { x: pc, y: clackY, autoAlpha: 1, scale: 0, rotation: -20 },
+        { scale: 1, rotation: 0, duration: 0.08, immediateRender: false }, at)
+        .to(spark, { autoAlpha: 0, scale: 1.3, duration: 0.12 }, at + 0.1);
+      if (hard) tl.add(c.shake(5, 0.12), at);
+      beat(at);
+      c.cue(at, 'clack', hard ? 1 : 0.7);
+    };
+    [[1.7, 'R'], [2.1, 'L'], [2.5, 'R']].forEach(([at, side]) => clack(at, false, side));
+    [[2.85, 'L'], [3.1, 'R'], [3.3, 'L'], [3.5, 'R']].forEach(([at, side]) => clack(at, true, side));
+    say(c, 'Faster!', 2.55, aX(c, aSt), c.m.a.top - fh * 0.15, 0.3, 'say say--small', 'aiko');
+    say(c, 'Faster!!', 2.95, cX(c, cSt), c.m.c.top - fh * 0.15, 0.3, 'say say--small', 'capiche');
+
+    // CRACK: one clack too hard, the sticks go flying, and now it's a fight
+    const CRACK = 3.75;
+    tl.to(A.root, { x: meetA, duration: 0.12, ease: 'power3.in' }, CRACK - 0.12)
+      .to(C.root, { x: meetC, duration: 0.12, ease: 'power3.in' }, CRACK - 0.12)
+      .to(A.root, { x: aSt - c.knock, duration: 0.3, ease: 'power3.out' }, CRACK)
+      .to(C.root, { x: cSt + c.knock, duration: 0.3, ease: 'power3.out' }, CRACK)
+      .to(A.body, { rotation: -18, duration: 0.2 }, CRACK)
+      .to(C.body, { rotation: 18, duration: 0.2 }, CRACK)
+      .set(sticks, { autoAlpha: 0 }, CRACK)
+      .add(c.shake(11, 0.3), CRACK);
+    const bigSpark = c.prop('dish', ART.flashStar, fh * 0.5);
+    tl.fromTo(bigSpark, { x: pc, y: clackY, autoAlpha: 1, scale: 0, rotation: -30 },
+      { scale: 1, rotation: 0, duration: 0.1, immediateRender: false }, CRACK)
+      .to(bigSpark, { autoAlpha: 0, scale: 1.4, duration: 0.2 }, CRACK + 0.15);
+    const handY = c.m.a.top + ah * 0.64;
+    [
+      [-1, { x: pc - stickW * 0.3, y: clackY }, '#C8553D', '#F6C453'],
+      [1, { x: pc + stickW * 0.3, y: clackY }, '#1F4FBF', '#F6C453'],
+      [-1, { x: aX(c, meetA) - aw * 0.47, y: handY - stickW * 0.3 }, '#2FA36B', '#E83E8C'],
+      [1, { x: cX(c, meetC) + cw2 * 0.45, y: handY - stickW * 0.3 }, '#6B3FA0', '#F08A1C'],
+    ].forEach(([dir, from, c1, c2], i) => {
+      const fly = c.prop('dish', stickArt(dir, c1, c2), stickW);
+      tl.set(fly, { autoAlpha: 1 }, CRACK);
+      arc(c, fly, from, { x: pc + dir * W * (i < 2 ? 0.3 : 0.42), y: -stickW }, CRACK, 0.65 + i * 0.05, fh * 0.5, dir * 720);
+      tl.set(fly, { autoAlpha: 0 }, CRACK + 0.75);
+    });
+    c.cue(CRACK, 'snap');
+    say(c, '!@#$', CRACK + 0.35, pc, c.m.a.top - fh * 0.4, 0.4, 'say', 'both');
+    tl.to([A.body, C.body], { rotation: (i) => (i ? 10 : -10), scaleY: 1.06, scaleX: 0.95, duration: 0.2 }, CRACK + 0.35);
+
+    // a festival dhol starts up and the tiger strolls in to its beat (its tail swishing in time);
+    // they stop and turn
+    const STROLL = CRACK + 0.4;
+    const ARRIVE = strollIn(c, STROLL, tcx, 5, 0.34, 0.1);
+    // one beat for the rest of the dance: the dhol on every beat, from the tiger's entrance to the twirl
+    const BEAT = 0.34;
+    const BLESS = ARRIVE + 0.15;
+    const WHIRL_AT = BLESS + 0.85 + 3 * BEAT + 0.55;
+    const BEATS = [];
+    for (let at = STROLL; at < WHIRL_AT - 0.1; at += BEAT) BEATS.push(at);
+    BEATS.forEach((at, i) => {
+      beat(at);
+      c.cue(at, 'dhol', i % 2);
+      if (at > ARRIVE) tl.to(tail, { keyframes: { rotation: [i % 2 ? -14 : 14, 0] }, duration: 0.3, ease: 'sine.inOut' }, at - 0.04);
+    });
+    tl.to([A.body, C.body], { rotation: 0, scaleY: 1.1, scaleX: 0.92, duration: 0.1 }, STROLL + 0.3)
+      .to([A.body, C.body], { rotation: -8, scaleY: 1, scaleX: 1, duration: 0.3 }, STROLL + 0.8)
+      .to(A.root, { x: aSt, duration: 0.3 }, STROLL + 0.8)
+      .to(C.root, { x: cSt, duration: 0.3 }, STROLL + 0.8);
+
+    // "Shubh Navratri!" New sticks appear for both, and everyone dances
+    say(c, 'Shubh Navratri!', BLESS, ht.x, ht.y - fh * 0.15, 0.7, 'say', 'tiger');
+    c.chomp(BLESS, 2);
+    tl.to(ear, { rotation: 8, duration: 0.07, yoyo: true, repeat: 3 }, BLESS + 0.1)
+      .to([A.body, C.body], { rotation: 0, duration: 0.2 }, BLESS + 0.4)
+      .set(sticks, { autoAlpha: 1 }, BLESS + 0.5)
+      .fromTo(sticks, { scale: 0 }, { scale: 1, duration: 0.3, ease: 'back.out(3)', immediateRender: false }, BLESS + 0.5);
+    c.cue(BLESS + 0.5, 'sparkle');
+    // three clacks together, each landing between two dhol beats
+    const DANCE = STROLL + (Math.ceil((BLESS + 0.85 - STROLL) / BEAT - 0.5) + 0.5) * BEAT;
+    ['R', 'L', 'R'].forEach((side, k) => clack(DANCE + k * BEAT, false, side));
+    tl.to(A.body, { rotation: 360, duration: 0.4, ease: 'power1.inOut' }, DANCE + 0.9)
+      .to(C.body, { rotation: -360, duration: 0.4, ease: 'power1.inOut' }, DANCE + 0.9)
+      .set([A.body, C.body], { rotation: 0 }, DANCE + 1.31)
+      .add(c.hopInPlace(A, fh * 0.25, 0.4), DANCE + 0.9)
+      .add(c.hopInPlace(C, fh * 0.25, 0.4), DANCE + 0.9)
+      .add(c.heartsUp(pc, c.m.a.top, fh * 0.7), DANCE + 1.1)
+      .to(head, { keyframes: { rotation: [4, -3, 0] }, duration: 0.6 }, DANCE + 0.9);
+    c.cue(DANCE + 0.9, 'whoosh');
+    c.cue(DANCE + 1.1, 'sparkle');
+
+    // the garba twirl: they spin round the garbo in a whirl of Navratri's colours, into the lamp's glow…
+    const WHIRL = WHIRL_AT;
+    const whirl = c.prop('dish', whirlArt(), potW * 2.6);
+    tl.fromTo(whirl, { x: pc, y: floorY - potH * 0.55, autoAlpha: 0, scale: 0.4, rotation: 0 },
+      { autoAlpha: 0.95, scale: 1, rotation: 540, duration: 1.3, ease: 'power1.in', immediateRender: false }, WHIRL)
+      .to(whirl, { scale: 0.15, rotation: 900, autoAlpha: 0, duration: 0.4, ease: 'power2.in' }, WHIRL + 1.3)
+      // twirling on the spot (turning round and round), drawn in, shrinking and rising into the flame
+      .to([A.body, C.body], { scaleX: -1, duration: 0.18, yoyo: true, repeat: 7, ease: 'sine.inOut' }, WHIRL)
+      .to(A.root, { x: c.ax(pc), duration: 1.4, ease: 'power2.in' }, WHIRL + 0.1)
+      .to(C.root, { x: c.cxo(pc), duration: 1.4, ease: 'power2.in' }, WHIRL + 0.1)
+      .to([A.lift, C.lift], { scale: 0.12, y: flame.y - floorY + fh / 2, duration: 1.4, ease: 'power2.in' }, WHIRL + 0.1)
+      .set([A.root, C.root], { autoAlpha: 0 }, WHIRL + 1.5);
+    c.cue(WHIRL, 'whirl');
+
+    // …a flash of lamplight, and out of the lamp rises Caiko…
+    const FLASH = WHIRL + 1.5;
+    tl.to(glow, { scale: 3, autoAlpha: 1, duration: 0.18, ease: 'power2.out' }, FLASH)
+      .to(glow, { scale: 1.2, autoAlpha: 0.7, duration: 0.6, ease: 'power2.inOut' }, FLASH + 0.2)
+      .to(lamp, { scaleY: 2.2, scaleX: 1.3, duration: 0.15, yoyo: true, repeat: 1 }, FLASH)
+      .add(c.shake(6, 0.2), FLASH);
+    const [seatX, seatY] = c.rider.dataset.seat.split(' ').map(Number);
+    const saddle = c.saddleAt(tcx);
+    const stand = { x: pc - (saddle.x + c.rw * (0.5 - seatX)), y: potTop - potH * 0.05 - (saddle.y + c.rh * (1 - seatY)) };
+    tl.set(c.rider, { autoAlpha: 1, x: stand.x }, FLASH)
+      .fromTo(c.rider, { y: stand.y + c.rh * 0.4, scale: 0.2 }, { y: stand.y, scale: 1, duration: 0.45, ease: 'back.out(2)', immediateRender: false }, FLASH)
+      .add(c.heartsUp(pc, potTop - c.rh, c.rh * 0.6), FLASH + 0.2);
+    c.cue(FLASH, 'sparkle');
+    c.cue(FLASH + 0.05, 'chime');
+
+    // …who flips onto the tiger's back; India's mandala opens out of the lamp's flame
+    const HOP = FLASH + 0.7;
+    const hopDur = 0.6;
+    const SEAT = HOP + hopDur;
+    tl.set(c.rider, { transformOrigin: '50% 50%' }, HOP)
+      .to(c.rider, { x: 0, duration: hopDur, ease: 'none' }, HOP)
+      .to(c.rider, {
+        keyframes: [
+          { y: Math.min(stand.y, 0) - fh * 0.3, duration: hopDur / 2, ease: 'power2.out' },
+          { y: 0, duration: hopDur / 2, ease: 'power2.in' },
+        ],
+      }, HOP)
+      .to(c.rider, { rotation: -360, duration: hopDur, ease: 'power1.inOut' }, HOP)
+      .set(c.rider, { rotation: 0, transformOrigin: '50% 100%' }, SEAT)
+      .to(c.rider, { keyframes: [{ scaleY: 0.85, scaleX: 1.1, duration: 0.07 }, { scaleY: 1, scaleX: 1, duration: 0.4, ease: 'elastic.out(1, 0.4)' }] }, SEAT)
+      .add(c.squash(T, 0.1, 0.45), SEAT)
+      .to([pot, glow], { autoAlpha: 0, scale: 0.7, duration: 0.4 }, SEAT + 0.3)
+      .to(toran, { autoAlpha: 0, y: toranY - fh * 0.3, duration: 0.5 }, SEAT + 0.8);
+    c.bloomAt(SEAT, flame);
+    c.cue(HOP, 'whoosh');
+    c.cue(SEAT, 'hop');
+
+    // and off they go
+    c.exitRight(SEAT + 0.45, tcx);
+    return { own: true };
+  }
+
+  return { fight, cookoff, sharing, noodle, dance, race, sleeping, chef, host, guest, storybook, judge, chai, holi, photo, tickle, navratri };
 })();

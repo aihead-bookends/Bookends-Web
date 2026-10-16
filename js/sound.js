@@ -35,6 +35,7 @@ window.BOOKENDS_SOUND = (() => {
     'tiger-chai', 'tiger-tada', 'tiger-bring-it-on', 'tiger-shabaash', 'tiger-ahem', 'tiger-welcome',
     'tiger-hop-on', 'tiger-table-for-one', 'tiger-table-for-one-q', 'tiger-mmm', 'tiger-judge-beshak',
     'tiger-hmm', 'tiger-a-tie', 'tiger-happy-holi', 'tiger-smile', 'tiger-say-paneer', 'tiger-friends',
+    'aiko-dandiya', 'aiko-faster', 'capiche-dandiya', 'capiche-faster', 'tiger-shubh-navratri',
   ];
   LINES.forEach((id) => { SAMPLES[id] = `assets/audio/voices/${id}.m4a`; });
   const MUSIC_LEVEL = 0.14;   // the track is mastered loud: this sits it under the effects
@@ -440,6 +441,26 @@ window.BOOKENDS_SOUND = (() => {
     whirr() {                                                          // …and the photo printing
       tone('square', 120, 140, 0.04, 0.02, 0.6);
       hiss('bandpass', 800, 900, 3, 0.06, 0.02, 0.6);
+    },
+
+    /* Navratri */
+    clack(level = 0.8) {                                               // dandiya sticks
+      tone('triangle', 1650, 1250, 0.28 * level, 0.001, 0.05);
+      hiss('bandpass', 2600, 1900, 3, 0.45 * level, 0.001, 0.04);
+      tone('sine', 820, 700, 0.16 * level, 0.001, 0.07);
+    },
+    dhol(high = 0) {                                                   // the dhol: a deep 'dhum' or a sharp 'ta'
+      if (high) {
+        tone('triangle', 420, 300, 0.25, 0.002, 0.08);
+        hiss('bandpass', 2200, 1400, 1.2, 0.3, 0.001, 0.05);
+      } else {
+        tone('sine', 110, 50, 0.9, 0.004, 0.32);
+        hiss('lowpass', 600, 150, 0.7, 0.35, 0.003, 0.12);
+      }
+    },
+    whirl() {                                                          // the garba twirl, spinning up
+      hiss('bandpass', 300, 3200, 2, 0.28, 1.0, 0.4);
+      tone('sine', 300, 900, 0.06, 0.8, 0.5);
     },
 
     sparkle() {
