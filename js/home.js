@@ -17,10 +17,10 @@
     'aiko-surat':         { booking: '', maps: 'https://maps.app.goo.gl/sbrYwXcPgCim5H828', phone: '' },   // Pal, Surat
     'aiko-ahmedabad':     { booking: '', maps: 'https://maps.app.goo.gl/Dr24fvCxHMh6JU3a8', phone: '' },   // Ambli, Ahmedabad
     'beshak-dumas':       { booking: '', maps: '', phone: '' },   // Dumas Road, Surat
-    'capiche-piplod':     { booking: '', maps: '', phone: '' },   // Gymkhana Road, Piplod, Surat
-    'capiche-vesu':       { booking: '', maps: '', phone: '' },   // IWC, Vesu, Surat
-    'capiche-ambli':      { booking: '', maps: '', phone: '' },   // Ason Vista, Ambli, Ahmedabad
-    'capiche-uni':        { booking: '', maps: '', phone: '' },   // Adore Aspire, Ahmedabad
+    'capiche-piplod':     { booking: '', maps: '', phone: '' },   // Samanvay, Gymkhana Road, Piplod, Surat
+    'capiche-vesu':       { booking: '', maps: '', phone: '' },   // International Wealth Center, Vesu, Surat
+    'capiche-ambli':      { booking: '', maps: '', phone: '' },   // Ason Vista, near Karnavati Club, Ahmedabad
+    'capiche-uni':        { booking: '', maps: '', phone: '' },   // Addor Aspire 2, University Road, Ahmedabad
 
     // Bookends Hospitality itself
     group:   { phone: '', email: '', instagram: '' },
