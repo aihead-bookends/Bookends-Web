@@ -30,10 +30,10 @@
 @media (max-aspect-ratio: 4/5) {
   :root {
     --floor: 58%;
-    --fh: 24vw;
-    --fw-max: 26vw;
-    --th: 36vw;
-    --tw-max: 42vw;
+    --fh: 22vw;              /* sized so the Navratri row fits: tiger, Aiko, garbo, Capiche */
+    --fw-max: 24vw;
+    --th: 33vw;
+    --tw-max: 34vw;
     --aiko-x: 15%;
     --capiche-x: 85%;
   }

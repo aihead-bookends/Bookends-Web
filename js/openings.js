@@ -1459,22 +1459,31 @@ window.BOOKENDS_OPENINGS = (() => {
   }
 
   function navratri(c) {
-    const { tl, gsap, A, C, T, fh, cx, W, tw, th, head, ear, tail, floorY, bg, korean, italian } = c;
-    // the garba circle is a little right of centre, leaving room for the tiger on the left
-    const pc = cx + W * 0.1;
+    const { tl, gsap, A, C, T, fh, cx, W, H, tw, th, head, ear, tail, floorY, bg, korean, italian } = c;
+    // the row, left to right: tiger, Aiko, the garbo, Capiche. The garbo sits a little right of
+    // centre to leave room for the tiger; where that doesn't fit (narrow phones), the whole row is
+    // centred instead, so the tiger never stands on Aiko
     const potW = fh * 0.48;
+    const stickW = fh * 0.5;
+    const g = W * 0.02;
+    const margin = Math.max(8, W * 0.02);
+    const rowLeft = (p) => p - potW / 2 - g - c.m.a.w * 1.05 - g - tw;
+    const rowRight = (p) => p + potW / 2 + g + c.m.c.w + stickW * 0.8;   // to the tip of Capiche's outer stick
+    let pc = cx + W * 0.1;
+    if (rowLeft(pc) < margin || rowRight(pc) > W - margin) pc = (W - (rowRight(0) - rowLeft(0))) / 2 - rowLeft(0);
     const potH = potW * (112 / 80);
     const potTop = floorY - potH;
     const flame = { x: pc, y: potTop + potH * 0.1 };
-    const aSt = c.ax(pc - potW * 0.5 - c.m.a.w * 0.55 - W * 0.02);
-    const cSt = c.cxo(pc + potW * 0.5 + c.m.c.w * 0.55 + W * 0.02);
-    const tcx = Math.max(tw / 2 + 12, aX(c, aSt) - c.m.a.w / 2 - tw / 2 - W * 0.02);
+    const aSt = c.ax(pc - potW * 0.5 - c.m.a.w * 0.55 - g);
+    const cSt = c.cxo(pc + potW * 0.5 + c.m.c.w * 0.55 + g);
+    const tcx = Math.max(tw / 2 + margin, aX(c, aSt) - c.m.a.w / 2 - tw / 2 - g);
     const ht = headTop(c, tcx);
     const beat = (at) => tl.to([...korean, ...italian], { y: -7, duration: 0.08, yoyo: true, repeat: 1 }, at);
 
     // the setting: a toran drops in across the top; the garbo appears and its lamp lights up
-    const toranW = Math.min(W * 0.86, 900);
-    const toranY = Math.max(64, Math.min(c.m.a.top, c.m.t.top) - fh * 0.8);
+    // (narrower on a short screen, a landscape phone, so it hangs clear of what they say)
+    const toranW = Math.min(W * 0.86, 900, H * 1.2);
+    const toranY = Math.max(Math.min(64, toranW * (80 / 620) / 2 + 8), Math.min(c.m.a.top, c.m.t.top) - fh * 0.8);
     const toran = c.prop('dish', toranArt(), toranW, bg);
     tl.fromTo(toran, { x: cx, y: toranY - fh * 0.6, autoAlpha: 1 }, { y: toranY, duration: 0.7, ease: 'bounce.out', immediateRender: false }, 0.1);
     // (the lamp and its glow stand behind the dancers, so their sticks cross in front of it)
@@ -1497,7 +1506,6 @@ window.BOOKENDS_OPENINGS = (() => {
     enter(c, aSt, cSt);
     // a stick in each hand, all four different: Aiko's hands are the ends of its arms; Capiche
     // grips one at its fingers (left) and one in the curl of its C (right)
-    const stickW = fh * 0.5;
     const { w: aw, h: ah } = c.m.a;
     const { w: cw2, h: ch2 } = c.m.c;
     const stick = (ch, x, y, dir, c1, c2) => {
@@ -1604,7 +1612,11 @@ window.BOOKENDS_OPENINGS = (() => {
       .to(C.root, { x: cSt, duration: 0.3 }, STROLL + 0.8);
 
     // "Shubh Navratri!" New sticks appear for both, and everyone dances
-    say(c, 'Shubh Navratri!', BLESS, ht.x, ht.y - fh * 0.15, 0.7, 'say', 'tiger');
+    // above the tiger and Aiko both (on a phone the tiger is shorter than Aiko); on a short
+    // screen, where that would run into the toran, under them instead
+    let blessY = Math.min(ht.y - fh * 0.15, c.m.a.top - fh * 0.2);
+    if (blessY - fh * 0.15 < toranY + toranW * (80 / 620) / 2) blessY = floorY + fh * 0.3;
+    say(c, 'Shubh Navratri!', BLESS, ht.x, blessY, 0.7, 'say', 'tiger');
     c.chomp(BLESS, 2);
     tl.to(ear, { rotation: 8, duration: 0.07, yoyo: true, repeat: 3 }, BLESS + 0.1)
       .to([A.body, C.body], { rotation: 0, duration: 0.2 }, BLESS + 0.4)
