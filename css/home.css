@@ -845,12 +845,16 @@ html { scroll-behavior: smooth; }
   mask: var(--icon) center / contain no-repeat;
 }
 
-.reserve__btn--book {
+.reserve__btn--book,
+.reserve__btn--dm {
   --icon: var(--icon-book);
   color: var(--paper);
   background: var(--ink);
   border-color: var(--ink);
 }
+
+/* an outlet that books on Instagram rather than TableCheck (Beshak) */
+.reserve__btn--dm { --icon: var(--icon-instagram); }
 
 .reserve__btn--call,
 .reserve__btn--ig { color: var(--ink); }
