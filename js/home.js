@@ -9,9 +9,9 @@
      email an address. An empty one keeps its button but goes nowhere. */
   const LINKS = {
     // each brand
-    aiko:    { menu: '', instagram: '' },
-    beshak:  { menu: '', instagram: '' },
-    capiche: { menu: '', instagram: '' },
+    aiko:    { menu: '', instagram: 'https://www.instagram.com/aikomfort/' },
+    beshak:  { menu: '', instagram: 'https://www.instagram.com/beshak.indian/' },
+    capiche: { menu: '', instagram: 'https://www.instagram.com/pizza.capiche/' },
 
     // each outlet: its TableCheck booking page, Google Maps link and phone number
     'aiko-surat':         { booking: '', maps: '', phone: '' },
@@ -54,6 +54,51 @@
       a.target = '_blank';
       a.rel = 'noopener';
     }
+  });
+
+  // reserving on Instagram: the button opens the brand's chat (the app, on a phone). Instagram
+  // can't fill in a message, so the same tap copies one for the guest to paste.
+  const copyByHand = (text) => {
+    const area = document.createElement('textarea');
+    area.value = text;
+    area.setAttribute('readonly', '');
+    area.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+    document.body.appendChild(area);
+    area.select();
+    try { document.execCommand('copy'); } catch (e) { /* nothing more we can do */ }
+    area.remove();
+  };
+  const copyText = (text) => {
+    if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text).catch(() => copyByHand(text));
+    copyByHand(text);
+    return Promise.resolve();
+  };
+  document.querySelectorAll('[data-dm]').forEach((a) => {
+    const profile = (LINKS[a.dataset.dm] || {}).instagram;
+    const handle = profile && new URL(profile).pathname.split('/')[1];
+    if (!handle) {
+      a.classList.add('is-todo');
+      a.title = 'Link coming soon';
+      a.addEventListener('click', (e) => e.preventDefault());
+      return;
+    }
+    a.href = `https://ig.me/m/${handle}`;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    const outlet = a.dataset.dmOutlet || '';
+    const message = `Hi ${a.dataset.dmName}! I'd like to reserve a table.\nOutlet: ${outlet}\nDate: \nTime: \nGuests: `;
+    const hint = a.nextElementSibling && a.nextElementSibling.classList.contains('reserve__hint') ? a.nextElementSibling : null;
+    const said = hint && hint.textContent;
+    let back;
+    // copied inside the tap and not cancelled, so the phone still hands the link to the app
+    a.addEventListener('click', () => {
+      copyText(message).then(() => {
+        if (!hint) return;
+        hint.textContent = 'Copied! Paste it in the chat.';
+        clearTimeout(back);
+        back = setTimeout(() => { hint.textContent = said; }, 6000);
+      });
+    });
   });
 
   // each country's landmark in its card, and the mandala behind the About art
