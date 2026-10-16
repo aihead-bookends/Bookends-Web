@@ -757,11 +757,16 @@ html { scroll-behavior: smooth; }
   letter-spacing: -.01em;
 }
 
+/* always two lines (the street, then the area, city and PIN): a line too long for a narrow card
+   ends in an ellipsis rather than wrapping */
 .outlet__address {
   margin: 0 0 10px;
+  overflow: hidden;
   font-style: normal;
   font-size: 14px;
   line-height: 1.55;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   color: var(--ink-soft);
 }
 
