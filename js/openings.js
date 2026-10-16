@@ -61,19 +61,6 @@ window.BOOKENDS_OPENINGS = (() => {
       <circle cx="78" cy="118" r="4" fill="#F6C453" stroke-width="2.4"/></svg>`,
     card: `<svg viewBox="0 0 48 60"><rect x="3" y="3" width="42" height="54" rx="5" fill="#FBF6EC" stroke="#111" stroke-width="3"/>
       <text x="24" y="41" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="900" font-size="26" fill="#C8553D">10</text></svg>`,
-    // a brass tray with a chai kettle on its left half (the cups are separate, so they can be handed out)
-    chaiTray: `<svg viewBox="0 0 120 64" stroke="#111" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">
-      <path d="M40 32c8-2 12-10 16-19" fill="none" stroke-width="6.5"/>
-      <path d="M40 32c8-2 12-10 16-19" fill="none" stroke="#D8CFBE" stroke-width="2.6"/>
-      <path d="M13 28c-9 2-9 15 0 17" fill="none" stroke-width="3.6"/>
-      <path d="M15 20h26c4 10 4 26-2 34H17c-6-8-6-24-2-34z" fill="#D8CFBE"/>
-      <path d="M19 20c2-7 18-7 20 0z" fill="#B9AE98"/>
-      <circle cx="29" cy="12" r="2.6" fill="#111"/>
-      <ellipse cx="60" cy="56" rx="56" ry="6" fill="#E9A23B"/></svg>`,
-    kulhad: `<svg viewBox="0 0 40 44" stroke="#111" stroke-width="2.6" stroke-linejoin="round">
-      <path d="M4 9l5 31h22l5-31z" fill="#C8553D"/>
-      <path d="M9 21h22" fill="none" stroke="#E9A27E" stroke-width="2"/>
-      <ellipse cx="20" cy="9" rx="16" ry="4.5" fill="#C99A62"/></svg>`,
     // a thali of Holi colours: pink, yellow, green, blue
     thali: `<svg viewBox="0 0 120 44" stroke="#111" stroke-width="2.6" stroke-linejoin="round">
       <ellipse cx="60" cy="36" rx="56" ry="7" fill="#E9A23B"/>
@@ -88,13 +75,6 @@ window.BOOKENDS_OPENINGS = (() => {
       <path d="M46 24l20-8v40l-20-8z" fill="#C8553D"/>
       <rect x="6" y="16" width="42" height="38" rx="5" fill="#3A2E28"/>
       <circle cx="70" cy="36" r="9" fill="#FBF6EC"/><circle cx="70" cy="36" r="4" fill="#111"/></svg>`,
-    // a giant kulhad, upside down: it comes down over the two of them like a magician's cup
-    bigKulhad: `<svg viewBox="0 0 100 112" stroke="#111" stroke-width="3" stroke-linejoin="round">
-      <path d="M24 8h52l18 96H6z" fill="#C8553D"/>
-      <path d="M24 8c0-7 52-7 52 0z" fill="#A8432F"/>
-      <path d="M18 40h64M12 74h76" fill="none" stroke="#E9A27E" stroke-width="3"/>
-      <path d="M28 57l7-7 7 7 7-7 7 7 7-7 7 7" fill="none" stroke="#F3E3C3" stroke-width="2.6" stroke-linecap="round"/>
-      <ellipse cx="50" cy="104" rx="44" ry="5" fill="#8E3A28"/></svg>`,
     flashStar: `<svg viewBox="0 0 100 100"><polygon points="50,2 60,36 98,30 68,54 88,96 50,70 12,96 32,54 2,30 40,36"
       fill="#FFF7C2" stroke="#111" stroke-width="3" stroke-linejoin="round"/></svg>`,
     // Navratri: the garbo (a clay lamp pot with holes, a diya burning on top)
@@ -155,15 +135,13 @@ window.BOOKENDS_OPENINGS = (() => {
 
   // the recording for each spoken line: assets/audio/voices/<speaker>-<key>.m4a (js/sound.js)
   const LINE_KEYS = {
-    'Sushi!': 'sushi', 'Sushi!!': 'sushi', 'Pizza!': 'pizza', 'PIZZA!!': 'pizza',
     'Mine!': 'mine', 'Mine!!': 'mine', 'MINE!': 'mine', 'Shh!': 'shh', 'Me first!': 'me-first', 'No, me!': 'no-me',
     'Ready… cook!': 'ready-cook', 'Bring it on!': 'bring-it-on', 'Shabaash!': 'shabaash', 'Ahem.': 'ahem',
     'Welcome!': 'welcome', 'Hop on.': 'hop-on', 'Table for one!': 'table-for-one', 'Table for one?': 'table-for-one-q',
     'Mmm!': 'mmm', 'Judge Beshak!': 'judge-beshak', 'Hmm…': 'hmm', 'A tie!': 'a-tie', 'High five!': 'high-five',
     'Bookends!': 'bookends', 'Happy Holi!': 'happy-holi', 'Ha ha!': 'ha-ha', 'ha ha!': 'ha-ha', 'Smile!': 'smile',
     'Say paneer!': 'say-paneer', 'PANEER!': 'paneer', 'hee!': 'hee', 'hihi!': 'hihi', 'hahaha!': 'hahaha',
-    'HA HA HA!': 'hahaha', 'Friends?': 'friends', 'Chai?': 'chai', 'Chai!!': 'chai', 'aah…': 'aah',
-    'Cheers!': 'cheers', 'Ta-da!': 'tada', 'Dandiya!': 'dandiya', 'Faster!': 'faster', 'Faster!!': 'faster',
+    'HA HA HA!': 'hahaha', 'Friends?': 'friends', 'Dandiya!': 'dandiya', 'Faster!': 'faster', 'Faster!!': 'faster',
     'Shubh Navratri!': 'shubh-navratri',
   };
   // a speaker ('aiko', 'capiche', 'tiger' or 'both') says `text`: their recording, or gibberish for
@@ -1124,17 +1102,6 @@ window.BOOKENDS_OPENINGS = (() => {
     return at + steps * stepDur;
   }
 
-  // a contented tiger: eyes shut, head rocks, tail curls
-  function purr(c, at, tcx) {
-    const { tl, fh, head, tail } = c;
-    c.eyes(at, 'shut');
-    tl.to(head, { keyframes: { rotation: [4, -3, 4, 0] }, duration: 1, ease: 'sine.inOut' }, at)
-      .to(tail, { keyframes: { rotation: [-16, 10, -12, 0] }, duration: 1, ease: 'sine.inOut' }, at);
-    c.eyes(at + 1, 'open');
-    const ht = headTop(c, tcx);
-    say(c, 'purrr…', at + 0.1, ht.x, ht.y - fh * 0.12, 0.55, 'say say--ink say--small');
-    c.cue(at, 'purr');
-  }
 
   // a wink with the near eye
   function wink(c, at) {
@@ -1149,221 +1116,6 @@ window.BOOKENDS_OPENINGS = (() => {
     const ride = c.mount(at, tcx);
     c.bloomAt(ride - 1, c.saddleAt(tcx));
     c.exitRight(ride, tcx);
-  }
-
-  /* --- 12 · chai break ------------------------------------------------------- */
-
-  function chai(c) {
-    const { tl, gsap, A, C, T, fh, cx, W, tw, th, head, ear, floorY } = c;
-    // they argue a little right of centre, leaving room for the tiger on the left
-    const pc = cx + W * 0.12;
-    const aSt = c.ax(pc - W * 0.1);
-    const cSt = c.cxo(pc + W * 0.1);
-    const tcx = Math.max(tw / 2 + 12, aX(c, aSt) - c.m.a.w / 2 - tw / 2 - W * 0.03);
-    enter(c, aSt, cSt);
-
-    // Sushi! Pizza! SUSHI!! PIZZA!!
-    const shout = (text, at, isA, big = false) => {
-      const ch = isA ? A : C;
-      const x = isA ? aX(c, aSt) - fh * 0.12 : cX(c, cSt) + fh * 0.12;
-      say(c, text, at, x, (isA ? c.m.a.top : c.m.c.top) - fh * 0.14, 0.3, big ? 'say' : 'say say--small', isA ? 'aiko' : 'capiche');
-      tl.add(c.hopInPlace(ch, fh * (big ? 0.16 : 0.09), 0.26), at)
-        .to(ch.body, { rotation: isA ? 9 : -9, duration: 0.13, yoyo: true, repeat: 1 }, at);
-    };
-    shout('Sushi!', 1.3, true);
-    shout('Pizza!', 1.7, false);
-    shout('Sushi!!', 2.1, true, true);
-    shout('PIZZA!!', 2.5, false, true);
-    // nose to nose
-    tl.to(A.root, { x: aSt + W * 0.025, duration: 0.2, ease: 'power2.out' }, 2.95)
-      .to(C.root, { x: cSt - W * 0.025, duration: 0.2, ease: 'power2.out' }, 2.95)
-      .to(A.body, { rotation: 12, duration: 0.2 }, 2.95)
-      .to(C.body, { rotation: -12, duration: 0.2 }, 2.95)
-      .to([A.lift, C.lift], { y: -fh * 0.03, duration: 0.05, yoyo: true, repeat: 9 }, 3.1)
-      .add(c.shake(6, 0.3), 3.1);
-    say(c, '!@#$%', 3.35, pc, c.m.a.top - fh * 0.4, 0.45, 'say', 'both');
-
-    // meanwhile the tiger strolls in, with chai on its back
-    const trW = tw * 0.34;
-    const trH = trW * (64 / 120);
-    const trLeft = tw * 0.42 - trW / 2;
-    const trTop = th * 0.18 - trH * 0.9;
-    const tray = c.held(T, 'chai', ART.chaiTray, { width: trW, left: trLeft, top: trTop });
-    const cupW = trW * 0.17;
-    const cupH = cupW * 1.1;
-    const onTray = [0.64, 0.84].map((f) => ({ left: trLeft + trW * f - cupW / 2, top: trTop + trH * (52 / 64) - cupH }));
-    const trayCups = onTray.map((p) => c.held(T, 'chai', ART.kulhad, { width: cupW, ...p }));
-    const ARRIVE = strollIn(c, 1.3, tcx, 7, 0.34);
-
-    // "Chai?" They stop mid-shout and turn round
-    const ht = headTop(c, tcx);
-    say(c, 'Chai?', ARRIVE + 0.25, ht.x, ht.y - fh * 0.15, 0.6, 'say say--ink', 'tiger');
-    c.chomp(ARRIVE + 0.25);
-    tl.to(ear, { rotation: 8, duration: 0.07, yoyo: true, repeat: 3 }, ARRIVE + 0.3)
-      .to([A.body, C.body], { rotation: 0, scaleY: 1.1, scaleX: 0.92, duration: 0.1 }, ARRIVE + 0.35)
-      .to([A.body, C.body], { rotation: -8, scaleY: 1, scaleX: 1, duration: 0.25 }, ARRIVE + 0.75)
-      .to(A.root, { x: aSt, duration: 0.25 }, ARRIVE + 0.75)
-      .to(C.root, { x: cSt, duration: 0.25 }, ARRIVE + 0.75);
-
-    const YES = ARRIVE + 1.0;
-    say(c, 'Chai!!', YES, pc, c.m.a.top - fh * 0.2, 0.45, 'say', 'both');
-    tl.add(c.hopInPlace(A, fh * 0.3, 0.4), YES)
-      .add(c.hopInPlace(C, fh * 0.3, 0.4), YES + 0.06)
-      .to([A.body, C.body], { rotation: 0, duration: 0.2 }, YES);
-
-    // a cup each, tossed off the tray
-    const SERVE = YES + 0.45;
-    const hands = [aHand(c, aSt), cHand(c, cSt)];
-    const handCupW = fh * 0.2;
-    tl.to(head, { keyframes: { rotation: [-6, 0] }, duration: 0.35 }, SERVE - 0.05);
-    const cups = onTray.map((p, i) => {
-      const cup = c.prop('dish', ART.kulhad, handCupW);
-      const from = { x: tcx - tw / 2 + p.left + cupW / 2, y: c.m.t.top + p.top + cupH / 2 };
-      const to = { x: hands[i].x, y: hands[i].y - handCupW * 0.4 };
-      const at = SERVE + i * 0.2;
-      tl.set(trayCups[i], { autoAlpha: 0 }, at)
-        .set(cup, { autoAlpha: 1, scale: cupW / handCupW }, at)
-        .to(cup, { scale: 1, duration: 0.5, ease: 'power1.out' }, at);
-      arc(c, cup, from, to, at, 0.5, fh * 0.5, 360);
-      return cup;
-    });
-
-    // steam curls up; a sip… aah
-    const SIP = SERVE + 0.8;
-    hands.forEach((hand, i) => {
-      for (let k = 0; k < 4; k++) {
-        const wisp = c.prop('dish', ART.steam, handCupW * 0.35);
-        const at = SIP - 0.2 + k * 0.35;
-        tl.fromTo(wisp, { x: hand.x + (k % 2 ? 1 : -1) * handCupW * 0.12, y: hand.y - handCupW * 0.9, autoAlpha: 1, scale: 0.6 },
-          { y: hand.y - handCupW * 2.2, scale: 1.1, autoAlpha: 0, duration: 1, ease: 'sine.out', immediateRender: false }, at);
-      }
-    });
-    tl.to(cups[0], { rotation: -30, x: `-=${handCupW * 0.3}`, duration: 0.25, yoyo: true, repeat: 1, repeatDelay: 0.4 }, SIP)
-      .to(cups[1], { rotation: 30, x: `+=${handCupW * 0.3}`, duration: 0.25, yoyo: true, repeat: 1, repeatDelay: 0.4 }, SIP + 0.1)
-      .to(A.body, { rotation: -6, duration: 0.25, yoyo: true, repeat: 1, repeatDelay: 0.4 }, SIP)
-      .to(C.body, { rotation: 6, duration: 0.25, yoyo: true, repeat: 1, repeatDelay: 0.4 }, SIP + 0.1);
-    say(c, 'aah…', SIP + 0.75, pc, c.m.a.top - fh * 0.18, 0.45, 'say say--ink', 'both');
-    [0, 0.2].forEach((d) => c.cue(SERVE + d + 0.5, 'tok'));        // the cups land in their hands
-    c.cue(SIP - 0.2, 'steam');
-    c.cue(SIP + 0.05, 'slurp');
-
-    // they look at each other, and make up; the tiger purrs
-    const MAKEUP = SIP + 1.1;
-    tl.to(A.body, { rotation: 10, duration: 0.25 }, MAKEUP)
-      .to(C.body, { rotation: -10, duration: 0.25 }, MAKEUP)
-      .add(c.heartsUp(pc, c.m.a.top, fh * 0.8), MAKEUP + 0.15);
-    purr(c, MAKEUP + 0.1, tcx);
-
-    // "Cheers!" They shuffle up close and clink cups
-    const CHEERS = MAKEUP + 0.7;
-    const clinkY = Math.min(hands[0].y, hands[1].y) - handCupW * 0.6;
-    tl.to([A.body, C.body], { rotation: 0, duration: 0.2 }, CHEERS)
-      .add(c.hop(A, c.ax(pc - c.m.a.w * 0.42), 0.35, fh * 0.12), CHEERS)
-      .add(c.hop(C, c.cxo(pc + c.m.c.w * 0.42), 0.35, fh * 0.12), CHEERS)
-      .to(cups[0], { x: pc - handCupW * 0.45, y: clinkY, rotation: 20, duration: 0.35, ease: 'power2.inOut' }, CHEERS)
-      .to(cups[1], { x: pc + handCupW * 0.45, y: clinkY, rotation: -20, duration: 0.35, ease: 'power2.inOut' }, CHEERS);
-    const CLINK = CHEERS + 0.35;
-    const spark = c.prop('dish', ART.flashStar, fh * 0.28);
-    tl.fromTo(spark, { x: pc, y: clinkY - handCupW * 0.3, autoAlpha: 1, scale: 0, rotation: -20 },
-      { scale: 1, rotation: 0, duration: 0.12, ease: 'power2.out', immediateRender: false }, CLINK)
-      .to(spark, { autoAlpha: 0, scale: 1.3, duration: 0.2 }, CLINK + 0.2)
-      .add(c.shake(4, 0.15), CLINK)
-      .to(cups[0], { rotation: -40, duration: 0.2 }, CLINK + 0.35)     // and a last gulp
-      .to(cups[1], { rotation: 40, duration: 0.2 }, CLINK + 0.35);
-    say(c, 'Cheers!', CLINK, pc, c.m.a.top - fh * 0.3, 0.45, 'say', 'both');
-    c.cue(MAKEUP + 0.15, 'sparkle');
-    c.cue(CHEERS + 0.35, 'hop');
-    c.cue(CLINK, 'clink');
-    c.cue(CLINK + 0.4, 'gulp');
-    gone(c, cups, CLINK + 0.6);
-
-    // the tiger bucks its tray into the air: it turns into a giant kulhad and comes down over them
-    const FLIP = CLINK + 0.65;
-    const bigW = c.m.a.w + c.m.c.w;
-    const bigH = bigW * (112 / 100);
-    const restY = floorY - bigH * 0.46;               // the rim sits just over the floor line, hiding their feet
-    const trayAt = { x: tcx - tw / 2 + trLeft + trW / 2, y: c.m.t.top + trTop + trH / 2 };
-    const high = { x: pc, y: restY - fh * 0.6 };
-    const flying = c.prop('dish', ART.chaiTray, trW);
-    const big = c.prop('dish', ART.bigKulhad, bigW);
-    gsap.set(big, { transformOrigin: '50% 100%' });
-    tl.add(c.squash(T, 0.1, 0.4), FLIP)
-      .to(head, { keyframes: { rotation: [-8, 0] }, duration: 0.4 }, FLIP)
-      .set(tray, { autoAlpha: 0 }, FLIP)
-      .set(flying, { autoAlpha: 1 }, FLIP);
-    arc(c, flying, trayAt, high, FLIP, 0.45, fh * 0.3, 540);
-    const SWAP = FLIP + 0.45;
-    tl.to(flying, { autoAlpha: 0, scale: 1.4, duration: 0.12 }, SWAP)
-      .fromTo(big, { x: high.x, y: high.y, autoAlpha: 1, scale: 0.35, rotation: -160 },
-        { scale: 1, rotation: 0, duration: 0.22, ease: 'back.out(1.6)', immediateRender: false }, SWAP)
-      .to(big, { y: restY, duration: 0.28, ease: 'power3.in' }, SWAP + 0.25);
-    const LAND = SWAP + 0.53;
-    tl.set([A.root, C.root], { autoAlpha: 0 }, LAND - 0.03)
-      .to(big, { keyframes: [{ scaleY: 0.86, scaleX: 1.08, duration: 0.07 }, { scaleY: 1, scaleX: 1, duration: 0.5, ease: 'elastic.out(1, 0.4)' }] }, LAND)
-      .add(c.shake(11, 0.3), LAND)
-      .add(c.dustPuff(pc, floorY, bigW * 0.6), LAND);
-
-    // under the cup, the two become one: Caiko stands where they were
-    const [seatX, seatY] = c.rider.dataset.seat.split(' ').map(Number);
-    const saddle = c.saddleAt(tcx);
-    const stand = { x: pc - (saddle.x + c.rw * (0.5 - seatX)), y: floorY - (saddle.y + c.rh * (1 - seatY)) };
-    tl.set(c.rider, { autoAlpha: 1, x: stand.x, y: stand.y }, LAND + 0.05);
-
-    // something's going on in there… steam escapes, the cup jumps twice
-    [0.4, 0.75].forEach((dt, i) => {
-      tl.to(big, {
-        keyframes: [
-          { y: restY - fh * 0.035, rotation: i ? 3 : -3, duration: 0.1, ease: 'power2.out' },
-          { y: restY, rotation: 0, duration: 0.14, ease: 'power2.in' },
-        ],
-      }, LAND + dt);
-    });
-    for (let k = 0; k < 3; k++) {
-      const wisp = c.prop('dish', ART.steam, bigW * 0.1);
-      tl.fromTo(wisp, { x: pc + (k - 1) * bigW * 0.14, y: floorY - bigH, autoAlpha: 1, scale: 0.6 },
-        { y: floorY - bigH - bigW * 0.4, scale: 1.2, autoAlpha: 0, duration: 0.9, ease: 'sine.out', immediateRender: false }, LAND + 0.25 + k * 0.22);
-    }
-    wink(c, LAND + 0.45);
-    c.cue(FLIP, 'whoosh', true);                                   // the tray flies up…
-    c.cue(SWAP, 'sparkle');                                        // …and turns into a giant kulhad
-    c.cue(LAND, 'thunk');
-    c.cue(LAND + 0.25, 'steam');
-    [LAND + 0.4, LAND + 0.75].forEach((t) => c.cue(t, 'knock'));
-
-    // "Ta-da!" The cup flies off, and there's Caiko
-    const LIFT = LAND + 1.05;
-    say(c, 'Ta-da!', LIFT - 0.15, ht.x, ht.y - fh * 0.15, 0.5, 'say say--ink', 'tiger');
-    c.cue(LIFT, 'tada');
-    c.cue(LIFT + 0.2, 'whoosh');
-    tl.to(big, { y: restY - fh * 0.25, rotation: 12, duration: 0.2, ease: 'power2.out' }, LIFT)
-      .to(big, { y: -bigH, rotation: 200, autoAlpha: 0, duration: 0.55, ease: 'power2.in' }, LIFT + 0.2)
-      .fromTo(c.rider, { scaleY: 0.8, scaleX: 1.12 }, { scaleY: 1, scaleX: 1, duration: 0.5, ease: 'elastic.out(1, 0.4)', immediateRender: false }, LIFT + 0.05)
-      .add(c.heartsUp(pc, floorY - c.rh, c.rh * 0.7), LIFT + 0.1);
-
-    // a flip up onto the tiger's back
-    const HOP = LIFT + 0.5;
-    const hopDur = 0.6;
-    const SEAT = HOP + hopDur;
-    tl.set(c.rider, { transformOrigin: '50% 50%' }, HOP)
-      .to(c.rider, { x: 0, duration: hopDur, ease: 'none' }, HOP)
-      .to(c.rider, {
-        keyframes: [
-          { y: Math.min(stand.y, 0) - fh * 0.3, duration: hopDur / 2, ease: 'power2.out' },
-          { y: 0, duration: hopDur / 2, ease: 'power2.in' },
-        ],
-      }, HOP)
-      .to(c.rider, { rotation: -360, duration: hopDur, ease: 'power1.inOut' }, HOP)
-      .set(c.rider, { rotation: 0, transformOrigin: '50% 100%' }, SEAT)
-      .to(c.rider, { keyframes: [{ scaleY: 0.85, scaleX: 1.1, duration: 0.07 }, { scaleY: 1, scaleX: 1, duration: 0.4, ease: 'elastic.out(1, 0.4)' }] }, SEAT)
-      .add(c.squash(T, 0.1, 0.45), SEAT)
-      .add(c.shake(5, 0.2), SEAT)
-      .to(ear, { rotation: 8, duration: 0.07, yoyo: true, repeat: 3 }, SEAT + 0.1);
-    c.bloomAt(SEAT, saddle);
-    c.cue(HOP, 'whoosh');                                          // Caiko flips up…
-    c.cue(SEAT, 'hop');                                            // …and lands on the tiger
-    c.cue(SEAT + 0.05, 'sparkle');
-    c.exitRight(SEAT + 0.45, tcx);
-    return { own: true };
   }
 
   /* --- 13 · holi ------------------------------------------------------------- */
@@ -1928,5 +1680,5 @@ window.BOOKENDS_OPENINGS = (() => {
     return { own: true };
   }
 
-  return { fight, cookoff, sharing, noodle, dance, race, sleeping, chef, host, guest, storybook, judge, chai, holi, photo, tickle, navratri };
+  return { fight, cookoff, sharing, noodle, dance, race, sleeping, chef, host, guest, storybook, judge, holi, photo, tickle, navratri };
 })();

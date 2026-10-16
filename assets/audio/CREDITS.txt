@@ -1,4 +1,6 @@
-Intro audio (plays only during the intro on index.html).
+Intro audio (plays only during the intro on index.html). The live site (main) plays the
+Navratri intro: the music and its five voice lines. The other files serve the intro
+concepts that are kept in js/openings.js but not shown.
 
 sitar-tabla.m4a     Music: "Sitar Tabla Fusion Beat" by BudgetPixel AI
                     https://budgetpixel.com/background-music/sitar-tabla-fusion-beat-592eb3d7
@@ -7,25 +9,15 @@ sitar-tabla.m4a     Music: "Sitar Tabla Fusion Beat" by BudgetPixel AI
                     Credit is REQUIRED: it is shown in the footer of index.html.
                     Re-encoded to AAC 96 kbps, otherwise unchanged.
 
-slurp.m4a           "End Of Drink Slurp" by BudgetPixel AI
-                    https://budgetpixel.com/sfx/end-of-drink-slurp-b9364e6f
-                    Licensed under Creative Commons Attribution 4.0
-                    Credit is REQUIRED: it is shown in the footer of index.html.
-                    Changed: cut to 1 s (1.05–2.05 s of the original), faded, AAC 64 kbps.
-
 purr.m4a            "Cat purr" (s0436), BigSoundBank, CC0 (public domain)
                     https://bigsoundbank.com/cat-purr-s0436.html
                     A 1.75 s cut (5.25–7.0 s), faded, AAC 64 kbps.
 
-clink.m4a           "Cheers, table glass #1" (s1323), BigSoundBank, CC0 (public domain)
-                    https://bigsoundbank.com/cheers-table-glass-1-s1323.html
-                    AAC 64 kbps.
-
 voices/*.m4a        The characters' lines, generated with Kokoro-82M (open-source
                     text-to-speech, Apache License 2.0, https://huggingface.co/hexgrad/Kokoro-82M):
                     Aiko in English (voice af_bella), Capiche in Italian (im_nicola:
-                    "Pizza!", "Ciai!", "Cin cin!", "Mio!", "No, io!", "Pronti… via!",
-                    "Batti cinque!"…), the tiger in Hindi (hm_omega: "चाय?", "टा-डा!",
+                    "Mio!", "No, io!", "Pronti… via!",
+                    "Batti cinque!"…), the tiger in Hindi (hm_omega: "शुभ नवरात्रि!",
                     "शाबाश!", and English lines written in Devanagari for an Indian
                     accent, e.g. "वेल्कम!", "हैप्पी होली!"). Silence trimmed, levelled,
                     AAC 64 kbps. No credit required.

@@ -29,11 +29,8 @@
   const SOUND = window.BOOKENDS_SOUND;     // js/sound.js: music, voices and effects for the intro
   let quietCues = false;                    // true while skipping, so jumped-over cues stay silent
   const sfx = (...args) => { if (!quietCues && SOUND) SOUND.fx(...args); };
-  const VARIANTS = Object.keys(OPENINGS);
-  let variant = (() => {
-    const v = new URLSearchParams(location.search).get('v');
-    return VARIANTS.includes(v) ? v : (VARIANTS[Number(v)] || VARIANTS[0]);
-  })();
+  // the live site plays the Navratri opening only (the variation branch has the switcher)
+  let variant = 'navratri';
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   const pair = (str, fallback) => (str || fallback).split(' ').map(Number);
 
@@ -121,7 +118,7 @@
   const PUFFS = [[50, 54, 50], [27, 60, 38], [73, 60, 38], [37, 32, 36], [63, 30, 38],
                  [15, 44, 24], [85, 44, 24], [32, 82, 28], [68, 82, 28]];
   const BITS = ['★', '!@#$', '✦', '%&!', '✶', '?!', '★', '#@!', '✦', '!!', '✶', '&%#', '★', '!?'];
-  // what lands each hit: Aiko (Korean) throws sushi, Capiche (Italian) throws pizza
+  // what lands each hit: Aiko (Pan-Asian) throws sushi, Capiche (Italian) throws pizza
   const HIT_FOOD = {
     sushi: `<svg viewBox="0 0 64 64" stroke="#111" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
       <rect x="9" y="36" width="46" height="16" rx="8" fill="#FBF6EC"/>

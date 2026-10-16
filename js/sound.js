@@ -1,9 +1,9 @@
 /* ==========================================================================
    Bookends Hospitality: sound for the intro only
-   Sound is on by default: sitar-and-tabla music under the chai story (fading
-   out at the title), the characters' voices, and effects on cue (intro.js
-   calls BOOKENDS_SOUND.fx('clink') etc. at each moment). The rest of the
-   site is silent.
+   Sound is on by default: sitar-and-tabla music under the Navratri story
+   (fading out at the title), the characters' voices, and effects on cue
+   (intro.js calls BOOKENDS_SOUND.fx('dhol') etc. at each moment). The rest
+   of the site is silent.
 
    Browsers only let a page make sound once the visitor has clicked, tapped
    or pressed a key. So the music tries to start with the intro; if the
@@ -11,30 +11,19 @@
    and the sound button shows "Tap for sound" until then. Muting with the
    button is remembered for the next visit.
 
-   Recordings: the music, the purr, the clink, the slurp, the roar, the thunder
-   and the voice lines (credits in assets/audio/CREDITS.txt and the footer).
+   Recordings: the music and the voice lines (credits in
+   assets/audio/CREDITS.txt and the footer).
    Every other effect is generated here with Web Audio.
    ========================================================================== */
 window.BOOKENDS_SOUND = (() => {
   'use strict';
 
   const MUSIC = 'assets/audio/sitar-tabla.m4a';
-  const SAMPLES = {
-    purr: 'assets/audio/purr.m4a', clink: 'assets/audio/clink.m4a', slurp: 'assets/audio/slurp.m4a',
-    roar: 'assets/audio/roar.m4a', thunder: 'assets/audio/thunder.m4a',
-  };
-  // what the characters say, one file per line (speaker-line): Aiko in English, Capiche in
-  // Italian, the tiger in Hindi. A line with no file falls back to gibberish (FX.say).
+  // main plays the Navratri opening only, so only its five lines are downloaded (the
+  // variation branch lists every concept's lines and samples). A line with no file
+  // falls back to gibberish (FX.say).
+  const SAMPLES = {};
   const LINES = [
-    'aiko-sushi', 'aiko-chai', 'aiko-aah', 'aiko-cheers', 'aiko-mine', 'aiko-shh', 'aiko-me-first',
-    'aiko-ready-cook', 'aiko-bookends', 'aiko-high-five', 'aiko-paneer', 'aiko-hee', 'aiko-hihi',
-    'aiko-ha-ha', 'aiko-hahaha',
-    'capiche-pizza', 'capiche-chai', 'capiche-aah', 'capiche-cheers', 'capiche-mine', 'capiche-no-me',
-    'capiche-ready-cook', 'capiche-bookends', 'capiche-high-five', 'capiche-paneer', 'capiche-ha-ha',
-    'capiche-hahaha',
-    'tiger-chai', 'tiger-tada', 'tiger-bring-it-on', 'tiger-shabaash', 'tiger-ahem', 'tiger-welcome',
-    'tiger-hop-on', 'tiger-table-for-one', 'tiger-table-for-one-q', 'tiger-mmm', 'tiger-judge-beshak',
-    'tiger-hmm', 'tiger-a-tie', 'tiger-happy-holi', 'tiger-smile', 'tiger-say-paneer', 'tiger-friends',
     'aiko-dandiya', 'aiko-faster', 'capiche-dandiya', 'capiche-faster', 'tiger-shubh-navratri',
   ];
   LINES.forEach((id) => { SAMPLES[id] = `assets/audio/voices/${id}.m4a`; });
@@ -50,7 +39,7 @@ window.BOOKENDS_SOUND = (() => {
   let musicGain = null;
   let fxGain = null;
   let noise = null;         // a white-noise buffer for whooshes, steam and thumps
-  const buffers = {};       // decoded recordings: purr, clink, slurp and the voice lines
+  const buffers = {};       // decoded recordings: the voice lines
   const live = new Set();   // effect nodes still sounding (stopped on skip)
 
   const pref = (() => { try { return localStorage.getItem(PREF_KEY); } catch (e) { return null; } })();
@@ -287,17 +276,8 @@ window.BOOKENDS_SOUND = (() => {
       hiss('bandpass', 2500, 1800, 3, 0.16, 0.001, 0.03);
     },
     steam() { hiss('highpass', 3000, 5200, 0.5, 0.05, 0.3, 1.0); },
-    slurp(level = 1) {
-      if (!sample('slurp', 0.8 * level, level < 1 ? 0.92 : 1)) hiss('bandpass', 600, 2400, 4, 0.25 * level, 0.05, 0.5);
-    },
     purr() {
       if (!sample('purr', 0.95)) tone('sawtooth', 32, 30, 0.2, 0.15, 1.1);
-    },
-    clink() {
-      if (!sample('clink', 0.75)) {
-        tone('sine', 2600, 2590, 0.16, 0.002, 0.35);
-        tone('sine', 3350, 3340, 0.1, 0.002, 0.3, 0.01);
-      }
     },
     gulp() {
       tone('sine', 380, 150, 0.25, 0.005, 0.12);
@@ -309,16 +289,7 @@ window.BOOKENDS_SOUND = (() => {
       tone('triangle', 140, 60, 0.3, 0.003, 0.15);
     },
     // the giant kulhad lands: a thud with a hollow clay ring
-    thunk() {
-      FX.thud();
-      tone('triangle', 230, 190, 0.28, 0.004, 0.55);
-      tone('sine', 460, 400, 0.1, 0.004, 0.4);
-    },
     // something moving inside the upturned cup
-    knock() {
-      tone('sine', 160, 90, 0.45, 0.004, 0.12);
-      hiss('lowpass', 900, 300, 0.7, 0.15, 0.002, 0.05);
-    },
     tada() {
       [523.25, 659.25, 783.99].forEach((f, i) => tone('triangle', f, f, 0.16, 0.006, 0.12, i * 0.08));
       tone('triangle', 1046.5, 1046, 0.18, 0.01, 0.7, 0.26);
