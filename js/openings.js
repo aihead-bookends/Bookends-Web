@@ -1775,5 +1775,482 @@ window.BOOKENDS_OPENINGS = (() => {
     return { own: true };
   }
 
-  return { fight, cookoff, sharing, noodle, dance, race, sleeping, chef, host, guest, storybook, judge, holi, photo, tickle, navratri };
+  /* --- 17 · dussehra: Ravana made of tasteless food, brought down from the tiger's back ---- */
+
+  // Ravana's body: a muscled warrior in a wide stance, in gold armour (a jewelled collar, shoulder
+  // plates, arm bands and bracers), a flaring red cape with a gold hem, a red dhoti with gold borders
+  // over a purple panel, a lion on his belt, gold anklets and curled gold shoes, a curved sword in
+  // one hand and a spiked mace in the other.
+  // He stands turned three-quarters, facing left towards Aiko, Capiche and the tiger. The art is drawn
+  // facing front, then turned: his far side (left of his middle, x = 150) is squeezed in, his near
+  // side widened, and his far foot set a little higher, further back.
+  const TURN = { mid: 136, far: 0.72, near: 1.1 };
+  const clamp01 = (n) => Math.min(1, Math.max(0, n));
+  const turned = (x, y) => [
+    TURN.mid + (x - 150) * (x < 150 ? TURN.far : TURN.near),
+    y - 5 * clamp01((150 - x) / 40) * clamp01((y - 100) / 44),
+  ];
+  // moves every point of some SVG art through f(x, y), for paths drawn with M L H V Q C Z only;
+  // kx(x) is how much it stretches sideways there, for the widths of circles and ellipses
+  const reshape = (art, f, kx) => {
+    const round = (n) => Math.round(n * 10) / 10;
+    const path = (d) => {
+      const tokens = d.match(/[MLHVQCZ]|-?(?:\d+\.?\d*|\.\d+)/gi);
+      const out = [];
+      let cmd = '';
+      let i = 0;
+      let x = 0;
+      let y = 0;
+      let start = [0, 0];
+      const num = () => Number(tokens[i++]);
+      const pt = (rel) => [num() + (rel ? x : 0), num() + (rel ? y : 0)];
+      const put = (c, pts) => out.push(c + pts.map(([px, py]) => f(px, py).map(round).join(' ')).join(' '));
+      while (i < tokens.length) {
+        if (/[a-z]/i.test(tokens[i])) cmd = tokens[i++];
+        const rel = cmd === cmd.toLowerCase();
+        const C = cmd.toUpperCase();
+        if (C === 'M') { const p = pt(rel); put('M', [p]); [x, y] = start = p; cmd = rel ? 'l' : 'L'; }
+        else if (C === 'L') { const p = pt(rel); put('L', [p]); [x, y] = p; }
+        else if (C === 'H') { x = num() + (rel ? x : 0); put('L', [[x, y]]); }
+        else if (C === 'V') { y = num() + (rel ? y : 0); put('L', [[x, y]]); }
+        else if (C === 'Q') { const pts = [pt(rel), pt(rel)]; put('Q', pts); [x, y] = pts[1]; }
+        else if (C === 'C') { const pts = [pt(rel), pt(rel), pt(rel)]; put('C', pts); [x, y] = pts[2]; }
+        else { out.push('Z'); [x, y] = start; }
+      }
+      return out.join('');
+    };
+    const oval = (cx, cy, rx, ry) => {
+      const [x, y] = f(+cx, +cy);
+      return `<ellipse cx="${round(x)}" cy="${round(y)}" rx="${round(rx * kx(+cx))}" ry="${ry}"`;
+    };
+    return art
+      .replace(/<ellipse cx="([\d.]+)" cy="([\d.]+)" rx="([\d.]+)" ry="([\d.]+)"/g, (_, cx, cy, rx, ry) => oval(cx, cy, rx, ry))
+      .replace(/<circle cx="([\d.]+)" cy="([\d.]+)" r="([\d.]+)"/g, (_, cx, cy, r) => oval(cx, cy, r, r))
+      .replace(/ d="([^"]+)"/g, (_, d) => ` d="${path(d)}"`);
+  };
+  const RAVANA_VIEW = { x: 38, y: -2, w: 252, h: 152 };
+  const RAVANA_RATIO = RAVANA_VIEW.w / RAVANA_VIEW.h;
+  const RAVANA_BODY = (() => {
+    const SKIN = '#C98A5B';
+    const GOLD = '#E3B23B';
+    const SHINE = '#F6C453';
+    const RED = '#C8242B';
+    // a gold border, drawn as an outlined stroke along a path
+    const trim = (d, w = 3.4) => `<path d="${d}" fill="none" stroke="#111" stroke-width="${w + 2.6}"/><path d="${d}" fill="none" stroke="${SHINE}" stroke-width="${w}"/>`;
+    const gem = (x, y, r) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#E3242B" stroke-width="1.4"/>`;
+    // his right-hand side is the left-hand side mirrored about the middle (x = 150)
+    const mirror = (art) => reshape(art, (x, y) => [300 - x, y], () => 1);
+    // a spiky ring: n points between radius r1 and r2 round (x, y)
+    const spikes = (x, y, n, r1, r2, turn = 0) => 'M' + Array.from({ length: n * 2 }, (_, i) => {
+      const a = (i / (n * 2)) * Math.PI * 2 + turn;
+      const r = i % 2 ? r1 : r2;
+      return `${(x + Math.cos(a) * r).toFixed(1)} ${(y + Math.sin(a) * r).toFixed(1)}`;
+    }).join('L') + 'z';
+    // one side of the cape, a leg and an anklet
+    const side = `
+      <path d="M110 16C90 30 70 70 52 110Q58 108 62 113Q69 109 74 115Q81 111 86 117L130 108L130 20z" fill="${RED}" stroke="none"/>
+      <path d="M110 16C90 30 70 70 52 110" fill="none"/><path d="M68 106Q76 64 106 24" fill="none" stroke="#8E1B1B" stroke-width="1.8"/>
+      ${trim('M52 110Q58 108 62 113Q69 109 74 115Q81 111 86 117')}
+      <path d="M88 110h15l-3 26H85z" fill="${SKIN}"/><path d="M85 130h16v6H85z" fill="${GOLD}"/>${gem(93, 133, 1.8)}`;
+    // a curled gold shoe, its heel at x = 103 + dx; both point left, the way he faces
+    const shoe = (dx) => reshape(`<path d="M103 136V144H82Q68 144 64 134Q62 128 67 129Q70 130 68 133Q72 137 80 136z" fill="${GOLD}"/>${gem(92, 140, 1.6)}`,
+      (x, y) => [x + dx, y], () => 1);
+    // an arm, with its gold band and bracer
+    const arm = `
+      <path d="M114 18Q94 18 88 34Q84 44 83 47L99 55Q104 44 121 31z" fill="${SKIN}"/>
+      <path d="M86.5 38.5L112.5 40L109.5 45L85 43.5z" fill="${GOLD}"/>${gem(98, 42, 1.8)}
+      <path d="M84 46Q74 56 70 66L86 74Q90 64 98 54z" fill="${SKIN}"/>
+      <path d="M77 56Q86 61 95.5 59L89 72Q79 70 71 65z" fill="${GOLD}"/>
+      <path d="M74.5 60.5Q83 65 93 63.5" fill="none" stroke="#8E5A12" stroke-width="1.2"/>${gem(84, 66, 1.8)}`;
+    // a shoulder plate in two layers
+    const pauldron = `
+      <path d="M128 12Q104 8 94 28Q106 31 114 25Q121 20 128 21z" fill="${GOLD}"/>
+      <path d="M100 27Q93 31 92 38Q100 36 105 31z" fill="${GOLD}"/>
+      <path d="M104 18Q112 14 124 15" fill="none" stroke="#8E5A12" stroke-width="1.4"/>${gem(110, 21, 1.8)}`;
+    const fist = (x) => `<ellipse cx="${x}" cy="72" rx="7.5" ry="6.5" fill="${SKIN}"/>
+      <path d="M${x - 4} 68.5v6M${x} 68v7" fill="none" stroke="#8E5A3B" stroke-width="1.2"/>`;
+    const { x, y, w, h } = RAVANA_VIEW;
+    return reshape(`<svg viewBox="${x} ${y} ${w} ${h}" stroke="#111" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">
+      ${side}${mirror(side)}${shoe(0)}${shoe(112)}
+      <path d="M141 2h18v16h-18z" fill="${SKIN}"/>
+      <path d="M82 116Q90 100 104 80Q114 68 122 66H178Q186 68 196 80Q210 100 218 116Q212 120 206 117Q200 122 194 118Q186 122 178 118L150 112L122 118Q114 122 106 118Q100 122 94 117Q88 120 82 116z" fill="${RED}"/>
+      <path d="M128 70Q118 92 100 114M137 70Q130 94 116 117M172 70Q182 92 200 114M163 70Q170 94 184 117" fill="none" stroke="#8E1B1B" stroke-width="1.8"/>
+      ${trim('M82 116Q88 120 94 117Q100 122 106 118Q114 122 122 118')}${trim('M178 118Q186 122 194 118Q200 122 206 117Q212 120 218 116')}
+      <path d="M136 66H164L172 130Q150 136 128 130z" fill="#4B2E6B"/>${trim('M136 68L128 130Q150 136 172 130L164 68', 3)}
+      <path d="M143 66H157L160 114Q150 120 140 114z" fill="${RED}"/>
+      <path d="M150 70V115M146 70L144 112M154 70L156 112" fill="none" stroke="#8E1B1B" stroke-width="1.4"/>${trim('M143 68L140 114Q150 120 160 114L157 68', 2.4)}
+      ${arm}${mirror(arm)}
+      <path d="M112 16Q150 8 188 16L182 46Q177 54 177 58H123Q123 54 118 46z" fill="${SKIN}"/>
+      <path d="M122 39Q136 47 150 42Q164 47 178 39M150 44V56M141 48.5H159M142 53H158M126 47Q130 53 135 57M174 47Q170 53 165 57" fill="none" stroke="#8E5A3B" stroke-width="1.6"/>
+      <path d="M120 55H180L182 68H118z" fill="${GOLD}"/><path d="M121 58.5H179" fill="none" stroke="#8E5A12" stroke-width="1.2"/>
+      ${gem(126, 62.5, 2)}${gem(134, 62.5, 1.6)}${gem(166, 62.5, 1.6)}${gem(174, 62.5, 2)}
+      <path d="${spikes(150, 62, 12, 8.5, 11.5)}" fill="${GOLD}" stroke-width="1.6"/><circle cx="150" cy="62.5" r="6.2" fill="${SHINE}" stroke-width="1.4"/>
+      <circle cx="147.8" cy="61.3" r="1" fill="#111" stroke="none"/><circle cx="152.2" cy="61.3" r="1" fill="#111" stroke="none"/>
+      <path d="M148.6 63.4h2.8l-1.4 1.6z" fill="#111" stroke="none"/><path d="M147.6 66q2.4 1.4 4.8 0" fill="none" stroke-width="1.1"/>
+      ${pauldron}${mirror(pauldron)}
+      <path d="M114 13Q150 4 186 13L182 25Q166 40 150 42Q134 40 118 25z" fill="${GOLD}"/>
+      <path d="M120 20Q150 31 180 20" fill="none" stroke="#8E5A12" stroke-width="1.4"/>
+      ${[[122, 30], [128.5, 34.5], [135.5, 38], [164.5, 38], [171.5, 34.5], [178, 30]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="2" fill="${SHINE}" stroke-width="1.2"/>`).join('')}
+      ${gem(133, 21, 2.2)}${gem(167, 21, 2.2)}<circle cx="150" cy="23" r="6.2" fill="${SHINE}"/>${gem(150, 23, 3.6)}
+      <path d="M150 38q6 5 0 11q-6-6 0-11z" fill="${SHINE}"/>${gem(150, 44.5, 1.6)}
+      <path d="M66 62Q40 54 20 24Q24 60 64 72z" fill="${SHINE}"/><path d="M60 64Q38 56 27 38" fill="none" stroke="#B5791F" stroke-width="1.4"/>
+      ${trim('M70 59L63 75', 3.6)}${gem(66.5, 67, 2.2)}
+      <path d="M70 68L90 78" stroke="#111" stroke-width="7"/><path d="M70 68L90 78" stroke="#6B3A22" stroke-width="4"/>
+      ${trim('M90 78q8 3 6 10q-2 4-6 1', 2.4)}${fist(79)}
+      <path d="M206 78L250 66" stroke="#111" stroke-width="7.5"/><path d="M206 78L250 66" stroke="${GOLD}" stroke-width="4.5"/>
+      <path d="M234 66.5l2 8M241 64.5l2 8" stroke="#111" stroke-width="2"/>
+      <path d="${spikes(264, 64, 8, 13, 22, 0.2)}" fill="${GOLD}"/><circle cx="264" cy="64" r="15" fill="${GOLD}"/>
+      <path d="M254 56q10-6 20 0" fill="none" stroke="#F8DA8A" stroke-width="2.4"/>
+      <circle cx="264" cy="64" r="6.5" fill="${SHINE}"/>${gem(264, 64, 3.6)}${fist(221)}</svg>`, turned, (cx) => (cx < 150 ? TURN.far : TURN.near));
+  })();
+  // where a point of the front-facing drawing ends up on him, once turned: as fractions of his
+  // width (from the middle) and of his height (from the top)
+  const ravanaAt = (x, y) => {
+    const [tx, ty] = turned(x, y);
+    return [(tx - RAVANA_VIEW.x) / RAVANA_VIEW.w - 0.5, (ty - RAVANA_VIEW.y) / RAVANA_VIEW.h];
+  };
+
+  // Ravana's ten heads: ten junk foods, each with a jewelled crown, glaring red-rimmed eyes, a big
+  // moustache and a shouting mouth, turned a little to glare left like the body. The donut is the
+  // biggest, in the middle.
+  const RAGE = (dy) => `<g transform="translate(-3 ${dy})">
+    <path d="M15 22l13 6M45 22l-13 6" fill="none" stroke-width="4.2"/>
+    <ellipse cx="23" cy="31" rx="5" ry="4" fill="#FFF" stroke="#B3261E" stroke-width="1.6"/><ellipse cx="37" cy="31" rx="5" ry="4" fill="#FFF" stroke="#B3261E" stroke-width="1.6"/>
+    <circle cx="21.6" cy="31.5" r="2.1" fill="#111" stroke="none"/><circle cx="34.6" cy="31.5" r="2.1" fill="#111" stroke="none"/>
+    <path d="M23 45q7-6 14 0q-1 8-7 8t-7-8z" fill="#8E1B1B"/><path d="M24.5 44.6q5.5-3.2 11 0l-.6 2.2q-4.9-2.4-9.8 0z" fill="#FFF" stroke="none"/>
+    <path d="M30 39c-3-3-9-4-13-1-3 2-6 2-8-1 1 6 8 9 13 7 4-1 6-3 8-3s4 2 8 3c5 2 12-1 13-7-2 3-5 3-8 1-4-3-10-2-13 1z" fill="#111"/></g>`;
+  const MINI_CROWN = `<path d="M15 8l-3-11 6 4 4-10 4 7 4-12 4 12 4-7 4 10 6-4-3 11z" fill="#F6C453"/>
+    <path d="M14.5 4.5h31" fill="none" stroke="#B5791F" stroke-width="1.4"/>
+    ${[[12, -3.5, 1.6], [22, -6.5, 1.6], [30, -12.5, 1.8], [38, -6.5, 1.6], [48, -3.5, 1.6]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#F6C453" stroke-width="1.2"/>`).join('')}
+    <path d="M30 -5q3 3 0 7q-3-4 0-7z" fill="#E3242B" stroke-width="1.2"/><circle cx="21" cy="1.5" r="1.4" fill="#E3242B" stroke="none"/><circle cx="39" cy="1.5" r="1.4" fill="#E3242B" stroke="none"/>`;
+  const JUNK = [
+    // a burger
+    [`<path d="M8 30q0-22 22-22t22 22z" fill="#E3A23B"/><path d="M6 30h48l-3 6H9z" fill="#5FAF3B"/><path d="M7 36h46v9H7z" fill="#6B3A22"/>
+      <path d="M8 45h44l-6 6-6-6-6 6-6-6-6 6-6-6-6 6z" fill="#F6C453"/><path d="M9 51h42q0 9-21 9T9 51z" fill="#E3A23B"/>`, -2],
+    // a slice of pizza
+    [`<path d="M5 8h50L30 62z" fill="#F6C453"/><path d="M4 6h52v8H4z" fill="#D9963B"/>
+      <circle cx="13" cy="22" r="3.5" fill="#C8242B" stroke="none"/><circle cx="47" cy="22" r="3.5" fill="#C8242B" stroke="none"/><circle cx="30" cy="55" r="2.6" fill="#C8242B" stroke="none"/>`, 0],
+    // fries
+    [`<path d="M16 26l-3-20M22 26l-1-22M28 26l1-24M34 26l1-22M40 26l2-20M46 26l3-16" stroke-width="7"/>
+      <path d="M16 26l-3-20M22 26l-1-22M28 26l1-24M34 26l1-22M40 26l2-20M46 26l3-16" stroke="#F6C453" stroke-width="4"/>
+      <path d="M10 24h40l-4 36H14z" fill="#E3242B"/>`, 5],
+    // a fried chicken drumstick
+    [`<path d="M28 56l-3 6" stroke-width="6"/><path d="M28 56l-3 6" stroke="#F3E3C3" stroke-width="3"/>
+      <path d="M30 6c15 0 23 11 21 25-2 15-12 25-21 25S9 46 9 31 15 6 30 6z" fill="#C77B30"/>
+      <path d="M14 18l3 2M44 14l3 3M48 42l3 1M12 42l3-1" stroke="#8E5A12" stroke-width="2"/>`, 0],
+    // the donut
+    [`<circle cx="30" cy="32" r="27" fill="#E8A06E"/><path d="M6 30q2-22 24-24t24 24q-2 8-6 4t-6 4-6-2-6 2-6-4-6 4-6-4-6 4z" fill="#F28BB5"/>
+      <path d="M16 16l3 2M40 12l2 3M47 22l3-1M11 26l2-2M27 10l3 1" stroke="#2FA36B" stroke-width="2"/><path d="M22 12l2 2M35 17l3 1M48 32l2 2" stroke="#1F4FBF" stroke-width="2"/>`, 2],
+    // a cola, with a straw
+    [`<path d="M38 8l8-22" stroke-width="5"/><path d="M38 8l8-22" stroke="#E3242B" stroke-width="2.6" stroke-dasharray="3 3"/>
+      <path d="M12 8h36v7H12z" fill="#E9E2CF"/><path d="M14 15h32l-4 45H18z" fill="#6B2E1E"/>`, 3],
+    // a cup of instant noodles
+    [`<path d="M14 22c2-10 6-14 8-6s6-10 8-2 6-10 8-2 6-8 8 2" fill="none" stroke-width="6"/><path d="M14 22c2-10 6-14 8-6s6-10 8-2 6-10 8-2 6-8 8 2" fill="none" stroke="#F6C453" stroke-width="3"/>
+      <path d="M8 20h44l-5 40H13z" fill="#E3242B"/><path d="M10 28h40" stroke="#FFF3D6" stroke-width="3"/>`, 5],
+    // a pile of candy and chocolate
+    [`<path d="M8 40q0-26 22-28t22 28q0 20-22 20T8 40z" fill="#6B3A22"/><circle cx="16" cy="14" r="6" fill="#E3242B"/><circle cx="44" cy="14" r="6" fill="#1F4FBF"/>
+      <circle cx="30" cy="9" r="6" fill="#2FA36B"/><circle cx="23" cy="18" r="5" fill="#F6C453"/><circle cx="37" cy="18" r="5" fill="#E83E8C"/>`, 7],
+    // an ice-cream cone, chocolate on top and a cherry
+    [`<path d="M16 38h28L30 62z" fill="#E3A23B"/><path d="M21 42l12 13M27 40l11 11M35 40l-12 14" stroke="#B5791F" stroke-width="1.6"/>
+      <path d="M8 38q0-30 22-30t22 30z" fill="#F3E3C3"/><path d="M10 25q4 8 8 0t8 2 8-2 8 2 8-4" fill="none" stroke="#6B3A22" stroke-width="5"/><circle cx="30" cy="4" r="5" fill="#E3242B"/>`, -6],
+    // a packet of chips
+    [`<path d="M10 6l4 3 4-3 4 3 4-3 4 3 4-3 4 3 4-3 4 3 4-3v54l-4-3-4 3-4-3-4 3-4-3-4 3-4-3-4 3-4-3-4 3-4-3z" fill="#E3242B"/>
+      <circle cx="30" cy="44" r="10" fill="#F6C453"/>`, -4],
+  ].map(([food, dy]) => `<svg viewBox="0 -16 60 80" stroke="#111" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">${food}${MINI_CROWN}${RAGE(dy)}</svg>`);
+  const DONUT = 4;   // which head is the donut
+
+  // a bow with an arrow nocked, held at its grip (25, 30); plain or burning
+  const bowArt = (flaming) => `<svg viewBox="0 0 64 60" fill="none" stroke-linecap="round">
+    <path d="M12 4Q38 30 12 56" stroke="#111" stroke-width="6"/><path d="M12 4Q38 30 12 56" stroke="#8E5A2B" stroke-width="3"/>
+    <path d="M12 4v52" stroke="#111" stroke-width="1.2"/>
+    <path d="M10 30h42" stroke="#111" stroke-width="3"/><path d="M50 26l8 4-8 4z" fill="#111" stroke="#111" stroke-width="1.5"/>
+    ${flaming ? '<path d="M58 30c6-5 6-11 2-16c-1 6-6 8-6 12c0 3 2 4 4 4z" fill="#F08A1C" stroke="#111" stroke-width="1.6"/>' : ''}</svg>`;
+  // a flying arrow, pointing right; plain or burning
+  const arrowArt = (flaming) => `<svg viewBox="0 0 76 20" fill="none" stroke-linecap="round">
+    <path d="M6 10h52" stroke="#111" stroke-width="3"/><path d="M4 4l8 6-8 6M10 4l8 6-8 6" stroke="#C8553D" stroke-width="2.4"/>
+    <path d="M56 5l10 5-10 5z" fill="#111" stroke="#111" stroke-width="1.5"/>
+    ${flaming ? '<path d="M64 10c8-4 9-10 5-16c0 7-7 8-7 13c0 2 1 3 2 3z" fill="#F08A1C" stroke="#111" stroke-width="1.4"/><circle cx="66" cy="10" r="3" fill="#F6C453" stroke="none"/>' : ''}</svg>`;
+  const FLAME = `<svg viewBox="0 0 40 60" stroke="#111" stroke-width="2" stroke-linejoin="round">
+    <path d="M20 2c14 18 20 30 14 44q-6 12-14 12t-14-12C0 32 6 20 20 2z" fill="#E3242B"/>
+    <path d="M20 18c9 12 12 20 8 28q-3 6-8 6t-8-6c-4-8-1-16 8-28z" fill="#F08A1C" stroke="none"/>
+    <path d="M20 32c4 6 5 10 3 14q-1 3-3 3t-3-3c-2-4-1-8 3-14z" fill="#F6C453" stroke="none"/></svg>`;
+  // a firework: lines of light bursting out from the middle
+  const fireworkArt = (col) => {
+    const rays = Array.from({ length: 12 }, (_, i) => {
+      const a = (i / 12) * Math.PI * 2;
+      const p = (r) => `${(Math.cos(a) * r).toFixed(1)} ${(Math.sin(a) * r).toFixed(1)}`;
+      return `<path d="M${p(12)}L${p(38)}"/><circle cx="${p(44).split(' ')[0]}" cy="${p(44).split(' ')[1]}" r="3.4" fill="${col}" stroke="none"/>`;
+    }).join('');
+    return `<svg viewBox="-50 -50 100 100" fill="none" stroke="${col}" stroke-width="3.2" stroke-linecap="round">${rays}</svg>`;
+  };
+
+  function dussehra(c) {
+    const { tl, gsap, A, C, T, fh, cx, W, tw, th, head, ear, tail, floorY, bg } = c;
+    const { w: aw, h: ah } = c.m.a;
+    const { w: cw2, h: ch2 } = c.m.c;
+
+    // Ravana stands at stage right: tall enough that his heads are out of reach from the ground
+    const bodyH = Math.min(th * 1.1, (floorY - 130) * 0.8, (W * 0.42) / RAVANA_RATIO);
+    const bodyW = bodyH * RAVANA_RATIO;
+    const headS = bodyH * 0.27;
+    const gap = headS * 0.72;
+    // the donut sits over his neck (left of his middle, as he's turned); the row of heads, and his
+    // mace, must fit on screen
+    const neckDx = ravanaAt(150, 8)[0] * bodyW;
+    const rx = Math.min(W * 0.78, W - (9 - DONUT) * gap - headS * 0.6 - 10 - neckDx, W - bodyW / 2 - 6);
+    const bodyTop = floorY - bodyH;
+    const on = (x, y) => { const [fx, fy] = ravanaAt(x, y); return { x: rx + fx * bodyW, y: bodyTop + fy * bodyH }; };
+    const neckY = bodyTop + bodyH * 0.15;
+    const chest = on(150, 40);
+    const body = c.prop('dish', RAVANA_BODY, bodyW, bg);
+    gsap.set(body, { x: rx, y: floorY - bodyH / 2, transformOrigin: '50% 100%' });
+    tl.fromTo(body, { autoAlpha: 1, scaleY: 0 }, { scaleY: 1, duration: 0.55, ease: 'back.out(1.5)', immediateRender: false }, 0.1);
+    c.cue(0.1, 'rise');
+    // ten heads in an arc on his shoulders, the donut highest and biggest in the middle; those on
+    // his far side a little closer together
+    const heads = JUNK.map((art, i) => {
+      const size = i === DONUT ? headS * 1.3 : headS;
+      const h = c.prop('dish', art, size, bg);
+      const x = rx + neckDx + (i - DONUT) * gap * (i < DONUT ? 0.9 : 1);
+      const y = neckY - size * 0.5 - (5 - Math.abs(i - DONUT)) * headS * 0.06;
+      tl.fromTo(h, { x, y, autoAlpha: 1, scale: 0 }, { scale: 1, duration: 0.25, ease: 'back.out(2.5)', immediateRender: false }, 0.5 + i * 0.06);
+      return { el: h, x, y, size };
+    });
+    const headsTop = Math.min(...heads.map((h) => h.y - h.size * 0.67));
+    [0.5, 0.74, 0.98].forEach((t) => c.cue(t, 'pop'));
+    c.cue(1.1, 'sparkle');
+    // he laughs: all ten heads bob, and the words go up above them
+    const laugh = (at) => {
+      say(c, 'HA HA HA!', at, heads[DONUT].x, Math.max(fh * 0.5, headsTop - headS * 0.5), 0.5, 'say say--ink', 'ravana');
+      tl.to(heads.map((h) => h.el), { y: '-=7', rotation: (i) => (i % 2 ? 8 : -8), duration: 0.12, yoyo: true, repeat: 5, stagger: 0.02 }, at);
+    };
+    laugh(1.3);
+
+    // Aiko and Capiche hop in with bows, aiming at Ravana
+    const aSt = c.ax(W * 0.16);
+    const cSt = c.cxo(W * 0.32);
+    enter(c, aSt, cSt);
+    const bowW = fh * 0.42;
+    const bowH = bowW * (60 / 64);
+    const bow = (ch, x, y, flaming = false) => {
+      const el = c.held(ch, 'bow', bowArt(flaming), { width: bowW, left: x - bowW * (25 / 64), top: y - bowH / 2 });
+      gsap.set(el, { transformOrigin: '39% 50%' });
+      return el;
+    };
+    const bowA = bow(A, aw * 0.97, ah * 0.64);
+    const bowC = bow(C, cw2 * 0.95, ch2 * 0.66);
+    const handA = { x: aX(c, aSt) + aw * 0.47 + bowW * 0.3, y: c.m.a.top + ah * 0.64 };
+    const handC = { x: cX(c, cSt) + cw2 * 0.45 + bowW * 0.3, y: c.m.c.top + ch2 * 0.66 };
+    const arrowW = fh * 0.42;
+
+    // Aiko shoots: the arrow falls short and sticks in the ground
+    const SHOT1 = 1.75;
+    tl.to(bowA, { rotation: -14, duration: 0.2 }, SHOT1 - 0.25).to(bowA, { rotation: 0, duration: 0.15 }, SHOT1 + 0.05)
+      .to(A.body, { rotation: -6, duration: 0.15, yoyo: true, repeat: 1 }, SHOT1 - 0.2);
+    const a1 = c.prop('dish', arrowArt(false), arrowW);
+    const stick1 = { x: (handA.x + rx - bodyW * 0.4) / 2, y: floorY - arrowW * 0.12 };
+    tl.set(a1, { autoAlpha: 1 }, SHOT1);
+    arc(c, a1, handA, stick1, SHOT1, 0.6, fh * 0.55, 0);
+    tl.fromTo(a1, { rotation: -35 }, { rotation: 48, duration: 0.6, ease: 'none', immediateRender: false }, SHOT1)
+      .to(a1, { autoAlpha: 0, duration: 0.3 }, 3.7);
+    c.cue(SHOT1, 'twang');
+    c.cue(SHOT1 + 0.6, 'tok');
+    tl.to(heads.map((h) => h.el), { y: '-=5', duration: 0.1, yoyo: true, repeat: 3, stagger: 0.02 }, SHOT1 + 0.7);
+
+    // Capiche shoots higher: it hits Ravana's belly and bounces off
+    const SHOT2 = 2.65;
+    tl.to(bowC, { rotation: -22, duration: 0.2 }, SHOT2 - 0.25).to(bowC, { rotation: 0, duration: 0.15 }, SHOT2 + 0.05)
+      .to(C.body, { rotation: -6, duration: 0.15, yoyo: true, repeat: 1 }, SHOT2 - 0.2);
+    const a2 = c.prop('dish', arrowArt(false), arrowW);
+    const belly = on(138, 50);
+    tl.set(a2, { autoAlpha: 1 }, SHOT2);
+    arc(c, a2, handC, belly, SHOT2, 0.5, fh * 0.45, 0);
+    tl.fromTo(a2, { rotation: -32 }, { rotation: 12, duration: 0.5, ease: 'none', immediateRender: false }, SHOT2);
+    arc(c, a2, belly, { x: belly.x - W * 0.1, y: floorY - arrowW * 0.1 }, SHOT2 + 0.5, 0.5, fh * 0.35, 0);
+    tl.to(a2, { rotation: -340, duration: 0.5, ease: 'none' }, SHOT2 + 0.5)
+      .to(a2, { autoAlpha: 0, duration: 0.3 }, 3.7)
+      .to(body, { keyframes: { rotation: [2, -1.5, 1, 0] }, duration: 0.5 }, SHOT2 + 0.5);
+    c.cue(SHOT2, 'twang');
+    c.cue(SHOT2 + 0.5, 'boing');
+    laugh(3.25);
+
+    // "Too tall!" They slump
+    const SLUMP = 3.75;
+    const midAC = (aX(c, aSt) + cX(c, cSt)) / 2;
+    say(c, 'Too tall!', SLUMP, midAC, c.m.a.top - fh * 0.25, 0.45, 'say', 'both');
+    tl.to([A.body, C.body], { scaleY: 0.86, scaleX: 1.08, duration: 0.2 }, SLUMP + 0.1)
+      .to([A.body, C.body], { scaleY: 1, scaleX: 1, duration: 0.3 }, SLUMP + 0.6);
+
+    // the tiger strolls in; they step aside, into the room between its nose and Ravana's sword and
+    // cape (closer together, and a little smaller, where there isn't much of it); "Hop on."
+    const roomR = rx - bodyW * 0.47 - W * 0.025;
+    const gapAC = W * 0.015;
+    // how far each reaches from its middle: left to its edge, right to the tip of its arrow
+    const aReach = [aw * 0.5, aw * 0.47 + bowW * 0.75];
+    const cReach = [cw2 * 0.5, cw2 * 0.45 + bowW * 0.75];
+    const span = aReach[0] + aReach[1] + cReach[0] + cReach[1];
+    const nose = (x) => x + tw / 2 + W * 0.015;
+    let tcx1 = Math.max(tw / 2 + 12, W * 0.2);
+    // short of room (a wide but short screen, where Ravana is big): the tiger stops further left,
+    // its tail off the edge of the screen
+    const lack = span * 0.85 + gapAC - (roomR - nose(tcx1));
+    if (lack > 0) tcx1 = Math.max(tw * 0.3, tcx1 - lack);
+    const ARRIVE = strollIn(c, 3.95, tcx1, 5, 0.34);
+    const roomL = nose(tcx1);
+    const shrink = Math.min(1, Math.max(0.7, (roomR - roomL - gapAC) / span));
+    const aMid = roomL + aReach[0] * shrink;
+    const cMid = Math.min(aMid + (aReach[1] + cReach[0]) * shrink + gapAC, roomR - cReach[1] * shrink);
+    const aSide = c.ax(aMid);
+    const cSide = c.cxo(cMid);
+    tl.add(c.hop(A, aSide, 0.45, fh * 0.25), 4.2)
+      .add(c.hop(C, cSide, 0.45, fh * 0.25), 4.35)
+      .to(A.body, { scale: shrink, duration: 0.45 }, 4.2)
+      .to(C.body, { scale: shrink, duration: 0.45 }, 4.35)
+      .to([A.body, C.body], { rotation: -8, duration: 0.25 }, ARRIVE - 0.2);
+    [4.65, 4.8].forEach((t) => c.cue(t, 'hop'));
+    const ht = headTop(c, tcx1);
+    say(c, 'Hop on.', ARRIVE + 0.1, ht.x, ht.y - fh * 0.15, 0.5, 'say say--ink', 'tiger');
+    c.chomp(ARRIVE + 0.1, 2);
+    tl.to(tail, { keyframes: { rotation: [-14, 14, 0] }, duration: 0.5 }, ARRIVE + 0.1);
+
+    // both hop up and sit on its back, their legs hidden behind the tiger…
+    const MOUNT = ARRIVE + 0.7;
+    const RIDE_SCALE = 0.72;
+    const saddle1 = c.saddleAt(tcx1);
+    const feetY = saddle1.y + fh * 0.1;
+    const lift = feetY - floorY;
+    const aRide = c.ax(saddle1.x - aw * RIDE_SCALE * 0.42);
+    const cRide = c.cxo(saddle1.x + cw2 * RIDE_SCALE * 0.38);
+    [[A, aRide], [C, cRide]].forEach(([ch, x], i) => {
+      const t0 = MOUNT + i * 0.08;
+      tl.to(ch.root, { x, duration: 0.5, ease: 'power1.inOut' }, t0)
+        .to(ch.lift, { keyframes: [{ y: lift - fh * 0.22, duration: 0.25, ease: 'power2.out' }, { y: lift, duration: 0.25, ease: 'power2.in' }] }, t0)
+        .to(ch.body, { scale: RIDE_SCALE, rotation: 0, duration: 0.5 }, t0)
+        .to(ch.shadow, { opacity: 0, duration: 0.3 }, t0);
+    });
+    tl.add(c.squash(T, 0.08, 0.4), MOUNT + 0.55);
+    c.cue(MOUNT, 'whoosh');
+    c.cue(MOUNT + 0.55, 'hop');
+
+    // …and in a burst of sparkle they become one: Caiko, a bow in its free hand
+    const MERGE = MOUNT + 0.85;
+    const flash = c.prop('dish', ART.flashStar, fh * 0.7);
+    tl.to(A.root, { x: c.ax(saddle1.x), duration: 0.3, ease: 'power2.in' }, MERGE)
+      .to(C.root, { x: c.cxo(saddle1.x), duration: 0.3, ease: 'power2.in' }, MERGE)
+      .to([A.body, C.body], { scale: 0, duration: 0.3, ease: 'power2.in' }, MERGE)
+      .set([A.root, C.root], { autoAlpha: 0 }, MERGE + 0.3)
+      .fromTo(flash, { x: saddle1.x, y: saddle1.y - c.rh * 0.4, autoAlpha: 1, scale: 0, rotation: -30 },
+        { scale: 1.3, rotation: 0, duration: 0.2, ease: 'power2.out', immediateRender: false }, MERGE + 0.22)
+      .to(flash, { autoAlpha: 0, scale: 1.6, duration: 0.25 }, MERGE + 0.45)
+      .set(c.rider, { autoAlpha: 1 }, MERGE + 0.25)
+      .fromTo(c.rider, { scale: 0.3 }, { scale: 1, duration: 0.5, ease: 'back.out(2)', immediateRender: false }, MERGE + 0.25)
+      .to(ear, { rotation: 8, duration: 0.07, yoyo: true, repeat: 3 }, MERGE + 0.4);
+    c.cue(MERGE + 0.2, 'sparkle');
+    c.cue(MERGE + 0.3, 'chime');
+    // Caiko's bow is carried by the tiger's body, at Caiko's free (right) hand
+    const [seatX, seatY] = c.rider.dataset.seat.split(' ').map(Number);
+    const hand = {                                                // in the tiger's own frame
+      x: saddle1.x - c.rw * seatX - (tcx1 - tw / 2) + c.rw * 0.97,
+      y: saddle1.y - c.rh * seatY - c.m.t.top + c.rh * 0.62,
+    };
+    const cBowW = bowW * 0.9;
+    const caikoBow = (flaming) => {
+      const el = c.held(T, 'bow', bowArt(flaming), { width: cBowW, left: hand.x - cBowW * (25 / 64), top: hand.y - (cBowW * (60 / 64)) / 2 });
+      el.style.zIndex = 3;
+      gsap.set(el, { autoAlpha: 0, transformOrigin: '39% 50%' });
+      return el;
+    };
+    const cBow = caikoBow(false);
+    const cFlame = caikoBow(true);
+    tl.set(cBow, { autoAlpha: 1 }, MERGE + 0.5)
+      .fromTo(cBow, { scale: 0 }, { scale: 1, duration: 0.3, ease: 'back.out(3)', immediateRender: false }, MERGE + 0.5);
+    c.cue(MERGE + 0.5, 'pop');
+
+    // the tiger takes a step or two, but stops well short of Ravana: this is a long shot
+    const RIDE = MERGE + 1.0;
+    const keepAway = Math.max(W * 0.16, tw * 0.4);
+    const tcx2 = Math.max(tcx1, Math.min(tcx1 + tw * 0.25, rx - bodyW * 0.5 - keepAway - tw / 2));
+    const STEPS = tcx2 > tcx1 + 4 ? 2 : 0;
+    if (STEPS) {
+      tl.add(c.walk(T, c.tx(tcx2), STEPS, 0.34, th * 0.035), RIDE)
+        .add(c.gait(STEPS, 0.34), RIDE)
+        .to(c.rider, { y: -c.rh * 0.05, duration: 0.17, ease: 'sine.inOut', yoyo: true, repeat: STEPS * 2 - 1 }, RIDE);
+      c.steps(RIDE, STEPS, 0.34, 0.2);
+    }
+
+    // "Fire!" Caiko draws a flaming arrow and looses it at Ravana's chest
+    const FIRE = RIDE + STEPS * 0.34 + 0.15;
+    const handAt = { x: tcx2 - tw / 2 + hand.x, y: c.m.t.top + hand.y };
+    say(c, 'Fire!', FIRE, handAt.x, handAt.y - c.rh * 0.95, 0.4, 'say', 'both');   // Caiko speaks with both their voices
+    tl.set(cBow, { autoAlpha: 0 }, FIRE + 0.2)
+      .set(cFlame, { autoAlpha: 1 }, FIRE + 0.2)
+      .fromTo(cFlame, { rotation: 0 }, { rotation: -14, duration: 0.25, immediateRender: false }, FIRE + 0.2);
+    c.cue(FIRE + 0.2, 'whoosh');
+    const SHOOT = FIRE + 0.6;
+    const shot = c.prop('dish', arrowArt(true), arrowW * 1.15);
+    tl.set(cFlame, { autoAlpha: 0 }, SHOOT)
+      .set(cBow, { autoAlpha: 1 }, SHOOT)
+      .set(shot, { autoAlpha: 1 }, SHOOT)
+      .to(c.rider, { keyframes: [{ x: -c.rw * 0.06, duration: 0.08 }, { x: 0, duration: 0.25 }] }, SHOOT);   // the recoil
+    arc(c, shot, { x: handAt.x + cBowW * 0.45, y: handAt.y }, chest, SHOOT, 0.65, fh * 0.4, 0);
+    tl.fromTo(shot, { rotation: -22 }, { rotation: 14, duration: 0.65, ease: 'none', immediateRender: false }, SHOOT)
+      .to(shot, { autoAlpha: 0, duration: 0.1 }, SHOOT + 0.65);
+    c.cue(SHOOT, 'twang');
+
+    // Ravana catches fire…
+    const IMPACT = SHOOT + 0.65;
+    const flames = [[124, 32], [176, 32], [150, 58], [70, 92], [230, 92], [112, 102], [188, 102], [150, 118]].map(([x, y], i) => {
+      const f = c.prop('dish', FLAME, bodyH * (0.26 + (i % 3) * 0.06));
+      gsap.set(f, { transformOrigin: '50% 100%' });
+      tl.fromTo(f, { ...on(x, y), autoAlpha: 1, scale: 0 },
+        { scale: 1, duration: 0.3, ease: 'back.out(2)', immediateRender: false }, IMPACT + i * 0.08)
+        .to(f, { scaleY: 1.25, scaleX: 0.85, duration: 0.14, yoyo: true, repeat: 9, ease: 'sine.inOut' }, IMPACT + 0.3 + i * 0.03);
+      return f;
+    });
+    tl.add(c.shake(8, 0.4), IMPACT)
+      .to(body, { keyframes: { rotation: [3, -2.5, 2, -1, 0] }, duration: 0.8 }, IMPACT);
+    c.cue(IMPACT, 'fire', 2.6);
+
+    // …his ten heads go up one by one like crackers, and the body burns down
+    const BOOM = IMPACT + 0.45;
+    const ORDER = [9, 0, 8, 1, 7, 2, 6, 3, 5, DONUT];
+    const COLOURS = ['#F6C453', '#E3242B', '#2FA36B', '#1F4FBF', '#F08A1C', '#E83E8C'];
+    ORDER.forEach((i, k) => {
+      const h = heads[i];
+      const last = i === DONUT;                                       // the donut goes last, the biggest burst of all
+      const at = BOOM + k * 0.09 + (last ? 0.15 : 0);
+      const top = Math.max(84, h.y - headS * (last ? 0.6 : 0.8 + (k % 3) * 0.35));
+      const burstX = Math.min(W - headS * 1.1, Math.max(headS * 1.1, h.x + (i - DONUT) * gap * 0.3));
+      tl.to(h.el, { y: top, x: burstX, scale: 0.45, rotation: (i - DONUT) * 18, duration: 0.35, ease: 'power2.in' }, at)
+        .set(h.el, { autoAlpha: 0 }, at + 0.35);
+      const fw = c.prop('dish', fireworkArt(last ? '#F6C453' : COLOURS[k % COLOURS.length]), headS * (last ? 3.6 : 2.2));
+      tl.fromTo(fw, { x: burstX, y: top, autoAlpha: 1, scale: 0, rotation: k * 17 }, { scale: 1, duration: 0.3, ease: 'power2.out', immediateRender: false }, at + 0.35)
+        .to(fw, { autoAlpha: 0, scale: 1.25, duration: last ? 0.6 : 0.45, ease: 'power1.in' }, at + 0.65);
+      if (k % 2 === 0 || last) c.cue(at - 0.1, 'firework', k);
+    });
+    const CROWN_AT = BOOM + 9 * 0.09 + 0.15;                          // when the donut goes up
+    tl.to(body, { scaleY: 0.05, autoAlpha: 0, duration: 0.9, ease: 'power2.in' }, BOOM + 0.4)
+      .to(flames, { scale: 0, autoAlpha: 0, duration: 0.4, stagger: 0.05 }, BOOM + 0.9)
+      .add(c.dustPuff(rx, floorY, bodyW * 0.6), BOOM + 1.2);
+    [0, 0.25, 0.5].forEach((d, k) => powder(c, 'rgba(120, 112, 100, .35)', BOOM + 1.0 + d, rx + (k - 1) * bodyW * 0.25, floorY - bodyH * 0.25, bodyW * 0.45, 0.2));
+
+    // Ravana is gone: Caiko puts the bow away, hearts, "Happy Dussehra!", and India's mandala
+    // opens where he stood
+    const ONE = CROWN_AT + 0.5;
+    const saddle2 = c.saddleAt(tcx2);
+    tl.to(cBow, { scale: 0, autoAlpha: 0, duration: 0.25 }, ONE)
+      .add(c.heartsUp(saddle2.x, saddle2.y - c.rh * 0.6, c.rh * 0.7), ONE + 0.1)
+      .to(ear, { rotation: 8, duration: 0.07, yoyo: true, repeat: 3 }, ONE + 0.2);
+    c.cue(ONE + 0.1, 'sparkle');
+    const ht2 = headTop(c, tcx2);
+    say(c, 'Happy Dussehra!', ONE + 0.3, Math.min(ht2.x, W - fh * 1.6), ht2.y - fh * 0.15, 0.7, 'say', 'tiger');
+    c.chomp(ONE + 0.3, 3);
+    c.bloomAt(ONE + 0.1, chest);
+
+    // and off they go
+    c.exitRight(ONE + 1.2, tcx2);
+    return { own: true };
+  }
+
+  return { fight, cookoff, sharing, noodle, dance, race, sleeping, chef, host, guest, storybook, judge, holi, photo, tickle, navratri, dussehra };
 })();

@@ -118,6 +118,11 @@
 
     <button class="btn skip" type="button">Skip intro</button>
     <!-- sound on / off, only while the intro plays; says "Tap for sound" until the browser allows audio (js/sound.js) -->
+    <!-- which festival the intro plays (js/intro.js) -->
+    <div class="festival" role="group" aria-label="Intro">
+      <button type="button" data-variant="navratri" aria-pressed="true">Navratri</button>
+      <button type="button" data-variant="dussehra" aria-pressed="false">Dussehra</button>
+    </div>
     <button class="sound" id="sound-toggle" type="button" aria-pressed="false" aria-label="Turn sound on">
       <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/>

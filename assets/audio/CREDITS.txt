@@ -1,6 +1,6 @@
 Intro audio (plays only during the intro on index.html). The live site (main) plays the
-Navratri intro: the music and its five voice lines. The other files serve the intro
-concepts that are kept in js/openings.js but not shown.
+Navratri or the Dussehra intro: the music and their voice lines. The other files serve the
+intro concepts that are kept in js/openings.js but not shown.
 
 sitar-tabla.m4a     Music: "Sitar Tabla Fusion Beat" by BudgetPixel AI
                     https://budgetpixel.com/background-music/sitar-tabla-fusion-beat-592eb3d7
@@ -19,7 +19,8 @@ voices/*.m4a        The characters' lines, generated with Kokoro-82M (open-sourc
                     "Mio!", "No, io!", "Pronti… via!",
                     "Batti cinque!"…), the tiger in Hindi (hm_omega: "शुभ नवरात्रि!",
                     "शाबाश!", and English lines written in Devanagari for an Indian
-                    accent, e.g. "वेल्कम!", "हैप्पी होली!"). Silence trimmed, levelled,
+                    accent, e.g. "वेल्कम!", "हैप्पी होली!", "हैप्पी दशहरा!"), and Ravana's
+                    deep laugh in Dussehra (hm_psi: "हा हा हा!", pitched down). Silence trimmed, levelled,
                     AAC 64 kbps. No credit required.
 
 roar.m4a            A 2.6 s cut of "Lion raring-sound1TamilNadu178.ogg", public domain.

@@ -1,6 +1,6 @@
 /* ==========================================================================
    Bookends Hospitality: sound for the intro only
-   Sound is on by default: sitar-and-tabla music under the Navratri story
+   Sound is on by default: sitar-and-tabla music under the Navratri or Dussehra story
    (fading out at the title), the characters' voices, and effects on cue
    (intro.js calls BOOKENDS_SOUND.fx('dhol') etc. at each moment). The rest
    of the site is silent.
@@ -19,12 +19,13 @@ window.BOOKENDS_SOUND = (() => {
   'use strict';
 
   const MUSIC = 'assets/audio/sitar-tabla.m4a';
-  // main plays the Navratri opening only, so only its five lines are downloaded (the
+  // main plays the Navratri and Dussehra openings, so only their lines are downloaded (the
   // variation branch lists every concept's lines and samples). A line with no file
   // falls back to gibberish (FX.say).
   const SAMPLES = {};
   const LINES = [
     'aiko-dandiya', 'aiko-faster', 'capiche-dandiya', 'capiche-faster', 'tiger-shubh-navratri',
+    'aiko-too-tall', 'capiche-too-tall', 'aiko-fire', 'capiche-fire', 'tiger-happy-dussehra', 'ravana-hahaha',
   ];
   LINES.forEach((id) => { SAMPLES[id] = `assets/audio/voices/${id}.m4a`; });
   const MUSIC_LEVEL = 0.14;   // the track is mastered loud: this sits it under the effects
@@ -204,6 +205,7 @@ window.BOOKENDS_SOUND = (() => {
     aiko: { lo: 560, hi: 780, wave: 'square', formant: 1900 },
     capiche: { lo: 310, hi: 440, wave: 'square', formant: 1300 },
     tiger: { lo: 120, hi: 175, wave: 'sawtooth', formant: 650 },
+    ravana: { lo: 80, hi: 120, wave: 'sawtooth', formant: 450 },
   };
 
   function blip(wave, f0, f1, level, dur, formant, at) {
@@ -432,6 +434,28 @@ window.BOOKENDS_SOUND = (() => {
     whirl() {                                                          // the garba twirl, spinning up
       hiss('bandpass', 300, 3200, 2, 0.28, 1.0, 0.4);
       tone('sine', 300, 900, 0.06, 0.8, 0.5);
+    },
+
+    /* Dussehra */
+    twang() {                                                          // a bow lets go
+      tone('triangle', 230, 170, 0.3, 0.002, 0.28);
+      tone('sine', 460, 420, 0.12, 0.002, 0.2);
+      hiss('bandpass', 1800, 900, 2, 0.12, 0.002, 0.05);
+    },
+    fire(seconds = 1.5) {                                              // flames: a roar of air, crackling
+      hiss('lowpass', 900, 500, 0.6, 0.35, 0.25, seconds);
+      let at = 0;
+      while (at < seconds) {
+        hiss('highpass', 3000 + Math.random() * 2000, 2000, 1, 0.12 + Math.random() * 0.12, 0.001, 0.025, at);
+        at += 0.04 + Math.random() * 0.1;
+      }
+    },
+    firework(i = 0) {                                                  // a cracker shoots up and bursts
+      const f = 900 + (i % 4) * 120;
+      tone('sine', f, f * 2.4, 0.06, 0.02, 0.42);                      // the whistle
+      tone('sine', 90, 40, 0.7, 0.003, 0.35, 0.45);                    // the bang
+      hiss('highpass', 2200, 900, 0.7, 0.5, 0.002, 0.18, 0.45);
+      for (let k = 0; k < 6; k++) hiss('highpass', 4500, 3000, 1, 0.1, 0.001, 0.03, 0.6 + k * 0.07 + Math.random() * 0.04);
     },
 
     sparkle() {

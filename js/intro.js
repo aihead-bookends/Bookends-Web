@@ -1,8 +1,8 @@
 /* ==========================================================================
    Bookends Hospitality: the intro
    The opening act comes from js/openings.js. The live site (main) plays the
-   Navratri opening only; the variation branch keeps the switcher with every
-   concept. Each opening ends by handing over to the shared tiger act, and
+   Navratri or the Dussehra opening, switched with the toggle on the stage; the
+   variation branch keeps the switcher with every concept. Each opening ends by handing over to the shared tiger act, and
    the title appears, ringed by the essence of Aiko's Pan-Asia, India and Italy.
 
    Dev aid: add ?t=5.5 to the URL to freeze the timeline at 5.5 seconds.
@@ -29,8 +29,14 @@
   const SOUND = window.BOOKENDS_SOUND;     // js/sound.js: music, voices and effects for the intro
   let quietCues = false;                    // true while skipping, so jumped-over cues stay silent
   const sfx = (...args) => { if (!quietCues && SOUND) SOUND.fx(...args); };
-  // the live site plays the Navratri opening only (the variation branch has the switcher)
-  let variant = 'navratri';
+  // the live site plays Navratri or Dussehra: the toggle on the stage switches between them, and
+  // ?v=dussehra opens on Dussehra (the variation branch has the switcher with every concept)
+  const FESTIVALS = ['navratri', 'dussehra'];
+  let variant = (() => {
+    const v = new URLSearchParams(location.search).get('v');
+    return FESTIVALS.includes(v) ? v : FESTIVALS[0];
+  })();
+  document.querySelectorAll('[data-variant]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.variant === variant)));
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   const pair = (str, fallback) => (str || fallback).split(' ').map(Number);
 
@@ -850,7 +856,7 @@
     createFx();
     play();
 
-    // variation switcher: rebuild with another opening act and play it from the top
+    // the festival toggle: rebuild with the other opening act and play it from the top
     const switcher = document.querySelectorAll('[data-variant]');
     const mark = () => switcher.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.variant === variant)));
     mark();
