@@ -7,6 +7,7 @@
   /* All outside links live here. Fill one in and every button that uses it
      updates: booking / menu / maps / instagram are full URLs, phone is a number,
      email an address. An empty one keeps its button but goes nowhere. */
+  const CAPICHE_PHONE = '+91 90235 80385';   // one central number for all four Capiche outlets
   const LINKS = {
     // each brand
     aiko:    { menu: '', instagram: 'https://www.instagram.com/aikomfort/' },
@@ -14,13 +15,13 @@
     capiche: { menu: '', instagram: 'https://www.instagram.com/pizza.capiche/' },
 
     // each outlet: its TableCheck booking page, Google Maps link and phone number
-    'aiko-surat':         { booking: '', maps: 'https://maps.app.goo.gl/sbrYwXcPgCim5H828', phone: '' },   // Pal, Surat
-    'aiko-ahmedabad':     { booking: '', maps: 'https://maps.app.goo.gl/Dr24fvCxHMh6JU3a8', phone: '' },   // Ambli, Ahmedabad
-    'beshak-dumas':       { booking: '', maps: 'https://maps.app.goo.gl/s4u4tZeTbHzmLmo1A', phone: '' },   // Plot 444/1-3, Dumas Road, Surat
-    'capiche-piplod':     { booking: '', maps: 'https://maps.app.goo.gl/4f9KeHX7ecbRLps87', phone: '' },   // Samanvay, Gymkhana Road, Piplod, Surat
-    'capiche-vesu':       { booking: '', maps: 'https://maps.app.goo.gl/wNMMwpsE9Bm7QkMX7', phone: '' },   // International Wealth Center, Vesu, Surat
-    'capiche-ambli':      { booking: '', maps: 'https://maps.app.goo.gl/StY1dgToBH54QjZj9', phone: '' },   // Ason Vista, near Karnavati Club, Ahmedabad
-    'capiche-uni':        { booking: '', maps: 'https://maps.app.goo.gl/ReQ3Xo5YQmnJnoLJ7', phone: '' },   // Addor Aspire 2, University Road, Ahmedabad
+    'aiko-surat':         { booking: '', maps: 'https://maps.app.goo.gl/sbrYwXcPgCim5H828', phone: '+91 95101 53532' },   // Pal, Surat
+    'aiko-ahmedabad':     { booking: '', maps: 'https://maps.app.goo.gl/Dr24fvCxHMh6JU3a8', phone: '+91 92279 91150' },   // Ambli, Ahmedabad
+    'beshak-dumas':       { booking: '', maps: 'https://maps.app.goo.gl/s4u4tZeTbHzmLmo1A', phone: '+91 95103 55182' },   // Plot 444/1-3, Dumas Road, Surat
+    'capiche-piplod':     { booking: '', maps: 'https://maps.app.goo.gl/4f9KeHX7ecbRLps87', phone: CAPICHE_PHONE },   // Samanvay, Gymkhana Road, Piplod, Surat
+    'capiche-vesu':       { booking: '', maps: 'https://maps.app.goo.gl/wNMMwpsE9Bm7QkMX7', phone: CAPICHE_PHONE },   // International Wealth Center, Vesu, Surat
+    'capiche-ambli':      { booking: '', maps: 'https://maps.app.goo.gl/StY1dgToBH54QjZj9', phone: CAPICHE_PHONE },   // Ason Vista, near Karnavati Club, Ahmedabad
+    'capiche-uni':        { booking: '', maps: 'https://maps.app.goo.gl/ReQ3Xo5YQmnJnoLJ7', phone: CAPICHE_PHONE },   // Addor Aspire 2, University Road, Ahmedabad
 
     // Bookends Hospitality itself
     group:   { phone: '', email: '', instagram: '' },
