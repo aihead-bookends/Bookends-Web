@@ -13,10 +13,12 @@
   // as the cards after it slide up over it, how deep it now lies (up to 4), so it can sink back.
   const moments = [...document.querySelectorAll('.timeline .moment')];
   moments.forEach((m, i) => m.style.setProperty('--i', i));
+  let unwinding = false;                         // the ending has the cards (below)
   if (moments.length && !reduceMotion) {
     let queued = false;
     const settle = () => {
       queued = false;
+      if (unwinding) return;
       // how far each card has come over the one before it: 0 just touching, 1 lying on it
       const over = moments.map((m, i) => {
         if (!i) return 0;
@@ -36,61 +38,80 @@
     settle();
   }
 
-  // …and how the story ends (.journey-end): as you scroll on, the moments, lying in a pile like
-  // the cards did, stand up one by one as books on a shelf; Aiko and Capiche slide in from the
-  // sides as the bookends; and the Bookends logo comes up over them. It's all worked out from the
-  // finished layout, so anything left unplayed (reduced motion, no script) is simply the shelf.
+  // …and how the story ends (.journey-end): with the last card on top, scrolling on unwinds the
+  // stack from the top down, each card spinning and shrinking into the middle of the screen, until
+  // they're all gone into one point; out of it pops Caiko, its mandala opens behind, and the logo
+  // and the line come up underneath. Laid out as it is, the page simply ends on Caiko, so with
+  // reduced motion (or no script) that's what you see.
   const end = document.querySelector('.journey-end');
-  if (end && !reduceMotion) {
+  if (end && moments.length && !reduceMotion) {
     end.classList.add('is-live');
     const stage = end.querySelector('.journey-end__stage');
-    const books = [...end.querySelectorAll('.book')];
-    const ends = [...end.querySelectorAll('.shelf__end')];
+    const art = end.querySelector('.journey-end__art');
+    const caiko = end.querySelector('.journey-end__caiko');
+    const mandala = end.querySelector('.journey-end__mandala');
     const logo = end.querySelector('.journey-end__logo');
     const line = end.querySelector('.journey-end__line');
     const headerH = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 0;
     const clamp01 = (v) => Math.min(1, Math.max(0, v));
-    const ease = (t) => 1 - Math.pow(1 - t, 3);
-    const overshoot = (t) => 1 + 2.4 * Math.pow(t - 1, 3) + 1.4 * Math.pow(t - 1, 2);
-    let pile = [];
-    let away = [];
+    const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    const pop = (t) => 1 + 2.7 * Math.pow(t - 1, 3) + 1.7 * Math.pow(t - 1, 2);   // past 1, then back
+    let cards = [];
+    // where each card sits when stuck, without any transform: its middle across, its top, its height
     const measure = () => {
-      [...books, ...ends].forEach((el) => { el.style.transform = ''; });
-      const shelf = books[0].parentElement.getBoundingClientRect();
-      const mid = shelf.left + shelf.width / 2;
-      let y = shelf.bottom;                          // the first book at the bottom of the pile
-      pile = books.map((b) => {
-        const r = b.getBoundingClientRect();
-        y -= r.width;                                // lying down, a book is as tall as its spine is wide
-        return { x: mid - (r.left + r.width / 2), y: y + r.width / 2 - (r.top + r.height / 2) };
+      moments.forEach((m) => { m.style.transform = 'none'; });
+      cards = moments.map((m) => {
+        const r = m.getBoundingClientRect();
+        return { x: r.left + r.width / 2, top: parseFloat(getComputedStyle(m).top) || 0, h: r.height };
       });
-      // each bookend starts just off its side of the screen
-      away = ends.map((e, i) => { const r = e.getBoundingClientRect(); return i ? innerWidth - r.left + 20 : -(r.right + 20); });
+      moments.forEach((m) => { m.style.transform = ''; });
     };
     let queued = false;
     const play = () => {
       queued = false;
       const run = end.offsetHeight - stage.offsetHeight;
       const p = clamp01((headerH() - end.getBoundingClientRect().top) / run);
-      books.forEach((b, i) => {
-        const t = ease(clamp01((p - 0.1 - i * 0.032) / 0.26));
-        b.style.transform = `translate(${pile[i].x * (1 - t)}px, ${pile[i].y * (1 - t)}px) rotate(${-90 * (1 - t)}deg)`;
+      unwinding = p > 0;
+      const r = art.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height / 2;
+      const n = moments.length;
+      moments.forEach((m, i) => {
+        // the top card goes first, then the one under it, and so on down the stack
+        const t = ease(clamp01((p - (n - 1 - i) * 0.03) / 0.3));
+        if (!t) {
+          m.style.transform = '';
+          m.style.opacity = '';
+          m.style.borderRadius = '';
+          return;
+        }
+        const base = 1 - Math.min(+m.style.getPropertyValue('--depth') || 0, 4) * 0.035;
+        const scale = base + (0.06 - base) * t;
+        const k = cards[i];
+        const dx = (cx - k.x) * t;
+        const dy = (cy - k.top - (k.h * scale) / 2) * t;
+        const spin = (i % 2 ? 1 : -1) * (30 + i * 8) * t;
+        m.style.transform = `translate(${dx}px, ${dy}px) scale(${scale}) rotate(${spin}deg)`;
+        m.style.borderRadius = `${24 + 176 * t}px`;
+        m.style.opacity = String(1 - clamp01((t - 0.7) / 0.3));
       });
-      const e = clamp01((p - 0.5) / 0.2);
-      ends.forEach((el, i) => {
-        el.style.transform = `translateX(${away[i] * (1 - overshoot(e))}px)`;
-      });
-      const l = ease(clamp01((p - 0.72) / 0.18));
-      logo.style.opacity = l;
-      logo.style.transform = `translateY(${(1 - l) * 28}px) scale(${0.9 + 0.1 * l})`;
-      line.style.opacity = ease(clamp01((p - 0.8) / 0.15));
+      const c = clamp01((p - 0.5) / 0.16);
+      caiko.style.opacity = c ? 1 : 0;
+      caiko.style.transform = `scale(${pop(c) * c}) rotate(${(1 - c) * -24}deg)`;
+      const md = ease(clamp01((p - 0.52) / 0.24));
+      mandala.style.opacity = String(0.12 * md);
+      mandala.style.transform = `scale(${0.4 + 0.6 * md}) rotate(${(1 - md) * -120}deg)`;
+      const l = ease(clamp01((p - 0.68) / 0.18));
+      logo.style.opacity = String(l);
+      logo.style.transform = `translateY(${(1 - l) * 26}px)`;
+      line.style.opacity = String(ease(clamp01((p - 0.76) / 0.16)));
+      line.style.transform = `translateY(${(1 - ease(clamp01((p - 0.76) / 0.16))) * 18}px)`;
     };
     const queue = () => { if (!queued) { queued = true; requestAnimationFrame(play); } };
     measure();
     play();
     addEventListener('scroll', queue, { passive: true });
     addEventListener('resize', () => { measure(); queue(); });
-    addEventListener('load', () => { measure(); queue(); });   // once the bookends' pictures have their size
   }
 
   if (!counters.length || reduceMotion || !('IntersectionObserver' in window)) return;
