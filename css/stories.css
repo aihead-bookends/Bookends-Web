@@ -50,14 +50,15 @@
 }
 
 /* --- our journey: a stack of cards ---------------------------------------------
-   Each moment sticks under the header, a little lower than the one before, so the next slides up
-   over it and the earlier ones show as a thin edge above. js/stories.js sets --i (its place) and
-   --depth (how many cards now lie on it), and a covered card sinks back: smaller, a touch darker. */
+   Each moment is a card with a picture. It sticks under the header, a little lower than the one
+   before, so the next slides up over it and the earlier ones show as a thin edge above.
+   js/stories.js sets --i (its place) and --depth (how many cards now lie on it), and a covered
+   card sinks back: smaller, a touch darker. All the cards are the same height, so the stack is even. */
 
 .timeline {
   --peek: 12px;
-  max-width: 880px;
-  margin: clamp(36px, 5vw, 56px) 0 0;
+  max-width: 980px;
+  margin: clamp(36px, 5vw, 56px) auto 0;
   padding: 0 0 clamp(40px, 12vh, 120px);   /* the finished stack stays a moment before it goes */
   list-style: none;
 }
@@ -66,15 +67,14 @@
   position: sticky;
   top: calc(var(--header-h) + 24px + var(--i, 0) * var(--peek));
   display: grid;
-  grid-template-columns: clamp(84px, 11vw, 132px) minmax(0, 1fr);
-  gap: 0 clamp(16px, 2.4vw, 28px);
-  align-items: start;
+  grid-template-columns: minmax(0, 44%) minmax(0, 1fr);
+  height: clamp(300px, 30vw, 380px);
   margin-bottom: clamp(18px, 4vh, 36px);
-  padding: clamp(20px, 2.6vw, 28px) clamp(20px, 3vw, 32px);
+  overflow: hidden;
   background: var(--paper);
   border: 1px solid var(--line);
-  border-radius: 22px;
-  box-shadow: 0 -8px 28px rgba(17, 17, 17, .07);
+  border-radius: 24px;
+  box-shadow: 0 -8px 30px rgba(17, 17, 17, .08);
   transform: scale(calc(1 - var(--depth, 0) * .035));
   transform-origin: 50% 0;
 }
@@ -85,21 +85,53 @@
 .moment::after {
   content: '';
   position: absolute;
-  inset: -1px;
-  border-radius: inherit;
+  inset: 0;
   background: var(--ink);
   opacity: calc(var(--depth, 0) * .035);
   pointer-events: none;
 }
 
-.moment--key {
-  background: #FFFDF8;
-  border-color: rgba(17, 17, 17, .18);
+.moment--key { background: #FFFDF8; }
+
+.moment__media {
+  position: relative;
+  margin: 0;
+  background: var(--paper-light);
+}
+
+.moment__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Today: one dish from each brand, side by side */
+.moment__media--trio { display: grid; grid-template-columns: repeat(3, 1fr); }
+
+/* 2024: the road from Surat to Ahmedabad */
+.moment__media--map {
+  display: grid;
+  place-items: center;
+  background: #F6EFE2;
+}
+
+.moment__media--map svg { width: 86%; height: auto; }
+
+.moment__media--map text { font: 600 26px var(--font-display); fill: var(--ink); }
+
+.moment__body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding: clamp(22px, 3vw, 40px);
 }
 
 .moment__year {
-  font: 600 clamp(30px, 4vw, 52px)/1 var(--font-display);
-  letter-spacing: -.02em;
+  margin-bottom: clamp(10px, 1.4vw, 16px);
+  font: 600 clamp(40px, 5vw, 68px)/.9 var(--font-display);
+  letter-spacing: -.03em;
   font-variant-numeric: tabular-nums;
 }
 
@@ -124,17 +156,108 @@
 
 .moment__tag img.is-wide { width: 38px; }
 
-.moment__card h3 {
-  margin: 0 0 6px;
-  font: 600 clamp(20px, 2vw, 24px)/1.15 var(--font-display);
+.moment__body h3 {
+  margin: 0 0 8px;
+  font: 600 clamp(22px, 2.3vw, 30px)/1.1 var(--font-display);
   letter-spacing: -.01em;
 }
 
-.moment--now .moment__card h3 { font-size: clamp(22px, 2.6vw, 30px); }
-
-.moment__card p:not(.moment__tag) {
+.moment__body p:not(.moment__tag) {
   margin: 0;
   line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+/* --- …and how the story ends: the moments, as books, stand up on a shelf between the two
+   bookends, Aiko and Capiche, and the logo comes up. As laid out here it's the finished shelf;
+   js/stories.js adds .is-live and plays it out over a few screens of scrolling. ------------- */
+
+.journey-end {
+  --eh: clamp(96px, 18vw, 230px);          /* the bookends' height; the books are a little shorter */
+  --bw: clamp(16px, 3vw, 42px);            /* a book's spine */
+  margin-top: clamp(40px, 8vh, 80px);
+}
+
+.journey-end__stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(22px, 4vh, 40px);
+  padding-block: clamp(24px, 6vh, 64px);
+}
+
+.journey-end.is-live { height: 280vh; }
+
+.journey-end.is-live .journey-end__stage {
+  position: sticky;
+  top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  height: calc(100svh - var(--header-h));
+  padding-block: 0;
+}
+
+.journey-end__logo {
+  width: clamp(200px, 30vw, 380px);
+  height: auto;
+}
+
+.shelf {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(6px, 1vw, 12px);
+  padding: 0 clamp(8px, 2vw, 24px);
+}
+
+/* the shelf they all stand on */
+.shelf::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 6px;
+  background: var(--ink);
+  border-radius: 3px;
+}
+
+.shelf__end {
+  position: relative;
+  z-index: 1;
+  height: var(--eh);
+  width: auto;
+}
+
+.shelf__books {
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(2px, .4vw, 5px);
+}
+
+.book {
+  display: grid;
+  place-items: center;
+  width: var(--bw);
+  height: calc(var(--eh) * .92 * var(--h));
+  color: var(--t);
+  /* a band of lettering colour near the top and bottom of each spine */
+  background:
+    linear-gradient(var(--t), var(--t)) 0 9% / 100% 3px no-repeat,
+    linear-gradient(var(--t), var(--t)) 0 91% / 100% 3px no-repeat,
+    var(--c);
+  border: 2px solid var(--ink);
+  border-radius: 4px 4px 2px 2px;
+  font: 700 clamp(8px, 1.1vw, 13px)/1 var(--font-ui);
+  letter-spacing: .14em;
+  writing-mode: vertical-rl;
+  will-change: transform;
+}
+
+.journey-end__line {
+  margin: 0;
+  font: italic 500 clamp(18px, 2.2vw, 26px)/1.3 var(--font-display);
+  text-align: center;
   color: var(--ink-soft);
 }
 
@@ -376,18 +499,21 @@
     border-left: 1px solid var(--line);
   }
 
-  /* phones: the stack sits closer under the header; the year heads each card */
+  /* phones: the stack sits closer under the header; each card has its picture on top */
   .timeline { --peek: 8px; }
 
   .moment {
     top: calc(var(--header-h) + 12px + var(--i, 0) * var(--peek));
     grid-template-columns: minmax(0, 1fr);
-    gap: 10px;
-    padding: 18px 18px 20px;
-    border-radius: 18px;
+    grid-template-rows: 172px minmax(0, 1fr);
+    height: 440px;
+    border-radius: 20px;
   }
 
-  .moment__year { font-size: 28px; }
+  .moment__body { justify-content: flex-start; padding: 18px 20px 20px; }
+  .moment__year { font-size: 36px; }
+  .moment__body h3 { font-size: 22px; }
+  .moment__body p:not(.moment__tag) { font-size: 15px; line-height: 1.5; }
 
   .case { display: flex; }
   .case__photo { height: auto; aspect-ratio: 16 / 10; }
