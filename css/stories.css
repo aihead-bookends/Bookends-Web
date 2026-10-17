@@ -49,87 +49,61 @@
   color: var(--ink-soft);
 }
 
-/* --- our journey: a timeline --------------------------------------------------- */
+/* --- our journey: a stack of cards ---------------------------------------------
+   Each moment sticks under the header, a little lower than the one before, so the next slides up
+   over it and the earlier ones show as a thin edge above. js/stories.js sets --i (its place) and
+   --depth (how many cards now lie on it), and a covered card sinks back: smaller, a touch darker. */
 
 .timeline {
-  position: relative;
+  --peek: 12px;
+  max-width: 880px;
   margin: clamp(36px, 5vw, 56px) 0 0;
-  padding: 0;
+  padding: 0 0 clamp(40px, 12vh, 120px);   /* the finished stack stays a moment before it goes */
   list-style: none;
 }
 
-/* the line */
-.timeline::before {
+.moment {
+  position: sticky;
+  top: calc(var(--header-h) + 24px + var(--i, 0) * var(--peek));
+  display: grid;
+  grid-template-columns: clamp(84px, 11vw, 132px) minmax(0, 1fr);
+  gap: 0 clamp(16px, 2.4vw, 28px);
+  align-items: start;
+  margin-bottom: clamp(18px, 4vh, 36px);
+  padding: clamp(20px, 2.6vw, 28px) clamp(20px, 3vw, 32px);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  box-shadow: 0 -8px 28px rgba(17, 17, 17, .07);
+  transform: scale(calc(1 - var(--depth, 0) * .035));
+  transform-origin: 50% 0;
+}
+
+.moment:last-child { margin-bottom: 0; }
+
+/* the shade on a covered card */
+.moment::after {
   content: '';
   position: absolute;
-  top: 10px;
-  bottom: 10px;
-  left: calc(var(--year-w) + var(--gap) + 11px);   /* through the centre of the dots */
-  width: 2px;
-  background: linear-gradient(var(--ink), var(--ink)) top / 2px 100% no-repeat;
-  opacity: .18;
+  inset: -1px;
+  border-radius: inherit;
+  background: var(--ink);
+  opacity: calc(var(--depth, 0) * .035);
+  pointer-events: none;
 }
 
-.timeline {
-  --year-w: clamp(84px, 11vw, 140px);
-  --gap: clamp(14px, 2vw, 24px);
+.moment--key {
+  background: #FFFDF8;
+  border-color: rgba(17, 17, 17, .18);
 }
-
-.moment {
-  position: relative;
-  display: grid;
-  grid-template-columns: var(--year-w) 24px minmax(0, 1fr);
-  gap: 0 var(--gap);
-  align-items: start;
-  padding-bottom: clamp(16px, 2.4vw, 24px);
-}
-
-.moment:last-child { padding-bottom: 0; }
 
 .moment__year {
-  padding-top: 18px;
-  font: 600 clamp(20px, 2.4vw, 30px)/1 var(--font-display);
-  text-align: right;
+  font: 600 clamp(30px, 4vw, 52px)/1 var(--font-display);
+  letter-spacing: -.02em;
   font-variant-numeric: tabular-nums;
 }
 
-/* the dot */
-.moment::before {
-  content: '';
-  grid-column: 2;
-  grid-row: 1;
-  justify-self: center;
-  width: 14px;
-  height: 14px;
-  margin-top: 22px;
-  background: var(--paper-light);
-  border: 2px solid var(--ink);
-  border-radius: 50%;
-}
-
-.moment--key::before {
-  width: 20px;
-  height: 20px;
-  margin-top: 19px;
-  background: var(--accent);
-  border-color: var(--accent);
-  box-shadow: 0 0 0 5px rgba(200, 85, 61, .15);
-}
-
-.moment__card {
-  grid-column: 3;
-  grid-row: 1;
-  max-width: 720px;
-  padding: 18px 22px 20px;
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-}
-
-.moment--key .moment__card {
-  background: var(--paper-light);
-  border-color: rgba(17, 17, 17, .2);
-}
+.moment--key .moment__year { color: var(--accent); }
 
 .moment__tag {
   display: flex;
@@ -162,6 +136,11 @@
   margin: 0;
   line-height: 1.6;
   color: var(--ink-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .moment { transform: none; }
+  .moment::after { content: none; }
 }
 
 /* --- awards & press -------------------------------------------------------------- */
@@ -397,27 +376,18 @@
     border-left: 1px solid var(--line);
   }
 
-  .timeline { --year-w: 0px; --gap: 12px; }
+  /* phones: the stack sits closer under the header; the year heads each card */
+  .timeline { --peek: 8px; }
 
-  /* phones: the line and dots on the left, the year sits at the top of each card */
   .moment {
-    grid-template-columns: 20px minmax(0, 1fr);
-    gap: 0 12px;
+    top: calc(var(--header-h) + 12px + var(--i, 0) * var(--peek));
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    padding: 18px 18px 20px;
+    border-radius: 18px;
   }
 
-  .timeline::before { left: 9px; }   /* 20px dot column: centre at 10px */
-
-  .moment::before { grid-column: 1; }
-
-  .moment__year {
-    grid-column: 2;
-    grid-row: 1;
-    padding: 18px 0 8px;
-    text-align: left;
-    font-size: 22px;
-  }
-
-  .moment__card { grid-column: 2; grid-row: 2; }
+  .moment__year { font-size: 28px; }
 
   .case { display: flex; }
   .case__photo { height: auto; aspect-ratio: 16 / 10; }
